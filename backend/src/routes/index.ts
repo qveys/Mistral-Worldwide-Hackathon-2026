@@ -1,10 +1,14 @@
 import type { Express } from 'express';
 import type { WebSocketServer } from 'ws';
+import { projectRouter } from './project.route.js';
+import { structureRouter } from './structure.route.js';
 import { setupTranscribeRoute } from './transcribe.route.js';
 
 export function registerRoutes(app: Express, wss: WebSocketServer): void {
     // WebSocket routes
     setupTranscribeRoute(wss);
 
-    //  REST routes
+    // REST routes
+    app.use(structureRouter);
+    app.use(projectRouter);
 }
