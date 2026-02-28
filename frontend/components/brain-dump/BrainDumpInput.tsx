@@ -3,8 +3,8 @@
 import { useVoxtralSTT } from '@/lib/useVoxtralSTT';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Eraser, Send, Sparkles } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Eraser, Send, Sparkles, AlertCircle, RefreshCcw } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
 import { MicButton, MicButtonState } from '../ui/MicButton';
 import { TranscriptionLiveView } from './TranscriptionLiveView';
 
@@ -21,7 +21,10 @@ export function BrainDumpInput({
 }: BrainDumpInputProps) {
     const [manualText, setManualText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [isFallback, setIsFallback] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const {
         transcript,
@@ -32,23 +35,48 @@ export function BrainDumpInput({
         resetTranscript,
     } = useVoxtralSTT();
 
-    // Derive micState from STT hook
-    const micState: MicButtonState = isStreaming ? 'recording' : 'idle';
+    // Reset fallback if error is cleared or new recording starts successfully
+    useEffect(() => {
+        if (sttError) {
+            setIsFallback(true);
+            setIsConnecting(false);
+            if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+        }
+    }, [sttError]);
 
-    // Merge: when streaming or transcript exists, use transcript; otherwise manual text
+    // Derive micState
+    const micState: MicButtonState = isStreaming ? 'recording' : (isConnecting ? 'processing' : 'idle');
+
+    // Merge: prioritize live transcript, then manual text
     const text = transcript || manualText;
-
     const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
     const handleMicClick = async () => {
         if (micState === 'idle') {
-            setIsEditing(false);
+            setIsConnecting(true);
+            setIsFallback(false);
             resetTranscript();
             setManualText('');
-            await startRecording();
+
+            // Timeout logic: if no streaming after 5s, trigger fallback
+            connectionTimeoutRef.current = setTimeout(() => {
+                if (!isStreaming) {
+                    setIsFallback(true);
+                    setIsConnecting(false);
+                    stopRecording();
+                }
+            }, 5000);
+
+            try {
+                await startRecording();
+                if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+                setIsConnecting(false);
+            } catch (err) {
+                setIsFallback(true);
+                setIsConnecting(false);
+            }
         } else if (micState === 'recording') {
             stopRecording();
-            // Copy transcript into manual text, then clear it so the textarea becomes editable
             setManualText(transcript);
             resetTranscript();
             setIsEditing(true);
@@ -64,7 +92,13 @@ export function BrainDumpInput({
     const clearText = () => {
         setManualText('');
         setIsEditing(false);
+        setIsFallback(false);
         resetTranscript();
+    };
+
+    const retryMic = () => {
+        setIsFallback(false);
+        handleMicClick();
     };
 
     return (
@@ -79,36 +113,56 @@ export function BrainDumpInput({
                         className="bg-white/40 dark:bg-black/40 backdrop-blur-xl rounded-3xl p-5 shadow-2xl border border-white/20 dark:border-white/10 relative"
                     >
                         {/* Header Actions */}
-                        <div className="flex justify-between items-center mb-3">
+                        <div className="flex justify-between items-center mb-3 px-1">
                             <div className="flex items-center gap-2">
-                                <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                                <div className={cn(
+                                    "h-2 w-2 rounded-full animate-pulse",
+                                    isFallback ? "bg-amber-500" : "bg-blue-500"
+                                )} />
                                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                    Brain Dump Engine
+                                    {isFallback ? 'Saisie Manuelle' : 'Brain Dump Engine'}
                                 </span>
                             </div>
-                            {text && (
-                                <button
-                                    onClick={clearText}
-                                    className="text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] font-bold uppercase"
-                                >
-                                    <Eraser size={12} />
-                                    Effacer
-                                </button>
-                            )}
+                            <div className="flex items-center gap-4">
+                                {isFallback && (
+                                    <button 
+                                        onClick={retryMic}
+                                        className="text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 text-[10px] font-black uppercase tracking-tighter italic"
+                                    >
+                                        <RefreshCcw size={12} />
+                                        Réessayer le micro
+                                    </button>
+                                )}
+                                {text && (
+                                    <button
+                                        onClick={clearText}
+                                        className="text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] font-bold uppercase"
+                                    >
+                                        <Eraser size={12} />
+                                        Effacer
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {/* Main Input Zone */}
                         <div className="relative min-h-[140px] mb-4">
-                            {/* STT Error Banner */}
-                            {sttError && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-medium"
-                                >
-                                    {sttError}
-                                </motion.div>
-                            )}
+                            {/* Fallback Message */}
+                            <AnimatePresence>
+                                {isFallback && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="mb-4 overflow-hidden"
+                                    >
+                                        <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wide flex items-center gap-2">
+                                            <AlertCircle size={14} />
+                                            Micro indisponible — saisie texte activée
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             {micState === 'recording' ? (
                                 <TranscriptionLiveView
@@ -139,9 +193,9 @@ export function BrainDumpInput({
                                                 <motion.p
                                                     animate={{ opacity: [0.4, 0.7, 0.4] }}
                                                     transition={{ duration: 3, repeat: Infinity }}
-                                                    className="text-xl font-medium text-slate-400 dark:text-slate-600"
+                                                    className="text-xl font-medium text-slate-400 dark:text-slate-600 text-balance px-10"
                                                 >
-                                                    Parlez ou écrivez ici...
+                                                    {isFallback ? 'Tapez votre idée ici...' : 'Parlez ou écrivez ici...'}
                                                 </motion.p>
                                                 <Sparkles
                                                     className="text-blue-300 dark:text-blue-900/50 animate-bounce"
