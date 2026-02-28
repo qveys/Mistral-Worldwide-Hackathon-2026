@@ -3,9 +3,11 @@ import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
 import { buildRevisePrompt } from '../prompts/revise.js';
 import { saveProject } from '../services/storage.js';
+import { DEMO_REVISED_ROADMAP } from '../mocks/demoRoadmap.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 const ReviseRequestSchema = z.object({
   projectId: z.string(),
@@ -27,6 +29,12 @@ const ReviseResponseSchema = z.object({
 
 router.post('/revise', async (req, res) => {
   try {
+    if (DEMO_MODE) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      res.json(DEMO_REVISED_ROADMAP);
+      return;
+    }
+
     const { projectId, instruction, roadmap } = ReviseRequestSchema.parse(req.body);
 
     const prompt = buildRevisePrompt(roadmap, instruction);
