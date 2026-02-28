@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { BedrockService } from '../services/bedrock.js';
+import { BedrockService, BedrockValidationExhaustedError } from '../services/bedrock.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
@@ -56,7 +56,14 @@ router.post('/structure', async (req, res) => {
     res.json(validatedResponse);
   } catch (error) {
     console.error('Structure endpoint error:', error);
-    if (error instanceof z.ZodError) {
+    if (error instanceof BedrockValidationExhaustedError) {
+      res.status(502).json({
+        error: "Bad Gateway",
+        message: "AI model returned invalid responses after multiple attempts",
+        attempts: error.attempts,
+        details: error.lastZodError.errors
+      });
+    } else if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Invalid request", details: error.errors });
     } else {
       res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
