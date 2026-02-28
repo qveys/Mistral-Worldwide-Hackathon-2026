@@ -5,9 +5,8 @@ import { TranscriptionLiveView } from '@/components/brain-dump/TranscriptionLive
 import { ClarificationBubble } from '@/components/brain-dump/ClarificationBubble';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
-import { RoadmapCanvas, Roadmap, RoadmapTimeSlot, RoadmapObjective, RoadmapTask } from '@/components/roadmap/RoadmapCanvas';
+import { RoadmapCanvas, Roadmap } from '@/components/roadmap/RoadmapCanvas';
 import { DependencyGraph } from '@/components/roadmap/DependencyGraph';
-import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput';
 import { ReviseInput } from '@/components/roadmap/ReviseInput';
 import { ExportButton } from '@/components/ui/ExportButton';
 import { LoadingOrchestrator } from '@/components/ui/LoadingOrchestrator';
@@ -16,37 +15,28 @@ import { Task, TaskCard, TaskStatus } from '@/components/ui/TaskCard';
 import { Toast, ToastType } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { cn } from '@/lib/utils';
-import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download, AlertOctagon, Share2, Network } from 'lucide-react';
+import { Home, Moon, Sparkles, Sun, Bug, CheckCircle2, AlertCircle, Brain, Layout, Download, AlertOctagon, Network, Layers, Zap, MousePointer2, ChevronRight, Component, Command, Terminal, Box } from 'lucide-react';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Composant qui crash pour tester l'ErrorBoundary
-function CrashingComponent() {
-    throw new Error("Simulation d'un crash composant !");
-    return null;
-}
+type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system';
 
 export default function DocumentationPage() {
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [view, setView] = useState<'flow' | 'catalog'>('flow');
+    const [activeCategory, setActiveCategory] = useState<DocCategory>('foundation');
     const [roadmapViewMode, setRoadmapViewMode] = useState<'timeline' | 'graph'>('timeline');
-    const [isLoading, setIsLoading] = useState(false);
-    const [showRoadmap, setShowRoadmap] = useState(false);
     const [micState, setMicState] = useState<MicButtonState>('idle');
-    const [shouldCrash, setShouldCrash] = useState(false);
-    const [isDemoBlocked, setIsDemoBlocked] = useState(true);
     const [isBubbleVisible, setIsBubbleVisible] = useState(false);
     const [simulateSTTError, setSimulateSTTError] = useState(false);
-    const lastPromptRef = useRef<string>('');
+    const [shouldCrash, setShouldCrash] = useState(false);
 
-    // Mock Roadmap Data with Dependencies
-    const mockRoadmap: Roadmap = {
+    // Mock Data
+    const mockRoadmap = useMemo<Roadmap>(() => ({
       id: 'demo-roadmap',
       title: 'EchoMaps Launch Plan',
       objectives: [
@@ -55,571 +45,237 @@ export default function DocumentationPage() {
       ],
       timeSlots: [
         {
-          day: 1,
-          period: 'AM',
+          day: 1, period: 'AM',
           tasks: [
             { id: 'rt-1', title: 'Setup Cloud Infrastructure', status: 'done', priority: 'high', estimate: 'L', objectiveId: 'obj-1' },
             { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-1'] }
           ]
         },
         {
-          day: 1,
-          period: 'PM',
+          day: 1, period: 'PM',
           tasks: [
-            { id: 'rt-3', title: 'Authentication Service', status: 'backlog', priority: 'high', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-2'] },
-            { id: 'rt-4', title: 'Landing Page Prototype', status: 'backlog', priority: 'medium', estimate: 'S', objectiveId: 'obj-2', dependencies: ['rt-2'] }
-          ]
-        },
-        {
-          day: 2,
-          period: 'AM',
-          tasks: [
-            { id: 'rt-5', title: 'Beta Testing Group Setup', status: 'backlog', priority: 'low', estimate: 'S', objectiveId: 'obj-2', isBlocked: true, blockedBy: ['Landing Page Prototype'], dependencies: ['rt-4'] }
+            { id: 'rt-3', title: 'Authentication Service', status: 'backlog', priority: 'high', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-2'] }
           ]
         }
       ]
-    };
+    }), []);
 
-    // Flat list of tasks for graph and other views
     const allTasks: Task[] = mockRoadmap.timeSlots.flatMap(slot => slot.tasks);
-
-    // Toast State
-    const [toast, setToast] = useState<{
-        isVisible: boolean;
-        message: string;
-        type: ToastType;
-        action?: { label: string; onClick: () => void };
-    }>({
-        isVisible: false,
-        message: '',
-        type: 'success',
-    });
-
     const [tasks, setTasks] = useState<Task[]>(allTasks);
 
-    const showToast = (
-        message: string,
-        type: ToastType,
-        action?: { label: string; onClick: () => void },
-    ) => {
-        setToast({ isVisible: true, message, type, action });
-    };
-
-    const handleStatusChange = (id: string, newStatus: TaskStatus) => {
-        setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
-        showToast(`Tâche mise à jour : ${newStatus.toUpperCase()}`, 'success');
-    };
-
-    const handleGenerate = (text: string) => {
-        lastPromptRef.current = text;
-        setIsLoading(true);
-
-        setTimeout(() => {
-            const hasError = Math.random() > 0.7;
-            setIsLoading(false);
-            if (hasError) {
-                showToast('Erreur Bedrock : Échec de la génération.', 'error', {
-                    label: 'Réessayer',
-                    onClick: () => handleGenerate(lastPromptRef.current),
-                });
-            } else {
-                setShowRoadmap(true);
-                showToast('Roadmap générée avec succès !', 'success');
-            }
-        }, 2000);
-    };
+    const [toast, setToast] = useState<{ isVisible: boolean; message: string; type: ToastType }>({ isVisible: false, message: '', type: 'success' });
+    const showToast = (message: string, type: ToastType) => setToast({ isVisible: true, message, type });
 
     const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
+    const navItems = [
+        { id: 'foundation', label: 'Design System', icon: Layers, desc: 'Atomes & Formulaires' },
+        { id: 'capture', label: 'Brain Dump', icon: Brain, desc: 'Voix & Saisie Hybride' },
+        { id: 'strategy', label: 'Intelligence', icon: Network, desc: 'Roadmap & Graphes' },
+        { id: 'system', label: 'Infrastructure', icon: Zap, desc: 'Feedback & Résilience' },
+    ];
+
     return (
-        <div
-            className={cn(
-                'min-h-screen transition-colors duration-500',
-                isDarkMode ? 'dark bg-slate-950' : 'bg-slate-50',
-            )}
-        >
-            {/* Clarification Bubble Demo */}
-            <ClarificationBubble 
-                isVisible={isBubbleVisible}
-                question="Est-ce que l'authentification doit être gérée par un service externe ou en local ?"
-                onReply={(ans) => {
-                    showToast(`IA a reçu : "${ans}"`, 'success');
-                    setIsBubbleVisible(false);
-                }}
-                onIgnore={() => setIsBubbleVisible(false)}
-            />
+        <div className={cn('min-h-screen flex transition-colors duration-500', isDarkMode ? 'dark bg-[#0a0a0a]' : 'bg-[#fafafa]')}>
+            <Toast isVisible={toast.isVisible} message={toast.message} type={toast.type} onClose={() => setToast(p => ({ ...p, isVisible: false }))} />
+            <ClarificationBubble isVisible={isBubbleVisible} question="Est-ce un projet solo ou en équipe ?" onReply={() => setIsBubbleVisible(false)} onIgnore={() => setIsBubbleVisible(false)} />
 
-            {/* Toast Notification */}
-            <Toast
-                isVisible={toast.isVisible}
-                message={toast.message}
-                type={toast.type}
-                action={toast.action}
-                onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
-            />
+            {/* --- SIDEBAR --- */}
+            <aside className="w-80 h-screen sticky top-0 border-r border-slate-200 dark:border-white/5 bg-white/50 dark:bg-black/20 backdrop-blur-xl p-6 flex flex-col gap-8 z-20">
+                <div className="flex items-center gap-3 px-2">
+                    <div className="h-8 w-8 bg-[#ff4f00] rounded-lg flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+                        <Box size={18} />
+                    </div>
+                    <div>
+                        <h1 className="text-sm font-black uppercase tracking-tighter italic dark:text-white">EchoMaps <span className="text-[#ff4f00]">UI</span></h1>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Documentation</p>
+                    </div>
+                </div>
 
-            {/* Background Gradients */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div
-                    className={cn(
-                        'absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full blur-[120px] transition-opacity duration-1000',
-                        isDarkMode ? 'bg-blue-900/20 opacity-40' : 'bg-blue-200 opacity-60',
-                    )}
-                />
-                <div
-                    className={cn(
-                        'absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full blur-[120px] transition-opacity duration-1000',
-                        isDarkMode ? 'bg-purple-900/20 opacity-40' : 'bg-purple-200 opacity-60',
-                    )}
-                />
-            </div>
-
-            <div className="relative z-10 p-8 space-y-12 max-w-6xl mx-auto">
-                {/* Navbar */}
-                <nav className="flex justify-between items-center bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/5 p-4 rounded-2xl shadow-xl">
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="/"
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:text-blue-600 hover:bg-white/20 dark:hover:bg-black/40 transition-all duration-300 transform hover:scale-105"
-                        >
-                            <Home size={18} />
-                            Home
-                        </Link>
-                        <div className="h-6 w-[1px] bg-white/10 mx-2" />
+                <nav className="flex-1 space-y-1">
+                    <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Composants</p>
+                    {navItems.map((item) => (
                         <button
-                            onClick={() => setView('flow')}
+                            key={item.id}
+                            onClick={() => setActiveCategory(item.id as DocCategory)}
                             className={cn(
-                                'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all duration-300 transform',
-                                view === 'flow'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-100'
-                                    : 'text-slate-500 hover:bg-white/20 dark:hover:bg-black/40 hover:scale-105',
+                                "w-full flex items-start gap-4 p-4 rounded-2xl transition-all text-left group",
+                                activeCategory === item.id 
+                                    ? "bg-[#ff4f00] text-white shadow-xl shadow-orange-500/20 scale-[1.02]" 
+                                    : "hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400"
                             )}
                         >
-                            <Play size={18} />
-                            Live Preview
+                            <item.icon size={18} className={cn("mt-0.5", activeCategory === item.id ? "text-white" : "text-slate-400 dark:text-slate-600 group-hover:text-[#ff4f00]")} />
+                            <div className="flex flex-col">
+                                <span className="font-black uppercase tracking-tighter italic text-[11px]">{item.label}</span>
+                                <span className={cn("text-[9px] font-medium opacity-70 leading-none mt-1", activeCategory === item.id ? "text-orange-50" : "text-slate-400")}>{item.desc}</span>
+                            </div>
+                            {activeCategory === item.id && <ChevronRight size={14} className="ml-auto mt-1" />}
                         </button>
-                        <button
-                            onClick={() => setView('catalog')}
-                            className={cn(
-                                'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all duration-300 transform',
-                                view === 'catalog'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-100'
-                                    : 'text-slate-500 hover:bg-white/20 dark:hover:bg-black/40 hover:scale-105',
-                            )}
-                        >
-                            <BookOpen size={18} />
-                            Documentation
-                        </button>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={toggleDarkMode}
-                            className="p-3 bg-white/20 dark:bg-black/40 rounded-xl border border-white/20 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:scale-110 hover:bg-blue-500 hover:text-white transition-all duration-300 shadow-lg"
-                        >
-                            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                        </button>
-                    </div>
+                    ))}
                 </nav>
 
-                {view === 'flow' ? (
-                    <section className="space-y-12">
-                        <header className="text-center space-y-4">
-                            <h1 className="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight italic text-balance">
-                                Roadmap{' '}
-                                <span className="text-blue-600 uppercase not-italic">
-                                    Architect
-                                </span>
-                            </h1>
-                            <p className="text-slate-500 dark:text-slate-400 text-xl max-w-2xl mx-auto font-medium">
-                                Interface de travail complète (Preview)
-                            </p>
-                        </header>
+                <div className="pt-6 border-t border-slate-200 dark:border-white/5 space-y-4">
+                    <Link href="/" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-slate-500 group">
+                        <Home size={18} className="group-hover:text-[#ff4f00]" />
+                        <span className="text-xs font-bold uppercase tracking-widest">Retour Accueil</span>
+                    </Link>
+                    <button onClick={toggleDarkMode} className="w-full flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-white/5 rounded-xl text-slate-600 dark:text-slate-300">
+                        <span className="text-[10px] font-black uppercase tracking-widest">{isDarkMode ? 'Mode Sombre' : 'Mode Clair'}</span>
+                        {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+                    </button>
+                </div>
+            </aside>
 
-                        <div className="space-y-6">
-                            <BrainDumpInput onGenerate={handleGenerate} isProcessing={isLoading} />
-                        </div>
+            {/* --- MAIN CONTENT --- */}
+            <main className="flex-1 p-12 overflow-y-auto">
+                <div className="max-w-5xl mx-auto">
+                    <AnimatePresence mode="wait">
+                        {/* DESIGN SYSTEM */}
+                        {activeCategory === 'foundation' && (
+                            <motion.div key="foundation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
+                                <div className="space-y-2">
+                                    <h2 className="text-4xl font-black uppercase tracking-tighter italic dark:text-white">Design <span className="text-[#ff4f00]">System</span></h2>
+                                    <p className="text-slate-500 font-medium max-w-2xl">Atomes et fondations graphiques de l&apos;interface.</p>
+                                </div>
 
-                        {isLoading && (
-                            <div className="space-y-8 animate-in fade-in duration-700">
-                                <LoadingOrchestrator activeStep="analysis" />
-                            </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
+                                        <div className="flex items-center gap-2 text-[#ff4f00]"><MousePointer2 size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Atomes UI</span></div>
+                                        <div className="flex flex-wrap gap-4">
+                                            <Button variant="primary">Principal</Button>
+                                            <Button variant="secondary">Secondaire</Button>
+                                            <Button variant="danger">Danger</Button>
+                                            <Button variant="primary" isLoading>Wait</Button>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <Badge variant="priority" type="high">Urgent</Badge>
+                                            <Badge variant="status" type="doing">In Progress</Badge>
+                                            <Badge variant="estimate">Size: M</Badge>
+                                            <Spinner size="md" className="text-[#ff4f00] ml-2" />
+                                        </div>
+                                    </div>
+                                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-6 shadow-sm">
+                                        <div className="flex items-center gap-2 text-indigo-500"><Command size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Formulaire</span></div>
+                                        <Input label="Roadmap Name" placeholder="Ex: Launch Project" />
+                                        <Input label="Email" placeholder="user@echo.maps" error="Email invalide" />
+                                    </div>
+                                </div>
+                            </motion.div>
                         )}
 
-                        {showRoadmap && !isLoading && (
-                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                                <div className="flex justify-between items-end px-4">
-                                    <div className="space-y-4">
-                                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white uppercase tracking-tighter italic">
-                                            Votre Roadmap
-                                        </h2>
-                                        {/* Toggle View Mode */}
-                                        <div className="flex bg-white/40 dark:bg-black/40 p-1 rounded-xl border border-white/20 w-fit">
-                                            <button 
-                                                onClick={() => setRoadmapViewMode('timeline')}
-                                                className={cn(
-                                                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all",
-                                                    roadmapViewMode === 'timeline' ? "bg-white dark:bg-slate-800 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"
-                                                )}
-                                            >
-                                                <Layout size={14} />
-                                                Timeline
-                                            </button>
-                                            <button 
-                                                onClick={() => setRoadmapViewMode('graph')}
-                                                className={cn(
-                                                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all",
-                                                    roadmapViewMode === 'graph' ? "bg-white dark:bg-slate-800 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"
-                                                )}
-                                            >
-                                                <Network size={14} />
-                                                Graphe
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <ExportButton
-                                        markdown="# Roadmap\n\n- Phase 1: MVP"
-                                        data={{ title: 'Roadmap', phases: ['MVP'] }}
-                                    />
+                        {/* BRAIN DUMP */}
+                        {activeCategory === 'capture' && (
+                            <motion.div key="capture" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
+                                <div className="space-y-2">
+                                    <h2 className="text-4xl font-black uppercase tracking-tighter italic dark:text-white">Brain <span className="text-[#ff4f00]">Dump</span></h2>
+                                    <p className="text-slate-500 font-medium max-w-2xl">Capture de la pensée par la voix et le texte.</p>
                                 </div>
 
-                                <ErrorBoundary>
-                                    {shouldCrash ? (
-                                        <CrashingComponent />
-                                    ) : (
-                                        <AnimatePresence mode="wait">
-                                            {roadmapViewMode === 'timeline' ? (
-                                                <motion.div
-                                                    key="timeline"
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    exit={{ opacity: 0, x: 20 }}
-                                                >
-                                                    <RoadmapCanvas roadmap={mockRoadmap} onTaskStatusChange={handleStatusChange} />
-                                                </motion.div>
-                                            ) : (
-                                                <motion.div
-                                                    key="graph"
-                                                    initial={{ opacity: 0, x: 20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    exit={{ opacity: 0, x: -20 }}
-                                                >
-                                                    <DependencyGraph tasks={tasks} onStatusChange={handleStatusChange} />
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    )}
-                                </ErrorBoundary>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                                    <ActionItemsList
-                                        tasks={tasks}
-                                        onStatusChange={handleStatusChange}
-                                    />
-                                    <div className="space-y-6">
-                                        <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 uppercase tracking-tight italic">
-                                            <Sparkles size={24} className="text-blue-500" />
-                                            Affiner la vision
-                                        </h3>
-                                        <ReviseInput 
-                                            onRevise={(ins) => {
-                                                showToast('Demande de révision envoyée', 'success');
-                                                console.log('Revision requested:', ins);
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </section>
-                ) : (
-                    <section className="space-y-12">
-                        <header className="space-y-2 px-2 text-left">
-                            <h1 className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">
-                                Documentation
-                            </h1>
-                            <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">
-                                Guide visuel et interactif des composants UI EchoMaps.
-                            </p>
-                        </header>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-left">
-                            {/* Left Column */}
-                            <div className="space-y-12 text-left">
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Atomic Primitives
-                                    </h3>
-                                    <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 space-y-8">
-                                        <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Buttons</p>
-                                            <div className="flex flex-wrap gap-3">
-                                                <Button variant="primary">Primary</Button>
-                                                <Button variant="secondary">Secondary</Button>
-                                                <Button variant="danger">Danger</Button>
-                                                <Button variant="primary" isLoading>Loading</Button>
-                                            </div>
+                                <div className="space-y-8">
+                                    {/* COMPACT VOICE SHOWCASE */}
+                                    <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 flex items-center gap-10 shadow-lg">
+                                        <div className="flex-shrink-0 flex flex-col items-center gap-3 pr-10 border-r border-slate-100 dark:border-white/5">
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff4f00] italic">Live Mic</span>
+                                            <MicButton state={micState} onClick={() => setMicState(micState === 'idle' ? 'recording' : 'idle')} />
                                         </div>
-
-                                        <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Badges</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                <Badge variant="priority" type="high">High</Badge>
-                                                <Badge variant="status" type="doing">In Progress</Badge>
-                                                <Badge variant="estimate">Size: M</Badge>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Input</p>
-                                            <Input label="Nom du Projet" placeholder="Ex: Mon Super Hackathon" />
-                                            <Input label="Email" placeholder="user@example.com" error="Email invalide" defaultValue="invalid-email" />
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Spinners</p>
-                                            <div className="flex items-center gap-6">
-                                                <Spinner size="sm" />
-                                                <Spinner size="md" className="text-blue-500" />
-                                                <Spinner size="lg" className="text-[#ff4f00]" />
-                                            </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-sm font-black uppercase italic dark:text-white mb-2">Transcription Live</h3>
+                                            <TranscriptionLiveView text="L'IA capture vos paroles pour structurer la roadmap..." isRecording={micState === 'recording'} className="bg-transparent p-0 border-none shadow-none min-h-0" />
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Brain Dump Fallback
-                                    </h3>
-                                    <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 space-y-6">
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Composant Interactif</p>
-                                            <button 
-                                                onClick={() => setSimulateSTTError(!simulateSTTError)}
-                                                className={cn(
-                                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all flex items-center gap-2",
-                                                    simulateSTTError ? "bg-amber-500 text-white" : "bg-slate-800 text-slate-400 hover:text-white"
-                                                )}
-                                            >
-                                                <AlertOctagon size={12} />
-                                                {simulateSTTError ? "Mode Fallback Actif" : "Simuler Timeout Micro"}
-                                            </button>
-                                        </div>
-                                        
-                                        <div className="relative">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-4 shadow-sm">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-black uppercase italic text-slate-400 tracking-widest">Brain Dump Engine</span>
+                                                <button onClick={() => setSimulateSTTError(!simulateSTTError)} className={cn("px-3 py-1 rounded-lg text-[8px] font-black uppercase transition-all", simulateSTTError ? "bg-amber-500 text-white" : "bg-slate-100 dark:bg-white/5 text-slate-500")}>Simuler Timeout</button>
+                                            </div>
                                             <BrainDumpInput onGenerate={() => {}} />
-                                            {simulateSTTError && (
-                                                <div className="absolute inset-0 pointer-events-none border-2 border-amber-500/20 rounded-3xl" />
-                                            )}
                                         </div>
-                                        <p className="text-[10px] text-slate-500 italic">
-                                            * En conditions réelles, le mode manuel s&apos;active si le micro met plus de 5s à répondre.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Task States (Interactive)
-                                    </h3>
-                                    <div className="space-y-6">
-                                        <div className="flex items-center justify-between px-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Simulateur de blocage</p>
-                                            <button 
-                                                onClick={() => setIsDemoBlocked(!isDemoBlocked)}
-                                                className={cn(
-                                                    "w-10 h-5 rounded-full transition-colors relative",
-                                                    isDemoBlocked ? "bg-red-500" : "bg-slate-300 dark:bg-slate-700"
-                                                )}
-                                            >
-                                                <motion.div 
-                                                    animate={{ x: isDemoBlocked ? 20 : 2 }}
-                                                    className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
-                                                />
-                                            </button>
-                                        </div>
-                                        
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <TaskCard 
-                                                task={{ id: 'demo-1', title: "Tâche interactive (Utilisez le switch)", priority: 'high', status: 'backlog', estimate: 'M' }}
-                                                isBlocked={isDemoBlocked}
-                                                blockedBy={["Configuration du serveur", "Validation Sécurité"]}
-                                                onStatusChange={() => showToast("Statut mis à jour", "success")}
-                                            />
-                                            <div className="h-[1px] bg-slate-200 dark:bg-white/5 my-2" />
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">Galerie de statuts</p>
-                                            <TaskCard 
-                                                task={{ id: 's1', title: "Tâche en attente (Backlog)", priority: 'low', status: 'backlog', estimate: 'S' }}
-                                                onStatusChange={() => {}}
-                                            />
-                                            <TaskCard 
-                                                task={{ id: 's3', title: "Tâche terminée (Done)", priority: 'high', status: 'done', estimate: 'L' }}
-                                                onStatusChange={() => {}}
-                                            />
+                                        <div className="flex flex-col items-center justify-center p-8 bg-blue-600/5 rounded-[2.5rem] border border-blue-500/10 text-center gap-4">
+                                            <button onClick={() => setIsBubbleVisible(true)} className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-2xl font-black uppercase italic shadow-xl hover:scale-105 transition-all">Bulle Clarification</button>
+                                            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold leading-tight">Interaction contextuelle en cas d&apos;ambiguïté.</p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
+                        )}
 
-                            {/* Right Column */}
-                            <div className="space-y-12 text-left">
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Dependency Visualization
-                                    </h3>
-                                    <div className="bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 overflow-hidden shadow-2xl">
-                                        <div className="p-4 border-b border-white/10 flex items-center gap-2 bg-white/5">
-                                            <Network size={16} className="text-blue-500" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Graphe de dépendances (React Flow)</span>
-                                        </div>
-                                        <DependencyGraph tasks={tasks} className="h-[400px] border-none rounded-none" />
+                        {/* INTELLIGENCE */}
+                        {activeCategory === 'strategy' && (activeCategory === 'strategy') && (
+                            <motion.div key="strategy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
+                                <div className="space-y-2">
+                                    <h2 className="text-4xl font-black uppercase tracking-tighter italic dark:text-white">Intelligence <span className="text-[#ff4f00]">Visuals</span></h2>
+                                    <p className="text-slate-500 font-medium max-w-2xl">Plan d&apos;exécution généré et graphe de dépendances.</p>
+                                </div>
+
+                                <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[3rem] overflow-hidden shadow-2xl h-[600px] relative">
+                                    <div className="absolute top-6 right-6 z-10 flex bg-white/80 dark:bg-black/40 backdrop-blur-md p-1 rounded-xl border border-slate-200 dark:border-white/10">
+                                        <button onClick={() => setRoadmapViewMode('timeline')} className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all", roadmapViewMode === 'timeline' ? "bg-slate-900 text-white dark:bg-white dark:text-black shadow-md" : "text-slate-400")}>Timeline</button>
+                                        <button onClick={() => setRoadmapViewMode('graph')} className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all", roadmapViewMode === 'graph' ? "bg-slate-900 text-white dark:bg-white dark:text-black shadow-md" : "text-slate-400")}>Graphe</button>
+                                    </div>
+                                    {roadmapViewMode === 'timeline' ? <RoadmapCanvas roadmap={mockRoadmap} className="h-full p-12" /> : <DependencyGraph tasks={tasks} className="h-full border-none rounded-none" />}
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                    <ObjectiveCard title="Migration Strategy" priority="high" tasks={tasks} />
+                                    <div className="space-y-4">
+                                        <TaskCard task={{ id: 't1', title: "Configuration Serveur", status: 'doing', priority: 'high', estimate: 'M' }} onStatusChange={() => {}} />
+                                        <TaskCard task={{ id: 't2', title: "Déploiement Frontend", status: 'backlog', priority: 'medium', estimate: 'L' }} isBlocked blockedBy={["Validation DNS"]} onStatusChange={() => {}} />
                                     </div>
                                 </div>
+                            </motion.div>
+                        )}
 
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Objective Molecule
-                                    </h3>
-                                    <ObjectiveCard 
-                                        title="Lancer le MVP"
-                                        priority="high"
-                                        tasks={tasks}
-                                    />
+                        {/* INFRASTRUCTURE */}
+                        {activeCategory === 'system' && (
+                            <motion.div key="system" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-12">
+                                <div className="space-y-2">
+                                    <h2 className="text-4xl font-black uppercase tracking-tighter italic dark:text-white">Infrastructure <span className="text-[#ff4f00]">& Feedback</span></h2>
+                                    <p className="text-slate-500 font-medium max-w-2xl">Gestion des états système et de la résilience.</p>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        AI Clarification
-                                    </h3>
-                                    <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 flex flex-col items-center gap-4">
-                                        <div className="h-12 w-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
-                                            <Brain size={24} />
-                                        </div>
-                                        <p className="text-sm text-slate-500 text-center font-medium">Tester l&apos;apparition de la bulle de question IA :</p>
-                                        <button 
-                                            onClick={() => setIsBubbleVisible(true)}
-                                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-tighter italic shadow-xl hover:scale-105 transition-all"
-                                        >
-                                            Déclencher Question
-                                        </button>
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                                    <div className="md:col-span-8 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 shadow-sm">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4f00] mb-6 block">Latency Orchestrator</span>
+                                        <LoadingOrchestrator className="max-w-none shadow-none border-none p-0 bg-transparent" />
                                     </div>
-                                </div>
-
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Timeline Canvas
-                                    </h3>
-                                    <div className="p-6 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 h-[500px] overflow-hidden">
-                                        <RoadmapCanvas roadmap={mockRoadmap} className="h-full" />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Roadmap Revision
-                                    </h3>
-                                    <div className="space-y-8">
-                                        <div className="space-y-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">Standard Revision Input</p>
-                                            <ReviseInput 
-                                                onRevise={(ins) => showToast(`Révision demandée : ${ins}`, "success")} 
-                                                isProcessing={isLoading}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Toasts & Retry Logic
-                                    </h3>
-                                    <div className="flex flex-wrap gap-3">
-                                        <button
-                                            onClick={() =>
-                                                showToast('Données sauvegardées.', 'success')
-                                            }
-                                            className="px-4 py-2 bg-green-500 text-white rounded-full font-bold text-xs transition-all active:scale-95 shadow-lg"
-                                        >
-                                            Test Success
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                showToast('Échec ElevenLabs.', 'error', {
-                                                    label: 'Réessayer',
-                                                    onClick: () =>
-                                                        showToast(
-                                                            "Relance de l'audio...",
-                                                            'success',
-                                                        ),
-                                                })
-                                            }
-                                            className="px-4 py-2 bg-red-500 text-white rounded-full font-bold text-xs transition-all active:scale-95 shadow-lg"
-                                        >
-                                            Test Error + Retry
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Error Boundary State
-                                    </h3>
-                                    <div className="p-8 bg-white/10 rounded-[2.5rem] border border-white/20 flex flex-col items-center gap-4 shadow-xl">
-                                        <button
-                                            onClick={() => setShouldCrash(true)}
-                                            className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-tighter italic shadow-xl hover:scale-105 transition-all"
-                                        >
-                                            <Bug size={18} /> Simuler Crash
-                                        </button>
-                                        {shouldCrash && (
-                                            <div className="w-full mt-4 text-left">
-                                                <ErrorBoundary
-                                                    fallback={
-                                                        <div className="p-4 bg-red-50 text-red-600 rounded-xl text-center font-bold border border-red-100">
-                                                            Crash intercepté !
-                                                        </div>
-                                                    }
-                                                >
-                                                    <CrashingComponent />
-                                                </ErrorBoundary>
-                                                <button
-                                                    onClick={() => setShouldCrash(false)}
-                                                    className="mt-4 text-xs text-blue-500 underline w-full text-center"
-                                                >
-                                                    Reset Test
-                                                </button>
+                                    <div className="md:col-span-4 space-y-6">
+                                        {/* COMPACT RESILIENCE */}
+                                        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-6 space-y-4 shadow-sm">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-black uppercase italic text-red-500">Resilience</span>
+                                                <button onClick={() => setShouldCrash(!shouldCrash)} className={cn("px-2 py-1 rounded-lg text-[8px] font-black uppercase border transition-all", shouldCrash ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20" : "border-red-500/20 text-red-500 hover:bg-red-500/10")}>{shouldCrash ? "Reset" : "Crash UI"}</button>
                                             </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Loading & Orchestration
-                                    </h3>
-                                    <LoadingOrchestrator
-                                        onCancel={() => showToast("Opération annulée", "error")}
-                                        className="max-w-none"
-                                    />
-                                </div>
-
-                                <div className="space-y-4 text-left">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Export Actions
-                                    </h3>
-                                    <div className="flex items-center gap-4 bg-white/10 p-6 rounded-[2rem] border border-white/20 shadow-xl">
-                                        <div className="flex-1 space-y-1">
-                                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Exporter les données</p>
-                                            <p className="text-[10px] text-slate-400">Markdown, JSON ou PDF</p>
+                                            <AnimatePresence mode="wait">
+                                                {shouldCrash ? (
+                                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                                        <ErrorBoundary fallback={<div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-600 rounded-xl text-[9px] font-bold text-center border border-red-100 dark:border-red-900/30">Erreur Interceptée</div>}><div className="hidden">{(() => { if (shouldCrash) throw new Error("!"); })()}</div></ErrorBoundary>
+                                                    </motion.div>
+                                                ) : (
+                                                    <div className="py-4 border-2 border-dashed border-slate-100 dark:border-white/5 rounded-xl flex items-center justify-center gap-2 opacity-30"><CheckCircle2 size={14} className="text-green-500" /><span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Stable</span></div>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
-                                        <ExportButton markdown="# Test" data={{}} />
+                                        <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-6 flex flex-col gap-4 shadow-sm">
+                                            <span className="text-[10px] font-black uppercase italic text-slate-400">Feedback & Data</span>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => showToast('Succès', 'success')} className="flex-1 py-2 bg-green-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg">Toast</button>
+                                                <button onClick={() => showToast('Erreur critique', 'error')} className="flex-1 py-2 bg-red-500 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg">Error</button>
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-black/40 rounded-xl border border-slate-200 dark:border-white/5">
+                                                <span className="text-[9px] font-black uppercase dark:text-white leading-tight">Export Package</span>
+                                                <ExportButton markdown="# Mock" data={{}} />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </section>
-                )}
-            </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </main>
         </div>
     );
 }
