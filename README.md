@@ -16,7 +16,7 @@ Built for the **Mistral Worldwide Hackathon 2026**.
 
 | Layer      | Tech                                                            |
 | ---------- | --------------------------------------------------------------- |
-| Frontend   | Next.js 15 (App Router) + TailwindCSS + Framer Motion           |
+| Frontend   | Next.js 16 (App Router) + TailwindCSS + Framer Motion           |
 | Backend    | Node.js / Express (TypeScript)                                  |
 | AI         | AWS Bedrock → Mistral Large (`mistral.mistral-large-2402-v1:0`) |
 | Voice      | Voxtral WebSocket SDK                                           |

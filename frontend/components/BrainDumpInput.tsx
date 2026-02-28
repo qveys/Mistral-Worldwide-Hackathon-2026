@@ -48,8 +48,9 @@ export function BrainDumpInput({
             await startRecording();
         } else if (micState === 'recording') {
             stopRecording();
-            // Copy transcript into manual text so user can edit it
+            // Copy transcript into manual text, then clear it so the textarea becomes editable
             setManualText(transcript);
+            resetTranscript();
             setIsEditing(true);
         }
     };
