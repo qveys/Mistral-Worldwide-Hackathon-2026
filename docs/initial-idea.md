@@ -58,10 +58,14 @@ Objectif : rendre productif immédiatement, avec interactivité, retour utilisat
   - Zone de texte avec l'audio retranscrit modifiable
   - Sélecteur d' "Action Items" (To-Do List)
   - Module de "Priorisation" (Matrice de décision)
+  - Organisation : Vue Roadmap (Timeline/Steps).
+  - Validation : Formulaires de révision interactive.
   - Barres de progression gamifiées
   - Formulaires de révision interactive
   - Graphique d'activités (inspiration Github)
-  bouton d'Export / Intégration (Connectivité)
+  - Bouton d'Export / Intégration (Connectivité)
+  - Sélecteur de "Focus Mode"
+  - Smart Reminder (Notification Contextuelle)
 
 ---
 
@@ -122,11 +126,12 @@ Endpoints :
 ---
 
 ## ✅ 4) Checklist
-   - [] frontend du site stylé et utilisable rapidement
+   - [] frontend du site stylé et utilisable rapidement avec une box avec le texte modifiable, et des questions posées pour 'améliorer' le texte.
    - [] CRUD création de roadmap
    - [] CRUD utilisateurs
    - [] Appels à ElevenLabs AI pour le voice to text
-   - [] Génération de roadmap par Mistral AI hébergé via appel API
+   - [] Génération de roadmap par Mistral AI hébergé et appelé via API
+   - [] Best practices de vibe coding (skills, MCP, agents.md, changelog.md)
 
 ---
 
