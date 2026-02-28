@@ -1,5 +1,7 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
+import { buildStructurePrompt } from "../prompts/structure.js";
+import { buildRevisePrompt } from "../prompts/revise.js";
 
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
@@ -55,27 +57,7 @@ export class BedrockService {
   }
 
   private buildRoadmapPrompt(transcript: string): string {
-    return `You are an AI strategic planning assistant. Convert this brain dump into a structured roadmap:
-
-${transcript}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "roadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "dependencies": ["string"]
-    }
-  ],
-  "metadata": {
-    "processingTimeMs": number,
-    "modelUsed": "string",
-    "confidenceScore": number (0-1)
-  }
-}`;
+    return buildStructurePrompt(transcript);
   }
 
   private validateRoadmapResponse(response: any): any {
@@ -129,29 +111,7 @@ Return ONLY valid JSON in this exact schema:
   }
 
   private buildRevisionPrompt(roadmapId: string, instructions: string): string {
-    return `Revise the existing roadmap ${roadmapId} based on these instructions:
-
-${instructions}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "revisedRoadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "status": "unchanged" | "modified" | "removed" | "added",
-      "dependencies": ["string"]
-    }
-  ],
-  "changesSummary": {
-    "itemsModified": number,
-    "itemsAdded": number,
-    "itemsRemoved": number,
-    "confidenceScore": number (0-1)
-  }
-}`;
+    return buildRevisePrompt(roadmapId, instructions);
   }
 
   private validateRevisionResponse(response: any): any {

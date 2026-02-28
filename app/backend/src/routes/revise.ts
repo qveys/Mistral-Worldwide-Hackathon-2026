@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
+import { hasCycle, topologicalSort, validateReferentialIntegrity } from '../lib/graph.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
@@ -20,7 +21,7 @@ const ReviseResponseSchema = z.object({
     description: z.string(),
     priority: z.number().min(1).max(5),
     status: z.enum(["unchanged", "modified", "removed", "added"]),
-    dependencies: z.array(z.string()).optional()
+    dependsOn: z.array(z.string()).default([])
   })),
   changesSummary: z.object({
     itemsModified: z.number(),
@@ -34,7 +35,7 @@ router.post('/revise', async (req, res) => {
   try {
     // Validate request
     const validatedRequest = ReviseRequestSchema.parse(req.body);
-    
+
     // Call Bedrock service to generate revision
     const startTime = Date.now();
     const revisionData = await bedrockService.generateRevision(
@@ -42,7 +43,7 @@ router.post('/revise', async (req, res) => {
       validatedRequest.revisionInstructions
     );
     const processingTimeMs = Date.now() - startTime;
-    
+
     // Enhance response with processing metadata
     const response = {
       ...revisionData,
@@ -51,11 +52,46 @@ router.post('/revise', async (req, res) => {
         processingTimeMs
       }
     };
-    
-    // Validate response before sending
+
+    // Validate response schema
     const validatedResponse = ReviseResponseSchema.parse(response);
-    
-    res.json(validatedResponse);
+
+    // Validate referential integrity
+    const integrityResult = validateReferentialIntegrity(
+      validatedResponse.revisedRoadmap.map(t => ({ id: t.id, dependsOn: t.dependsOn }))
+    );
+    if (!integrityResult.valid) {
+      res.status(400).json({ error: "Referential integrity violation", details: integrityResult.errors });
+      return;
+    }
+
+    // Build adjacency list and check for cycles
+    const adjacencyList = new Map<string, string[]>();
+    for (const task of validatedResponse.revisedRoadmap) {
+      adjacencyList.set(task.id, task.dependsOn);
+    }
+
+    if (hasCycle(adjacencyList)) {
+      res.status(400).json({ error: "Circular dependency detected in revised roadmap" });
+      return;
+    }
+
+    // Re-order using topological sort
+    const sortedIds = topologicalSort(adjacencyList);
+    if (!sortedIds) {
+      res.status(400).json({ error: "Unable to resolve dependency order" });
+      return;
+    }
+
+    const taskMap = new Map(validatedResponse.revisedRoadmap.map(t => [t.id, t]));
+    const sortedRoadmap = sortedIds
+      .filter(id => taskMap.has(id))
+      .map(id => taskMap.get(id)!);
+
+    res.json({
+      revisedRoadmap: sortedRoadmap,
+      changesSummary: validatedResponse.changesSummary
+    });
   } catch (error) {
     console.error('Revise endpoint error:', error);
     if (error instanceof z.ZodError) {
