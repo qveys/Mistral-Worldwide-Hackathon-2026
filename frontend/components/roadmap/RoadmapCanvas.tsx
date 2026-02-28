@@ -1,99 +1,162 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { motion, Variants } from 'framer-motion';
 import React from 'react';
+import { motion, Variants } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { TaskCard, TaskStatus, TaskPriority, TaskEstimate } from '../ui/TaskCard';
+import { Calendar, Clock, Target, ChevronRight } from 'lucide-react';
+
+export interface RoadmapTask {
+  id: string;
+  title: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  estimate: TaskEstimate;
+  objectiveId: string;
+  isBlocked?: boolean;
+  blockedBy?: string[];
+}
+
+export interface RoadmapObjective {
+  id: string;
+  title: string;
+  color: string; // e.g., 'blue', 'orange', 'green'
+}
+
+export interface RoadmapTimeSlot {
+  day: number;
+  period: 'AM' | 'PM';
+  tasks: RoadmapTask[];
+}
+
+export interface Roadmap {
+  id: string;
+  title: string;
+  objectives: RoadmapObjective[];
+  timeSlots: RoadmapTimeSlot[];
+}
 
 interface RoadmapCanvasProps {
-    children: React.ReactNode;
-    className?: string;
-    title?: string;
+  roadmap: Roadmap;
+  onTaskStatusChange?: (taskId: string, newStatus: TaskStatus) => void;
+  className?: string;
 }
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2,
-        },
-    },
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2
+    }
+  }
 };
 
-export function RoadmapCanvas({ children, className, title }: RoadmapCanvasProps) {
-    return (
-        <div
-            className={cn(
-                'w-full bg-slate-50/30 backdrop-blur-lg rounded-3xl p-8 min-h-[500px] border border-white/20 shadow-inner',
-                className,
-            )}
-        >
-            {title && (
-                <motion.h2
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="text-2xl font-bold text-slate-900 mb-8 border-l-4 border-blue-600 pl-4"
-                >
-                    {title}
-                </motion.h2>
-            )}
+const slotVariants: Variants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { type: 'spring', stiffness: 100 }
+  }
+};
 
-            <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-                {children}
-            </motion.div>
-        </div>
-    );
-}
+export function RoadmapCanvas({ roadmap, onTaskStatusChange, className }: RoadmapCanvasProps) {
+  return (
+    <div className={cn(
+      "w-full max-h-[80vh] overflow-y-auto pr-4 scrollbar-hide custom-scrollbar",
+      className
+    )}>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative flex flex-col gap-12 pb-20"
+      >
+        {/* Central Timeline Line */}
+        <div className="absolute left-8 md:left-1/2 top-4 bottom-0 w-[2px] bg-gradient-to-b from-blue-500 via-slate-200 dark:via-white/10 to-transparent -translate-x-1/2 hidden md:block" />
 
-interface RoadmapItemProps {
-    title: string;
-    description: string;
-    period?: string;
-    status?: 'todo' | 'in-progress' | 'done';
-}
-
-export function RoadmapItem({ title, description, period, status = 'todo' }: RoadmapItemProps) {
-    const itemVariants: Variants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { type: 'spring', stiffness: 100, damping: 12 },
-        },
-    };
-
-    return (
-        <motion.div
-            variants={itemVariants}
-            className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-white/40 hover:bg-white/80 hover:shadow-md transition-all group"
-        >
-            <div className="flex justify-between items-start mb-4">
-                {period && (
-                    <span className="text-xs font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full">
-                        {period}
-                    </span>
-                )}
-                <div
-                    className={cn(
-                        'h-3 w-3 rounded-full',
-                        status === 'done' && 'bg-green-500',
-                        status === 'in-progress' && 'bg-amber-500 animate-pulse',
-                        status === 'todo' && 'bg-slate-300',
-                    )}
-                />
+        {roadmap.timeSlots.map((slot, slotIdx) => (
+          <motion.div 
+            key={`${slot.day}-${slot.period}`}
+            variants={slotVariants}
+            className="relative grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
+          >
+            {/* Day/Period Marker - Desktop Center */}
+            <div className="absolute left-8 md:left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center">
+              <div className="w-4 h-4 rounded-full bg-white dark:bg-slate-900 border-4 border-blue-500 shadow-lg shadow-blue-500/20" />
+              <div className="mt-2 px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black uppercase tracking-tighter whitespace-nowrap shadow-xl">
+                Day {slot.day} {slot.period}
+              </div>
             </div>
 
-            <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                {title}
-            </h3>
+            {/* Mobile Marker */}
+            <div className="md:hidden flex items-center gap-3 mb-2 ml-2">
+               <div className="w-12 h-12 rounded-2xl bg-blue-600 flex flex-col items-center justify-center text-white shadow-lg">
+                  <span className="text-[10px] font-black leading-none uppercase">Day</span>
+                  <span className="text-xl font-bold leading-none">{slot.day}</span>
+               </div>
+               <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  {slot.period === 'AM' ? 'Matin (09h - 13h)' : 'Après-midi (14h - 18h)'}
+               </div>
+            </div>
 
-            <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
-        </motion.div>
-    );
+            {/* Tasks Container */}
+            <div className={cn(
+              "space-y-4 md:pt-12",
+              slotIdx % 2 === 0 ? "md:pr-12 md:text-right" : "md:col-start-2 md:pl-12 md:text-left"
+            )}>
+              {slot.tasks.map((task) => {
+                const objective = roadmap.objectives.find(o => o.id === task.objectiveId);
+                return (
+                  <div key={task.id} className="relative group">
+                    {/* Objective Connector */}
+                    <div className={cn(
+                      "absolute top-1/2 w-4 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity hidden md:block",
+                      slotIdx % 2 === 0 ? "-right-4 bg-gradient-to-l" : "-left-4 bg-gradient-to-r",
+                      objective?.color === 'blue' ? "from-blue-500" : "from-orange-500"
+                    )} />
+                    
+                    <div className="flex flex-col gap-1">
+                      {objective && (
+                        <div className={cn(
+                          "flex items-center gap-1.5 mb-1",
+                          slotIdx % 2 === 0 ? "md:justify-end" : "md:justify-start"
+                        )}>
+                           <Target size={10} className={cn(
+                             objective.color === 'blue' ? "text-blue-500" : "text-orange-500"
+                           )} />
+                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                              {objective.title}
+                           </span>
+                        </div>
+                      )}
+                      <TaskCard 
+                        task={task} 
+                        isBlocked={task.isBlocked}
+                        blockedBy={task.blockedBy}
+                        onStatusChange={(id, status) => onTaskStatusChange?.(id, status)}
+                        className="text-left"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+      
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+    </div>
+  );
 }
