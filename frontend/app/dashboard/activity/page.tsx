@@ -2,20 +2,22 @@
 
 import React from 'react';
 
-// Dashboard Components
-import { ActivityHeader } from '@/components/dashboard/ActivityHeader';
-import { ActivityStats } from '@/components/dashboard/ActivityStats';
-import { ActivityFilters } from '@/components/dashboard/ActivityFilters';
-import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+// Dashboard Activity Components
+import { ActivityHeader } from '@/components/dashboard/activity/ActivityHeader';
+import { ActivityStats } from '@/components/dashboard/activity/ActivityStats';
+import { ActivityFilters } from '@/components/dashboard/activity/ActivityFilters';
+import { ActivityFeed } from '@/components/dashboard/activity/ActivityFeed';
+import { ActivityInsights } from '@/components/dashboard/activity/ActivityInsights';
+
+// Shared Dashboard Components
 import { ActivityHeatmap } from '@/components/dashboard/ActivityHeatmap';
-import { ActivityInsights } from '@/components/dashboard/ActivityInsights';
 
 // Constants & Mock Data
 import { 
   STATIC_ACTIVITY_DATA, 
   MOCK_ACTIVITIES, 
   LIVE_INSIGHTS 
-} from '@/components/dashboard/activity.constants';
+} from '@/components/dashboard/activity/activity.constants';
 
 export default function ActivityPage() {
   return (

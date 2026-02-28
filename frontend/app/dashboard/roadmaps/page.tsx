@@ -3,23 +3,20 @@
 import React, { useState } from 'react';
 import { 
   Plus, 
-  Search, 
-  Filter, 
   Target,
-  LayoutGrid,
-  List,
-  SortAsc,
   Zap,
   History,
   ChevronRight
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
-// Dashboard Components
+// Dashboard Shared Components
 import { RoadmapCard } from '@/components/dashboard/RoadmapCard';
 import { StatBox } from '@/components/dashboard/StatBox';
+
+// Page Specific Components
+import { RoadmapControls } from '@/components/dashboard/roadmaps/RoadmapControls';
 
 const roadmaps = [
   { id: '1', title: 'Microservices Architecture v2', status: 'Stable', lastEdit: '2m ago', nodes: 24, team: 4 },
@@ -50,50 +47,20 @@ export default function RoadmapsPage() {
         </div>
         
         <Link href="/">
-          <Button className="h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-bold transition-all shadow-2xl shadow-white/5 group text-sm">
+          <Button size="lg" className="h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-bold transition-all shadow-2xl shadow-white/5 group text-sm">
             <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform" />
             Initialize Roadmap
           </Button>
         </Link>
       </div>
 
-      {/* Control Bar (Filters & Search) */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-[#161618] border border-zinc-800/50 p-4 rounded-3xl">
-        <div className="relative w-full sm:w-96 group">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-violet-400 transition-colors" />
-          <input 
-            type="text" 
-            placeholder="Search clusters..." 
-            className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-violet-500/50 rounded-xl py-3 pl-12 pr-4 text-sm text-zinc-300 outline-none transition-all"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <div className="flex bg-zinc-900 rounded-xl p-1 border border-zinc-800">
-            <button 
-              onClick={() => setViewMode('grid')}
-              className={cn("p-2 rounded-lg transition-all", viewMode === 'grid' ? "bg-zinc-800 text-white" : "text-zinc-600 hover:text-zinc-400")}
-            >
-              <LayoutGrid size={18} />
-            </button>
-            <button 
-              onClick={() => setViewMode('list')}
-              className={cn("p-2 rounded-lg transition-all", viewMode === 'list' ? "bg-zinc-800 text-white" : "text-zinc-600 hover:text-zinc-400")}
-            >
-              <List size={18} />
-            </button>
-          </div>
-          <div className="h-8 w-[1px] bg-zinc-800 mx-2" />
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
-            <Filter size={14} /> Filter
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
-            <SortAsc size={14} /> Sort
-          </button>
-        </div>
-      </div>
+      {/* Factorized Controls */}
+      <RoadmapControls 
+        viewMode={viewMode} 
+        setViewMode={setViewMode} 
+        searchQuery={searchQuery} 
+        setSearchQuery={setSearchQuery} 
+      />
 
       {/* Display Logic */}
       <div className={cn(
@@ -136,3 +103,5 @@ export default function RoadmapsPage() {
     </div>
   );
 }
+
+import { cn } from '@/lib/utils';
