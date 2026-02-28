@@ -12,17 +12,17 @@ Chaque endpoint suit une structure cohérente :
 
 ```typescript
 // Validation input → Appel service → Validation output → Réponse
-router.post("/structure", async (req, res) => {
-  try {
-    const { text } = req.body;
-    const validated = structureInputSchema.parse({ text });
-    const result = await callBedrockStructure(validated.text);
-    const roadmap = roadmapSchema.parse(result);
-    res.json(roadmap);
-  } catch (error) {
-    logToCloudWatch(error);
-    res.status(500).json({ error: "Structure failed" });
-  }
+router.post('/structure', async (req, res) => {
+    try {
+        const { text } = req.body;
+        const validated = structureInputSchema.parse({ text });
+        const result = await callBedrockStructure(validated.text);
+        const roadmap = roadmapSchema.parse(result);
+        res.json(roadmap);
+    } catch (error) {
+        logToCloudWatch(error);
+        res.status(500).json({ error: 'Structure failed' });
+    }
 });
 ```
 
@@ -34,7 +34,7 @@ router.post("/structure", async (req, res) => {
 
 ### 3. Error Handling
 
-- Chaque appel Bedrock/ElevenLabs dans un `try/catch`.
+- Chaque appel Bedrock/Voxtral dans un `try/catch`.
 - Log structuré vers CloudWatch (latence, erreur, coût estimé).
 - Réponse HTTP cohérente : `{ error: string }` en cas d'échec.
 
@@ -56,14 +56,14 @@ router.post("/structure", async (req, res) => {
 
 ### 3. Optimistic UI
 
-- Transcription : afficher le texte dès réception du stream ElevenLabs, sans attendre la fin.
+- Transcription : afficher le texte dès réception du stream Voxtral, sans attendre la fin.
 - Structuration : afficher un Spinner pendant l'appel Bedrock, puis remplacer par le résultat validé.
 - En cas d'erreur : rollback visuel + message d'erreur.
 
 ### 4. Separation of Concerns
 
 - **UI** (`src/components/`) : rendu uniquement, pas de logique métier.
-- **Logic** (`src/hooks/`, `src/lib/`) : useElevenLabs, useBedrock, useTaskConditioning, dependencyGraph.
+- **Logic** (`src/hooks/`, `src/lib/`) : useVoxtral, useBedrock, useTaskConditioning, dependencyGraph.
 
 ---
 
@@ -107,10 +107,10 @@ router.post("/structure", async (req, res) => {
 
 ## 💬 Conventions de Code
 
-| Règle | Détail |
-| ----- | ------ |
-| **Langue** | Commentaires en anglais, documentation et messages utilisateur en français. |
-| **TypeScript** | Strict mode, zéro `any`. |
-| **Naming** | camelCase pour variables/fonctions, PascalCase pour composants/types. |
-| **Styles** | Tailwind uniquement, pas de CSS inline ou fichiers .css custom. |
-| **Credentials** | Variables d'environnement uniquement, jamais en dur. |
+| Règle           | Détail                                                                      |
+| --------------- | --------------------------------------------------------------------------- |
+| **Langue**      | Commentaires en anglais, documentation et messages utilisateur en français. |
+| **TypeScript**  | Strict mode, zéro `any`.                                                    |
+| **Naming**      | camelCase pour variables/fonctions, PascalCase pour composants/types.       |
+| **Styles**      | Tailwind uniquement, pas de CSS inline ou fichiers .css custom.             |
+| **Credentials** | Variables d'environnement uniquement, jamais en dur.                        |

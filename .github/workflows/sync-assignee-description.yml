@@ -1,0 +1,81 @@
+name: Sync Assignee in Description
+
+on:
+  issues:
+    types: [assigned, unassigned, edited]
+  pull_request:
+    types: [assigned, unassigned, edited]
+
+jobs:
+  sync-assignee:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Sync assignee field in description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isPR = !!context.payload.pull_request;
+            const item = isPR ? context.payload.pull_request : context.payload.issue;
+
+            if (!item || !item.body) {
+              console.log('No body found, skipping.');
+              return;
+            }
+
+            const assignees = item.assignees || [];
+            const currentBody = item.body;
+
+            // Build the new assignee value
+            let newAssigneeValue;
+            if (assignees.length === 0) {
+              newAssigneeValue = 'non assigné';
+            } else {
+              newAssigneeValue = assignees.map(a => `@${a.login}`).join(', ');
+            }
+
+            // Check if description contains an "Assigné :" line
+            const assigneeRegex = /^(\*\*Assign[eé]\s*:\*\*\s*)(.*)$/im;
+            const match = currentBody.match(assigneeRegex);
+
+            if (!match) {
+              console.log('No "Assigné :" field found in description, skipping.');
+              return;
+            }
+
+            const currentAssigneeInBody = match[2].trim();
+
+            if (currentAssigneeInBody === newAssigneeValue) {
+              console.log(`Assignee field already up to date: ${newAssigneeValue}`);
+              return;
+            }
+
+            console.log(`Updating assignee from "${currentAssigneeInBody}" to "${newAssigneeValue}"`);
+
+            const newBody = currentBody.replace(
+              assigneeRegex,
+              `$1${newAssigneeValue}`
+            );
+
+            const number = item.number;
+
+            if (isPR) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: number,
+                body: newBody,
+              });
+            } else {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: number,
+                body: newBody,
+              });
+            }
+
+            console.log(`Description updated successfully for #${number}`);

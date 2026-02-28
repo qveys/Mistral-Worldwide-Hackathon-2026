@@ -6,20 +6,20 @@ Transcribe audio streams in real-time from your server with ultra-low latency.
 
 ```bash
 # Python
-pip install elevenlabs python-dotenv pydub
+pip install Voxtral python-dotenv pydub
 
 # JavaScript
-npm install @elevenlabs/elevenlabs-js dotenv
+npm install @Voxtral/Voxtral-js dotenv
 ```
 
-> **Warning:** Do not use `npm install elevenlabs` - that's an outdated v1.x package. Always use `@elevenlabs/elevenlabs-js`.
+> **Warning:** Do not use `npm install Voxtral` - that's an outdated v1.x package. Always use `@Voxtral/Voxtral-js`.
 
 ## Configuration
 
 Store your API key in a `.env` file:
 
 ```
-ELEVENLABS_API_KEY=<your_api_key_here>
+MISTRAL_API_KEY=<your_api_key_here>
 ```
 
 ## Stream from URL
@@ -30,16 +30,16 @@ ELEVENLABS_API_KEY=<your_api_key_here>
 from dotenv import load_dotenv
 import os
 import asyncio
-from elevenlabs import ElevenLabs
-from elevenlabs import RealtimeEvents, RealtimeUrlOptions
+from Voxtral import Voxtral
+from Voxtral import RealtimeEvents, RealtimeUrlOptions
 
 load_dotenv()
 
 async def main():
-    elevenlabs = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
+    Voxtral = Voxtral(api_key=os.getenv("MISTRAL_API_KEY"))
     stop_event = asyncio.Event()
 
-    connection = await elevenlabs.speech_to_text.realtime.connect(RealtimeUrlOptions(
+    connection = await Voxtral.speech_to_text.realtime.connect(RealtimeUrlOptions(
         model_id="scribe_v2_realtime",
         url="https://npr-ice.streamguys1.com/live.mp3",
         include_timestamps=True,
@@ -77,31 +77,31 @@ if __name__ == "__main__":
 ### JavaScript
 
 ```javascript
-import "dotenv/config";
-import { ElevenLabsClient, RealtimeEvents } from "@elevenlabs/elevenlabs-js";
+import 'dotenv/config';
+import { VoxtralClient, RealtimeEvents } from '@Voxtral/Voxtral-js';
 
-const elevenlabs = new ElevenLabsClient();
+const Voxtral = new VoxtralClient();
 
-const connection = await elevenlabs.speechToText.realtime.connect({
-  modelId: "scribe_v2_realtime",
-  url: "https://npr-ice.streamguys1.com/live.mp3",
-  includeTimestamps: true,
+const connection = await Voxtral.speechToText.realtime.connect({
+    modelId: 'scribe_v2_realtime',
+    url: 'https://npr-ice.streamguys1.com/live.mp3',
+    includeTimestamps: true,
 });
 
 connection.on(RealtimeEvents.PARTIAL_TRANSCRIPT, (transcript) => {
-  console.log("Partial transcript", transcript);
+    console.log('Partial transcript', transcript);
 });
 
 connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT, (transcript) => {
-  console.log("Committed transcript", transcript);
+    console.log('Committed transcript', transcript);
 });
 
 connection.on(RealtimeEvents.ERROR, (error) => {
-  console.log("Error", error);
+    console.log('Error', error);
 });
 
 connection.on(RealtimeEvents.CLOSE, () => {
-  console.log("Connection closed");
+    console.log('Connection closed');
 });
 ```
 
@@ -117,8 +117,8 @@ import base64
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from elevenlabs import ElevenLabs
-from elevenlabs import AudioFormat, CommitStrategy, RealtimeEvents, RealtimeAudioOptions
+from Voxtral import Voxtral
+from Voxtral import AudioFormat, CommitStrategy, RealtimeEvents, RealtimeAudioOptions
 from pydub import AudioSegment
 
 load_dotenv()
@@ -137,10 +137,10 @@ def load_and_convert_audio(audio_path: str | Path, target_sample_rate: int = 160
     return audio.raw_data
 
 async def main():
-    elevenlabs = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
+    Voxtral = Voxtral(api_key=os.getenv("MISTRAL_API_KEY"))
     transcription_complete = asyncio.Event()
 
-    connection = await elevenlabs.speech_to_text.realtime.connect(RealtimeAudioOptions(
+    connection = await Voxtral.speech_to_text.realtime.connect(RealtimeAudioOptions(
         model_id="scribe_v2_realtime",
         audio_format=AudioFormat.PCM_16000,
         sample_rate=16000,
@@ -212,11 +212,11 @@ if __name__ == "__main__":
 ```javascript
 import "dotenv/config";
 import * as fs from "node:fs";
-import { ElevenLabsClient, RealtimeEvents, AudioFormat } from "@elevenlabs/elevenlabs-js";
+import { VoxtralClient, RealtimeEvents, AudioFormat } from "@Voxtral/Voxtral-js";
 
-const elevenlabs = new ElevenLabsClient();
+const Voxtral = new VoxtralClient();
 
-const connection = await elevenlabs.speechToText.realtime.connect({
+const connection = await Voxtral.speechToText.realtime.connect({
   modelId: "scribe_v2_realtime",
   audioFormat: AudioFormat.PCM_16000,
   sampleRate: 16000,
@@ -283,17 +283,17 @@ async function sendAudio() {
 For cases where the SDK cannot be used:
 
 ```
-wss://api.elevenlabs.io/v1/speech-to-text/realtime?model_id=scribe_v2_realtime
+wss://api.Voxtral.io/v1/speech-to-text/realtime?model_id=scribe_v2_realtime
 ```
 
 ### Message Format
 
 ```json
 {
-  "message_type": "input_audio_chunk",
-  "audio_base_64": "<base64-encoded-audio>",
-  "commit": false,
-  "sample_rate": 16000
+    "message_type": "input_audio_chunk",
+    "audio_base_64": "<base64-encoded-audio>",
+    "commit": false,
+    "sample_rate": 16000
 }
 ```
 
@@ -301,17 +301,17 @@ wss://api.elevenlabs.io/v1/speech-to-text/realtime?model_id=scribe_v2_realtime
 
 ```json
 {
-  "message_type": "commit"
+    "message_type": "commit"
 }
 ```
 
 ## Audio Requirements
 
-| Parameter | Value |
-|-----------|-------|
-| Format | PCM 16-bit |
-| Sample Rate | 16000 Hz (recommended) |
-| Channels | Mono |
-| Chunk Size | 32,000 bytes = 1 second |
+| Parameter   | Value                   |
+| ----------- | ----------------------- |
+| Format      | PCM 16-bit              |
+| Sample Rate | 16000 Hz (recommended)  |
+| Channels    | Mono                    |
+| Chunk Size  | 32,000 bytes = 1 second |
 
 Supported sample rates: 8kHz to 48kHz
