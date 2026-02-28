@@ -6,7 +6,7 @@ Bienvenue dans la documentation d'architecture de **EchoMaps**, l'application qu
 
 L'application repose sur une architecture découplée :
 
-- **Frontend :** Next.js 15/16 (App Router) + TailwindCSS + Framer Motion, hébergé sur AWS Amplify.
+- **Frontend :** Next.js 16 (App Router) + TailwindCSS + Framer Motion.
 - **Backend :** API Express (TypeScript) déployée sur AWS Lambda.
 - **Base de Données :** Stockage des projets (S3 ou persistance minimale pour le hackathon 48h).
 
