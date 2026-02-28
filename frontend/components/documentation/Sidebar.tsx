@@ -99,6 +99,7 @@ export const Sidebar = ({
         </div>
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label={isCollapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
           className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg text-slate-400 transition-colors"
         >
           {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
