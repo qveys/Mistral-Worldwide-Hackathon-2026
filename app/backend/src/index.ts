@@ -1,7 +1,9 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { type Request, type Response } from 'express';
+import express from 'express';
 import { createServer } from 'http';
+import rateLimit from 'express-rate-limit';
+import healthRouter from './routes/health.js';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
 import { VoxstralService } from './services/voxstral.js';
@@ -14,14 +16,21 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+// Rate limiter: max 10 requests per minute per IP for API routes
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too Many Requests', message: 'Rate limit exceeded. Max 10 requests per minute.' }
 });
 
-// API routes
-app.use('/api/structure', structureRouter);
-app.use('/api/revise', reviseRouter);
+// Health check endpoint
+app.use('/health', healthRouter);
+
+// API routes (rate limited)
+app.use('/api/structure', apiLimiter, structureRouter);
+app.use('/api/revise', apiLimiter, reviseRouter);
 
 // Create HTTP server and integrate Voxstral WebSocket service
 const server = createServer(app);
