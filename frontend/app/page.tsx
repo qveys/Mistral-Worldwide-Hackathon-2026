@@ -21,7 +21,7 @@ export default function HomePage() {
         </div>
         <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
           <a href="#" className="px-4 py-2 rounded-full hover:bg-slate-100 hover:text-black transition-all duration-300">Methodology</a>
-          <a href="/demo" className="px-4 py-2 rounded-full bg-orange-50 text-[#ff4f00] font-bold border border-orange-100 hover:bg-orange-100 transition-all duration-300">Components</a>
+          <a href="/documentation" className="px-4 py-2 rounded-full bg-orange-50 text-[#ff4f00] font-bold border border-orange-100 hover:bg-orange-100 transition-all duration-300">Documentation</a>
           <a href="#" className="px-4 py-2 rounded-full hover:bg-slate-100 hover:text-black transition-all duration-300">API</a>
           <div className="h-4 w-[1px] bg-slate-200 mx-2" />
           <a href="https://github.com" className="px-4 py-2 rounded-full hover:bg-slate-100 hover:text-black transition-all duration-300">GitHub</a>
