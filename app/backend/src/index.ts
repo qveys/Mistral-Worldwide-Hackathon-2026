@@ -1,12 +1,19 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { type Request, type Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { createServer } from 'http';
+import { createRequire } from 'module';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
 import { VoxstralService } from './services/voxstral.js';
 
 dotenv.config();
+
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json') as { version: string };
+
+const startTime = Date.now();
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -14,9 +21,23 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+// Rate limiting: 10 requests per minute per IP on /api/*
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 10,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+});
+app.use('/api', apiLimiter);
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    res.json({
+        status: 'ok',
+        version,
+        uptime: Math.floor((Date.now() - startTime) / 1000),
+        timestamp: new Date().toISOString(),
+    });
 });
 
 // API routes
