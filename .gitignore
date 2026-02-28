@@ -141,3 +141,14 @@ docker-compose.override.yml
 # Windows
 #############################################
 Thumbs.db
+
+#############################################
+# Dotfiles (local tooling)
+#############################################
+.*
+!.gitignore
+!.gitattributes
+!.github/
+!.github/**
+/CUsersu248563.claudepluginsmarketplacesclaude-plugins-official/
+/CUsersu248563.claudepluginsmarketplacesclaude-plugins-official/
