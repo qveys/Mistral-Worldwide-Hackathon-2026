@@ -1,30 +1,39 @@
 'use client';
 
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
-import { TranscriptionLiveView } from '@/components/brain-dump/TranscriptionLiveView';
 import { ClarificationBubble } from '@/components/brain-dump/ClarificationBubble';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
-import { RoadmapCanvas, Roadmap, RoadmapTimeSlot, RoadmapObjective, RoadmapTask } from '@/components/roadmap/RoadmapCanvas';
 import { DependencyGraph } from '@/components/roadmap/DependencyGraph';
-import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput';
+import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { ReviseInput } from '@/components/roadmap/ReviseInput';
+import { Roadmap, RoadmapCanvas } from '@/components/roadmap/RoadmapCanvas';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { ExportButton } from '@/components/ui/ExportButton';
+import { Input } from '@/components/ui/Input';
 import { LoadingOrchestrator } from '@/components/ui/LoadingOrchestrator';
-import { MicButton, MicButtonState } from '@/components/ui/MicButton';
+import { MicButtonState } from '@/components/ui/MicButton';
+import { Spinner } from '@/components/ui/Spinner';
 import { Task, TaskCard, TaskStatus } from '@/components/ui/TaskCard';
 import { Toast, ToastType } from '@/components/ui/Toast';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Spinner } from '@/components/ui/Spinner';
-import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { cn } from '@/lib/utils';
-import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download, AlertOctagon, Share2, Network } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    AlertOctagon,
+    BookOpen,
+    Brain,
+    Bug,
+    Home,
+    Layout,
+    Moon,
+    Network,
+    Play,
+    Sparkles,
+    Sun,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // Composant qui crash pour tester l'ErrorBoundary
 function CrashingComponent() {
@@ -47,41 +56,82 @@ export default function DocumentationPage() {
 
     // Mock Roadmap Data with Dependencies
     const mockRoadmap: Roadmap = {
-      id: 'demo-roadmap',
-      title: 'EchoMaps Launch Plan',
-      objectives: [
-        { id: 'obj-1', title: 'Core Infrastructure', color: 'blue' },
-        { id: 'obj-2', title: 'Product Launch', color: 'orange' }
-      ],
-      timeSlots: [
-        {
-          day: 1,
-          period: 'AM',
-          tasks: [
-            { id: 'rt-1', title: 'Setup Cloud Infrastructure', status: 'done', priority: 'high', estimate: 'L', objectiveId: 'obj-1' },
-            { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-1'] }
-          ]
-        },
-        {
-          day: 1,
-          period: 'PM',
-          tasks: [
-            { id: 'rt-3', title: 'Authentication Service', status: 'backlog', priority: 'high', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-2'] },
-            { id: 'rt-4', title: 'Landing Page Prototype', status: 'backlog', priority: 'medium', estimate: 'S', objectiveId: 'obj-2', dependencies: ['rt-2'] }
-          ]
-        },
-        {
-          day: 2,
-          period: 'AM',
-          tasks: [
-            { id: 'rt-5', title: 'Beta Testing Group Setup', status: 'backlog', priority: 'low', estimate: 'S', objectiveId: 'obj-2', isBlocked: true, blockedBy: ['Landing Page Prototype'], dependencies: ['rt-4'] }
-          ]
-        }
-      ]
+        id: 'demo-roadmap',
+        title: 'EchoMaps Launch Plan',
+        objectives: [
+            { id: 'obj-1', title: 'Core Infrastructure', color: 'blue' },
+            { id: 'obj-2', title: 'Product Launch', color: 'orange' },
+        ],
+        timeSlots: [
+            {
+                day: 1,
+                period: 'AM',
+                tasks: [
+                    {
+                        id: 'rt-1',
+                        title: 'Setup Cloud Infrastructure',
+                        status: 'done',
+                        priority: 'high',
+                        estimate: 'L',
+                        objectiveId: 'obj-1',
+                    },
+                    {
+                        id: 'rt-2',
+                        title: 'Database Schema Design',
+                        status: 'doing',
+                        priority: 'medium',
+                        estimate: 'M',
+                        objectiveId: 'obj-1',
+                        dependsOn: ['rt-1'],
+                    },
+                ],
+            },
+            {
+                day: 1,
+                period: 'PM',
+                tasks: [
+                    {
+                        id: 'rt-3',
+                        title: 'Authentication Service',
+                        status: 'backlog',
+                        priority: 'high',
+                        estimate: 'M',
+                        objectiveId: 'obj-1',
+                        dependsOn: ['rt-2'],
+                    },
+                    {
+                        id: 'rt-4',
+                        title: 'Landing Page Prototype',
+                        status: 'backlog',
+                        priority: 'medium',
+                        estimate: 'S',
+                        objectiveId: 'obj-2',
+                        dependsOn: ['rt-2'],
+                    },
+                ],
+            },
+            {
+                day: 2,
+                period: 'AM',
+                tasks: [
+                    {
+                        id: 'rt-5',
+                        title: 'Beta Testing Group Setup',
+                        status: 'backlog',
+                        priority: 'low',
+                        estimate: 'S',
+                        objectiveId: 'obj-2',
+                        isBlocked: true,
+                        blockedBy: ['Landing Page Prototype'],
+                        dependsOn: ['rt-4'],
+                    },
+                ],
+            },
+        ],
     };
 
     // Flat list of tasks for graph and other views
-    const allTasks: Task[] = mockRoadmap.timeSlots.flatMap(slot => slot.tasks);
+    const allTasks: Task[] = mockRoadmap.timeSlots.flatMap((slot) => slot.tasks);
 
     // Toast State
     const [toast, setToast] = useState<{
@@ -139,7 +189,7 @@ export default function DocumentationPage() {
             )}
         >
             {/* Clarification Bubble Demo */}
-            <ClarificationBubble 
+            <ClarificationBubble
                 isVisible={isBubbleVisible}
                 question="Est-ce que l'authentification doit être gérée par un service externe ou en local ?"
                 onReply={(ans) => {
@@ -242,7 +292,7 @@ export default function DocumentationPage() {
 
                         {isLoading && (
                             <div className="space-y-8 animate-in fade-in duration-700">
-                                <LoadingOrchestrator activeStep="analysis" />
+                                <LoadingOrchestrator />
                             </div>
                         )}
 
@@ -255,21 +305,25 @@ export default function DocumentationPage() {
                                         </h2>
                                         {/* Toggle View Mode */}
                                         <div className="flex bg-white/40 dark:bg-black/40 p-1 rounded-xl border border-white/20 w-fit">
-                                            <button 
+                                            <button
                                                 onClick={() => setRoadmapViewMode('timeline')}
                                                 className={cn(
-                                                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all",
-                                                    roadmapViewMode === 'timeline' ? "bg-white dark:bg-slate-800 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"
+                                                    'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all',
+                                                    roadmapViewMode === 'timeline'
+                                                        ? 'bg-white dark:bg-slate-800 shadow-sm text-blue-600'
+                                                        : 'text-slate-500 hover:text-slate-700',
                                                 )}
                                             >
                                                 <Layout size={14} />
                                                 Timeline
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => setRoadmapViewMode('graph')}
                                                 className={cn(
-                                                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all",
-                                                    roadmapViewMode === 'graph' ? "bg-white dark:bg-slate-800 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"
+                                                    'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all',
+                                                    roadmapViewMode === 'graph'
+                                                        ? 'bg-white dark:bg-slate-800 shadow-sm text-blue-600'
+                                                        : 'text-slate-500 hover:text-slate-700',
                                                 )}
                                             >
                                                 <Network size={14} />
@@ -295,7 +349,10 @@ export default function DocumentationPage() {
                                                     animate={{ opacity: 1, x: 0 }}
                                                     exit={{ opacity: 0, x: 20 }}
                                                 >
-                                                    <RoadmapCanvas roadmap={mockRoadmap} onTaskStatusChange={handleStatusChange} />
+                                                    <RoadmapCanvas
+                                                        roadmap={mockRoadmap}
+                                                        onTaskStatusChange={handleStatusChange}
+                                                    />
                                                 </motion.div>
                                             ) : (
                                                 <motion.div
@@ -304,7 +361,10 @@ export default function DocumentationPage() {
                                                     animate={{ opacity: 1, x: 0 }}
                                                     exit={{ opacity: 0, x: -20 }}
                                                 >
-                                                    <DependencyGraph tasks={tasks} onStatusChange={handleStatusChange} />
+                                                    <DependencyGraph
+                                                        tasks={tasks}
+                                                        onStatusChange={handleStatusChange}
+                                                    />
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
@@ -321,7 +381,7 @@ export default function DocumentationPage() {
                                             <Sparkles size={24} className="text-blue-500" />
                                             Affiner la vision
                                         </h3>
-                                        <ReviseInput 
+                                        <ReviseInput
                                             onRevise={(ins) => {
                                                 showToast('Demande de révision envoyée', 'success');
                                                 console.log('Revision requested:', ins);
@@ -352,32 +412,54 @@ export default function DocumentationPage() {
                                     </h3>
                                     <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 space-y-8">
                                         <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Buttons</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+                                                Buttons
+                                            </p>
                                             <div className="flex flex-wrap gap-3">
                                                 <Button variant="primary">Primary</Button>
                                                 <Button variant="secondary">Secondary</Button>
                                                 <Button variant="danger">Danger</Button>
-                                                <Button variant="primary" isLoading>Loading</Button>
+                                                <Button variant="primary" isLoading>
+                                                    Loading
+                                                </Button>
                                             </div>
                                         </div>
 
                                         <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Badges</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+                                                Badges
+                                            </p>
                                             <div className="flex flex-wrap gap-2">
-                                                <Badge variant="priority" type="high">High</Badge>
-                                                <Badge variant="status" type="doing">In Progress</Badge>
+                                                <Badge variant="priority" type="high">
+                                                    High
+                                                </Badge>
+                                                <Badge variant="status" type="doing">
+                                                    In Progress
+                                                </Badge>
                                                 <Badge variant="estimate">Size: M</Badge>
                                             </div>
                                         </div>
 
                                         <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Input</p>
-                                            <Input label="Nom du Projet" placeholder="Ex: Mon Super Hackathon" />
-                                            <Input label="Email" placeholder="user@example.com" error="Email invalide" defaultValue="invalid-email" />
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+                                                Input
+                                            </p>
+                                            <Input
+                                                label="Nom du Projet"
+                                                placeholder="Ex: Mon Super Hackathon"
+                                            />
+                                            <Input
+                                                label="Email"
+                                                placeholder="user@example.com"
+                                                error="Email invalide"
+                                                defaultValue="invalid-email"
+                                            />
                                         </div>
 
                                         <div className="space-y-3">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Spinners</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+                                                Spinners
+                                            </p>
                                             <div className="flex items-center gap-6">
                                                 <Spinner size="sm" />
                                                 <Spinner size="md" className="text-blue-500" />
@@ -393,19 +475,27 @@ export default function DocumentationPage() {
                                     </h3>
                                     <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 space-y-6">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Composant Interactif</p>
-                                            <button 
-                                                onClick={() => setSimulateSTTError(!simulateSTTError)}
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+                                                Composant Interactif
+                                            </p>
+                                            <button
+                                                onClick={() =>
+                                                    setSimulateSTTError(!simulateSTTError)
+                                                }
                                                 className={cn(
-                                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all flex items-center gap-2",
-                                                    simulateSTTError ? "bg-amber-500 text-white" : "bg-slate-800 text-slate-400 hover:text-white"
+                                                    'px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all flex items-center gap-2',
+                                                    simulateSTTError
+                                                        ? 'bg-amber-500 text-white'
+                                                        : 'bg-slate-800 text-slate-400 hover:text-white',
                                                 )}
                                             >
                                                 <AlertOctagon size={12} />
-                                                {simulateSTTError ? "Mode Fallback Actif" : "Simuler Timeout Micro"}
+                                                {simulateSTTError
+                                                    ? 'Mode Fallback Actif'
+                                                    : 'Simuler Timeout Micro'}
                                             </button>
                                         </div>
-                                        
+
                                         <div className="relative">
                                             <BrainDumpInput onGenerate={() => {}} />
                                             {simulateSTTError && (
@@ -413,7 +503,8 @@ export default function DocumentationPage() {
                                             )}
                                         </div>
                                         <p className="text-[10px] text-slate-500 italic">
-                                            * En conditions réelles, le mode manuel s&apos;active si le micro met plus de 5s à répondre.
+                                            * En conditions réelles, le mode manuel s&apos;active si
+                                            le micro met plus de 5s à répondre.
                                         </p>
                                     </div>
                                 </div>
@@ -424,36 +515,65 @@ export default function DocumentationPage() {
                                     </h3>
                                     <div className="space-y-6">
                                         <div className="flex items-center justify-between px-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Simulateur de blocage</p>
-                                            <button 
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+                                                Simulateur de blocage
+                                            </p>
+                                            <button
                                                 onClick={() => setIsDemoBlocked(!isDemoBlocked)}
                                                 className={cn(
-                                                    "w-10 h-5 rounded-full transition-colors relative",
-                                                    isDemoBlocked ? "bg-red-500" : "bg-slate-300 dark:bg-slate-700"
+                                                    'w-10 h-5 rounded-full transition-colors relative',
+                                                    isDemoBlocked
+                                                        ? 'bg-red-500'
+                                                        : 'bg-slate-300 dark:bg-slate-700',
                                                 )}
                                             >
-                                                <motion.div 
+                                                <motion.div
                                                     animate={{ x: isDemoBlocked ? 20 : 2 }}
                                                     className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
                                                 />
                                             </button>
                                         </div>
-                                        
+
                                         <div className="grid grid-cols-1 gap-4">
-                                            <TaskCard 
-                                                task={{ id: 'demo-1', title: "Tâche interactive (Utilisez le switch)", priority: 'high', status: 'backlog', estimate: 'M' }}
+                                            <TaskCard
+                                                task={{
+                                                    id: 'demo-1',
+                                                    title: 'Tâche interactive (Utilisez le switch)',
+                                                    priority: 'high',
+                                                    status: 'backlog',
+                                                    estimate: 'M',
+                                                }}
                                                 isBlocked={isDemoBlocked}
-                                                blockedBy={["Configuration du serveur", "Validation Sécurité"]}
-                                                onStatusChange={() => showToast("Statut mis à jour", "success")}
+                                                blockedBy={[
+                                                    'Configuration du serveur',
+                                                    'Validation Sécurité',
+                                                ]}
+                                                onStatusChange={() =>
+                                                    showToast('Statut mis à jour', 'success')
+                                                }
                                             />
                                             <div className="h-[1px] bg-slate-200 dark:bg-white/5 my-2" />
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">Galerie de statuts</p>
-                                            <TaskCard 
-                                                task={{ id: 's1', title: "Tâche en attente (Backlog)", priority: 'low', status: 'backlog', estimate: 'S' }}
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">
+                                                Galerie de statuts
+                                            </p>
+                                            <TaskCard
+                                                task={{
+                                                    id: 's1',
+                                                    title: 'Tâche en attente (Backlog)',
+                                                    priority: 'low',
+                                                    status: 'backlog',
+                                                    estimate: 'S',
+                                                }}
                                                 onStatusChange={() => {}}
                                             />
-                                            <TaskCard 
-                                                task={{ id: 's3', title: "Tâche terminée (Done)", priority: 'high', status: 'done', estimate: 'L' }}
+                                            <TaskCard
+                                                task={{
+                                                    id: 's3',
+                                                    title: 'Tâche terminée (Done)',
+                                                    priority: 'high',
+                                                    status: 'done',
+                                                    estimate: 'L',
+                                                }}
                                                 onStatusChange={() => {}}
                                             />
                                         </div>
@@ -470,9 +590,14 @@ export default function DocumentationPage() {
                                     <div className="bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 overflow-hidden shadow-2xl">
                                         <div className="p-4 border-b border-white/10 flex items-center gap-2 bg-white/5">
                                             <Network size={16} className="text-blue-500" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Graphe de dépendances (React Flow)</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                Graphe de dépendances (React Flow)
+                                            </span>
                                         </div>
-                                        <DependencyGraph tasks={tasks} className="h-[400px] border-none rounded-none" />
+                                        <DependencyGraph
+                                            tasks={tasks}
+                                            className="h-[400px] border-none rounded-none"
+                                        />
                                     </div>
                                 </div>
 
@@ -480,7 +605,7 @@ export default function DocumentationPage() {
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Objective Molecule
                                     </h3>
-                                    <ObjectiveCard 
+                                    <ObjectiveCard
                                         title="Lancer le MVP"
                                         priority="high"
                                         tasks={tasks}
@@ -495,8 +620,10 @@ export default function DocumentationPage() {
                                         <div className="h-12 w-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
                                             <Brain size={24} />
                                         </div>
-                                        <p className="text-sm text-slate-500 text-center font-medium">Tester l&apos;apparition de la bulle de question IA :</p>
-                                        <button 
+                                        <p className="text-sm text-slate-500 text-center font-medium">
+                                            Tester l&apos;apparition de la bulle de question IA :
+                                        </p>
+                                        <button
                                             onClick={() => setIsBubbleVisible(true)}
                                             className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-tighter italic shadow-xl hover:scale-105 transition-all"
                                         >
@@ -520,9 +647,16 @@ export default function DocumentationPage() {
                                     </h3>
                                     <div className="space-y-8">
                                         <div className="space-y-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">Standard Revision Input</p>
-                                            <ReviseInput 
-                                                onRevise={(ins) => showToast(`Révision demandée : ${ins}`, "success")} 
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">
+                                                Standard Revision Input
+                                            </p>
+                                            <ReviseInput
+                                                onRevise={(ins) =>
+                                                    showToast(
+                                                        `Révision demandée : ${ins}`,
+                                                        'success',
+                                                    )
+                                                }
                                                 isProcessing={isLoading}
                                             />
                                         </div>
@@ -598,7 +732,7 @@ export default function DocumentationPage() {
                                         Loading & Orchestration
                                     </h3>
                                     <LoadingOrchestrator
-                                        onCancel={() => showToast("Opération annulée", "error")}
+                                        onCancel={() => showToast('Opération annulée', 'error')}
                                         className="max-w-none"
                                     />
                                 </div>
@@ -609,8 +743,12 @@ export default function DocumentationPage() {
                                     </h3>
                                     <div className="flex items-center gap-4 bg-white/10 p-6 rounded-[2rem] border border-white/20 shadow-xl">
                                         <div className="flex-1 space-y-1">
-                                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Exporter les données</p>
-                                            <p className="text-[10px] text-slate-400">Markdown, JSON ou PDF</p>
+                                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+                                                Exporter les données
+                                            </p>
+                                            <p className="text-[10px] text-slate-400">
+                                                Markdown, JSON ou PDF
+                                            </p>
                                         </div>
                                         <ExportButton markdown="# Test" data={{}} />
                                     </div>

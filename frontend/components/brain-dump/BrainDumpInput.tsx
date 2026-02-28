@@ -4,7 +4,7 @@ import { useVoxtralSTT } from '@/lib/useVoxtralSTT';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CalendarDays, Eraser, RefreshCcw, Send, Sparkles } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { MicButton, MicButtonState } from '../ui/MicButton';
 import { TranscriptionLiveView } from './TranscriptionLiveView';
 
@@ -21,7 +21,7 @@ export function BrainDumpInput({
 }: BrainDumpInputProps) {
     const [manualText, setManualText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
-    const [isFallback, setIsFallback] = useState(false);
+    const [manualFallback, setManualFallback] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
     const [includePlanning, setIncludePlanning] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -36,19 +36,13 @@ export function BrainDumpInput({
         resetTranscript,
     } = useVoxtralSTT();
 
-    // Reset fallback if error is cleared or new recording starts successfully
-    useEffect(() => {
-        if (sttError) {
-            setIsFallback(true);
-            setIsConnecting(false);
-            if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
-        }
-    }, [sttError]);
+    // Derive fallback state: manual fallback OR STT error
+    const isFallback = manualFallback || !!sttError;
 
     // Derive micState
     const micState: MicButtonState = isStreaming
         ? 'recording'
-        : isConnecting
+        : isConnecting && !isFallback
           ? 'processing'
           : 'idle';
 
@@ -59,14 +53,14 @@ export function BrainDumpInput({
     const handleMicClick = async () => {
         if (micState === 'idle') {
             setIsConnecting(true);
-            setIsFallback(false);
+            setManualFallback(false);
             resetTranscript();
             setManualText('');
 
             // Timeout logic: if no streaming after 5s, trigger fallback
             connectionTimeoutRef.current = setTimeout(() => {
                 if (!isStreaming) {
-                    setIsFallback(true);
+                    setManualFallback(true);
                     setIsConnecting(false);
                     stopRecording();
                 }
@@ -77,7 +71,7 @@ export function BrainDumpInput({
                 if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
                 setIsConnecting(false);
             } catch (err) {
-                setIsFallback(true);
+                setManualFallback(true);
                 setIsConnecting(false);
             }
         } else if (micState === 'recording') {
@@ -97,12 +91,12 @@ export function BrainDumpInput({
     const clearText = () => {
         setManualText('');
         setIsEditing(false);
-        setIsFallback(false);
+        setManualFallback(false);
         resetTranscript();
     };
 
     const retryMic = () => {
-        setIsFallback(false);
+        setManualFallback(false);
         handleMicClick();
     };
 

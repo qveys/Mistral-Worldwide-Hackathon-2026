@@ -17,6 +17,8 @@ export interface Task {
     priority: TaskPriority;
     estimate: TaskEstimate;
     dependsOn?: string[];
+    /** @deprecated Use dependsOn instead */
+    dependencies?: string[];
 }
 
 interface TaskCardProps {
