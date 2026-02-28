@@ -94,23 +94,61 @@ AWS_SECRET_ACCESS_KEY=...
 
 ```jsonc
 {
-    "projectId": "string",
-    "title": "string",
-    "createdAt": "ISO timestamp",
-    "brainDump": "string",
-    "objectives": [{ "id": "string", "text": "string", "priority": "High|Med|Low" }],
-    "tasks": [
+    "projectId": "179b1942-7527-4968-9ca5-02f14dfcce96",
+    "title": "Organisation travail et sport",
+    "createdAt": "2026-02-28T20:23:13.000Z",
+    "brainDump": "Je veux aller faire du sport mais avant ça j'ai du travail",
+    "objectives": [
         {
-            "id": "string",
-            "text": "string",
-            "objectiveId": "string",
-            "status": "backlog|doing|done",
-            "estimate": "S|M|L",
-            "priority": "High|Med|Low",
+            "id": "obj-1",
+            "text": "Terminer le travail en cours",
+            "priority": "high",
+        },
+        {
+            "id": "obj-2",
+            "text": "Aller faire du sport",
+            "priority": "medium",
         },
     ],
-    "timeline": [{ "taskId": "string", "day": "string", "slot": "AM|PM" }],
-    "revisionHistory": [{ "timestamp": "string", "patch": "json-patch" }],
+    "tasks": [
+        {
+            "id": "task-1",
+            "title": "Identifier les tâches de travail à compléter",
+            "objectiveId": "obj-1",
+            "status": "backlog",
+            "estimate": "S",
+            "priority": "high",
+            "dependsOn": [],
+        },
+        {
+            "id": "task-2",
+            "title": "Réaliser le travail prioritaire",
+            "objectiveId": "obj-1",
+            "status": "backlog",
+            "estimate": "M",
+            "priority": "high",
+            "dependsOn": ["task-1"],
+        },
+        {
+            "id": "task-3",
+            "title": "Préparer les affaires de sport",
+            "objectiveId": "obj-2",
+            "status": "backlog",
+            "estimate": "S",
+            "priority": "medium",
+            "dependsOn": [],
+        },
+        {
+            "id": "task-4",
+            "title": "Aller à la salle de sport",
+            "objectiveId": "obj-2",
+            "status": "backlog",
+            "estimate": "M",
+            "priority": "medium",
+            "dependsOn": ["task-2", "task-3"],
+        },
+    ],
+    "revisionHistory": [],
 }
 ```
 

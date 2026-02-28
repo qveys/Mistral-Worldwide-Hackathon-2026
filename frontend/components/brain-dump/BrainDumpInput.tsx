@@ -3,13 +3,13 @@
 import { useVoxtralSTT } from '@/lib/useVoxtralSTT';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Eraser, Send, Sparkles, AlertCircle, RefreshCcw } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { AlertCircle, CalendarDays, Eraser, RefreshCcw, Send, Sparkles } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { MicButton, MicButtonState } from '../ui/MicButton';
 import { TranscriptionLiveView } from './TranscriptionLiveView';
 
 interface BrainDumpInputProps {
-    onGenerate: (text: string) => void;
+    onGenerate: (text: string, includePlanning: boolean) => void;
     isProcessing?: boolean;
     className?: string;
 }
@@ -21,8 +21,9 @@ export function BrainDumpInput({
 }: BrainDumpInputProps) {
     const [manualText, setManualText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
-    const [isFallback, setIsFallback] = useState(false);
+    const [manualFallback, setManualFallback] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
+    const [includePlanning, setIncludePlanning] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -35,17 +36,15 @@ export function BrainDumpInput({
         resetTranscript,
     } = useVoxtralSTT();
 
-    // Reset fallback if error is cleared or new recording starts successfully
-    useEffect(() => {
-        if (sttError) {
-            setIsFallback(true);
-            setIsConnecting(false);
-            if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
-        }
-    }, [sttError]);
+    // Derive fallback state: manual fallback OR STT error
+    const isFallback = manualFallback || !!sttError;
 
     // Derive micState
-    const micState: MicButtonState = isStreaming ? 'recording' : (isConnecting ? 'processing' : 'idle');
+    const micState: MicButtonState = isStreaming
+        ? 'recording'
+        : isConnecting && !isFallback
+          ? 'processing'
+          : 'idle';
 
     // Merge: prioritize live transcript, then manual text
     const text = transcript || manualText;
@@ -54,14 +53,14 @@ export function BrainDumpInput({
     const handleMicClick = async () => {
         if (micState === 'idle') {
             setIsConnecting(true);
-            setIsFallback(false);
+            setManualFallback(false);
             resetTranscript();
             setManualText('');
 
             // Timeout logic: if no streaming after 5s, trigger fallback
             connectionTimeoutRef.current = setTimeout(() => {
                 if (!isStreaming) {
-                    setIsFallback(true);
+                    setManualFallback(true);
                     setIsConnecting(false);
                     stopRecording();
                 }
@@ -72,7 +71,7 @@ export function BrainDumpInput({
                 if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
                 setIsConnecting(false);
             } catch (err) {
-                setIsFallback(true);
+                setManualFallback(true);
                 setIsConnecting(false);
             }
         } else if (micState === 'recording') {
@@ -85,19 +84,19 @@ export function BrainDumpInput({
 
     const handleGenerate = () => {
         if (text.trim() && !isProcessing) {
-            onGenerate(text);
+            onGenerate(text, includePlanning);
         }
     };
 
     const clearText = () => {
         setManualText('');
         setIsEditing(false);
-        setIsFallback(false);
+        setManualFallback(false);
         resetTranscript();
     };
 
     const retryMic = () => {
-        setIsFallback(false);
+        setManualFallback(false);
         handleMicClick();
     };
 
@@ -115,17 +114,19 @@ export function BrainDumpInput({
                         {/* Header Actions */}
                         <div className="flex justify-between items-center mb-3 px-1">
                             <div className="flex items-center gap-2">
-                                <div className={cn(
-                                    "h-2 w-2 rounded-full animate-pulse",
-                                    isFallback ? "bg-amber-500" : "bg-blue-500"
-                                )} />
+                                <div
+                                    className={cn(
+                                        'h-2 w-2 rounded-full animate-pulse',
+                                        isFallback ? 'bg-amber-500' : 'bg-blue-500',
+                                    )}
+                                />
                                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                                     {isFallback ? 'Saisie Manuelle' : 'Brain Dump Engine'}
                                 </span>
                             </div>
                             <div className="flex items-center gap-4">
                                 {isFallback && (
-                                    <button 
+                                    <button
                                         onClick={retryMic}
                                         aria-label="Réessayer la connexion au micro"
                                         className="text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 text-[10px] font-black uppercase tracking-tighter italic"
@@ -198,7 +199,9 @@ export function BrainDumpInput({
                                                     transition={{ duration: 3, repeat: Infinity }}
                                                     className="text-xl font-medium text-slate-400 dark:text-slate-600 text-balance px-10"
                                                 >
-                                                    {isFallback ? 'Tapez votre idée ici...' : 'Parlez ou écrivez ici...'}
+                                                    {isFallback
+                                                        ? 'Tapez votre idée ici...'
+                                                        : 'Parlez ou écrivez ici...'}
                                                 </motion.p>
                                                 <Sparkles
                                                     className="text-blue-300 dark:text-blue-900/50 animate-bounce"
@@ -208,6 +211,43 @@ export function BrainDumpInput({
                                         )}
                                     </AnimatePresence>
                                 </div>
+                            )}
+                        </div>
+
+                        {/* Planning Toggle */}
+                        <div className="flex items-center gap-3 mb-4">
+                            <button
+                                type="button"
+                                onClick={() => setIncludePlanning(!includePlanning)}
+                                className={cn(
+                                    'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
+                                    includePlanning
+                                        ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-400'
+                                        : 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-orange-300 hover:text-orange-600',
+                                )}
+                            >
+                                <CalendarDays size={16} />
+                                Inclure un planning
+                                <div
+                                    className={cn(
+                                        'h-5 w-9 rounded-full transition-colors relative',
+                                        includePlanning
+                                            ? 'bg-orange-500'
+                                            : 'bg-slate-300 dark:bg-slate-700',
+                                    )}
+                                >
+                                    <div
+                                        className={cn(
+                                            'absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform',
+                                            includePlanning ? 'translate-x-4' : 'translate-x-0.5',
+                                        )}
+                                    />
+                                </div>
+                            </button>
+                            {includePlanning && (
+                                <span className="text-[10px] font-bold text-orange-500 uppercase tracking-wider">
+                                    L&apos;IA génèrera un planning jour par jour
+                                </span>
                             )}
                         </div>
 

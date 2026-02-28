@@ -42,7 +42,7 @@ export const SystemSection = ({
             {shouldCrash ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <ErrorBoundary fallback={<div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-600 rounded-xl text-[9px] font-bold text-center border border-red-100 dark:border-red-900/30">Erreur Interceptée</div>}>
-                  <div className="hidden">{(() => { if (shouldCrash) throw new Error("!"); })()}</div>
+                  <div className="hidden">{(() => { if (shouldCrash) throw new Error("!"); return null; })()}</div>
                 </ErrorBoundary>
               </motion.div>
             ) : (
