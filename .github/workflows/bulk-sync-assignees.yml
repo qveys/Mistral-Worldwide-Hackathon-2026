@@ -1,0 +1,76 @@
+name: Bulk Sync Assignees in Descriptions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bulk-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Sync all issues with mismatched assignee in description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const assigneeRegex = /^(\*\*Assign[eé]\s*:\*\*\s*)(.*)$/im;
+            let page = 1;
+            let updated = 0;
+            let skipped = 0;
+            let noField = 0;
+
+            while (true) {
+              const { data: issues } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100,
+                page,
+              });
+
+              if (issues.length === 0) break;
+
+              for (const issue of issues) {
+                // Skip pull requests
+                if (issue.pull_request) continue;
+
+                const body = issue.body;
+                if (!body) { skipped++; continue; }
+
+                const match = body.match(assigneeRegex);
+                if (!match) { noField++; continue; }
+
+                const assignees = issue.assignees || [];
+                const newAssigneeValue = assignees.length === 0
+                  ? 'non assigné'
+                  : assignees.map(a => '@' + a.login).join(', ');
+
+                const currentAssigneeInBody = match[2].trim();
+
+                if (currentAssigneeInBody === newAssigneeValue) {
+                  skipped++;
+                  continue;
+                }
+
+                console.log('#' + issue.number + ': "' + currentAssigneeInBody + '" → "' + newAssigneeValue + '"');
+
+                const newBody = body.replace(assigneeRegex, '$1' + newAssigneeValue);
+
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: newBody,
+                });
+
+                updated++;
+                // Avoid rate limiting
+                await new Promise(r => setTimeout(r, 300));
+              }
+
+              page++;
+            }
+
+            console.log('Done. Updated: ' + updated + ', Already in sync: ' + skipped + ', No field: ' + noField);
