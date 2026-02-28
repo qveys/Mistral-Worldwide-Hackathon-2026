@@ -1,9 +1,9 @@
 'use client';
 
+import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Brain, Send, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
 
 interface ClarificationBubbleProps {
     isVisible: boolean;
@@ -32,13 +32,21 @@ export function ClarificationBubble({
     };
 
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isVisible) {
+                onIgnore();
+            }
+        };
+
         if (isVisible) {
             resetTimer();
+            window.addEventListener('keydown', handleKeyDown);
         }
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
+            window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isVisible]);
+    }, [isVisible, onIgnore]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -91,11 +99,13 @@ export function ClarificationBubble({
                                             resetTimer();
                                         }}
                                         placeholder="Répondez ici pour affiner..."
+                                        aria-label="Votre réponse à la question de clarification"
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-4 pr-14 text-white focus:border-blue-500 focus:outline-none transition-all placeholder:text-slate-500 font-medium"
                                     />
                                     <button
                                         type="submit"
                                         disabled={!answer.trim()}
+                                        aria-label="Envoyer la réponse"
                                         className={cn(
                                             'absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl transition-all',
                                             answer.trim()
@@ -113,6 +123,7 @@ export function ClarificationBubble({
                                     </p>
                                     <button
                                         onClick={onIgnore}
+                                        aria-label="Ignorer la question de clarification"
                                         className="text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-1 group"
                                     >
                                         Ignorer

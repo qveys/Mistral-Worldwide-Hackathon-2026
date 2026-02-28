@@ -32,7 +32,7 @@ export function TranscriptionLiveView({
 
   return (
     <div className={cn(
-      "w-full min-h-[200px] transition-all duration-500",
+      "w-full min-h-[120px] transition-all duration-500",
       className
     )}>
       <AnimatePresence mode="wait">
@@ -43,10 +43,10 @@ export function TranscriptionLiveView({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             ref={scrollRef}
-            className="w-full min-h-[200px] p-6 rounded-3xl bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl overflow-y-auto flex flex-wrap gap-x-1 gap-y-2 content-start"
+            className="w-full min-h-[120px] p-4 rounded-2xl bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-xl overflow-y-auto flex flex-wrap gap-x-1 gap-y-1.5 content-start"
           >
             {words.length === 0 && (
-              <p className="text-slate-400 dark:text-slate-500 italic animate-pulse">
+              <p className="text-sm text-slate-400 dark:text-slate-500 italic animate-pulse">
                 Écoute en cours...
               </p>
             )}
@@ -57,7 +57,7 @@ export function TranscriptionLiveView({
                 initial={{ opacity: 0, y: 5, filter: 'blur(4px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="text-lg md:text-xl font-medium text-slate-800 dark:text-slate-100"
+                className="text-base md:text-lg font-medium text-slate-800 dark:text-slate-100"
               >
                 {word}
               </motion.span>
@@ -67,7 +67,7 @@ export function TranscriptionLiveView({
             <motion.span
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 0.8, repeat: Infinity }}
-              className="w-1.5 h-6 bg-blue-500 rounded-full self-center ml-1"
+              className="w-1 h-5 bg-blue-500 rounded-full self-center ml-1"
             />
           </motion.div>
         ) : (
@@ -83,7 +83,7 @@ export function TranscriptionLiveView({
               value={text}
               onChange={(e) => onTextChange(e.target.value)}
               placeholder={placeholder}
-              className="w-full min-h-[200px] p-6 rounded-3xl bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-inner focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none text-lg md:text-xl text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none transition-all"
+              className="w-full min-h-[120px] p-4 rounded-2xl bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-inner focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none text-base md:text-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none transition-all"
             />
           </motion.div>
         )}

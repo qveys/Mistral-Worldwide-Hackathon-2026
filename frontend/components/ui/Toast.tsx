@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, CheckCircle2, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -80,6 +80,7 @@ export function Toast({ message, type, isVisible, onClose, duration = 5000, acti
                   e.stopPropagation();
                   action.onClick();
                 }}
+                aria-label={action.label}
                 className={cn(
                   "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 border shrink-0",
                   type === 'error' ? "bg-red-500 text-white border-red-400 hover:bg-red-600" : "bg-slate-900 text-white border-slate-700 hover:bg-black"
@@ -91,6 +92,7 @@ export function Toast({ message, type, isVisible, onClose, duration = 5000, acti
 
             <button
               onClick={onClose}
+              aria-label="Fermer la notification"
               className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-slate-400 dark:text-slate-500 transition-colors shrink-0"
             >
               <X size={16} />

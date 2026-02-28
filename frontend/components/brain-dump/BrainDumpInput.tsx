@@ -128,6 +128,7 @@ export function BrainDumpInput({
                                 {isFallback && (
                                     <button
                                         onClick={retryMic}
+                                        aria-label="Réessayer la connexion au micro"
                                         className="text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 text-[10px] font-black uppercase tracking-tighter italic"
                                     >
                                         <RefreshCcw size={12} />
@@ -137,6 +138,7 @@ export function BrainDumpInput({
                                 {text && (
                                     <button
                                         onClick={clearText}
+                                        aria-label="Effacer le texte"
                                         className="text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] font-bold uppercase"
                                     >
                                         <Eraser size={12} />
@@ -180,6 +182,7 @@ export function BrainDumpInput({
                                         onChange={(e) => setManualText(e.target.value)}
                                         onFocus={() => setIsEditing(true)}
                                         placeholder=""
+                                        aria-label={isFallback ? "Saisie manuelle de votre idée" : "Saisie de votre idée"}
                                         className="w-full min-h-[140px] bg-transparent border-none focus:ring-0 text-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none py-1"
                                     />
 
@@ -269,6 +272,7 @@ export function BrainDumpInput({
                             <button
                                 onClick={handleGenerate}
                                 disabled={!text.trim() || micState === 'recording'}
+                                aria-label="Générer la roadmap"
                                 className={cn(
                                     'flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-base transition-all shadow-lg',
                                     text.trim() && micState !== 'recording'
