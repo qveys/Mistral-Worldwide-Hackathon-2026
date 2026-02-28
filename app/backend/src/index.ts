@@ -4,6 +4,8 @@ import express, { type Request, type Response } from 'express';
 import { createServer } from 'http';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
+import projectRouter from './routes/project.js';
+import { demoModeMiddleware } from './middleware/demoMode.js';
 import { VoxstralService } from './services/voxstral.js';
 
 dotenv.config();
@@ -13,6 +15,7 @@ const port = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use(demoModeMiddleware);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
@@ -22,6 +25,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes
 app.use('/api/structure', structureRouter);
 app.use('/api/revise', reviseRouter);
+app.use('/api/project', projectRouter);
 
 // Create HTTP server and integrate Voxstral WebSocket service
 const server = createServer(app);
@@ -44,5 +48,6 @@ server.listen(port, () => {
   console.log(`- GET /health`);
   console.log(`- POST /api/structure`);
   console.log(`- POST /api/revise`);
+  console.log(`- GET /api/project/:id`);
   console.log(`- WS / (Voxstral WebSocket)`);
 });

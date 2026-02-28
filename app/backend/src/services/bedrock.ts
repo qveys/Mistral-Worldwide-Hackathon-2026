@@ -23,10 +23,28 @@ export class BedrockService {
     this.client = new BedrockRuntimeClient({ region: this.config.region });
   }
 
+  private async withRetry<T>(operation: () => Promise<T>, operationName: string, maxRetries = 2): Promise<T> {
+    let lastError: Error | undefined;
+    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+      try {
+        console.log(JSON.stringify({ level: "info", operation: operationName, attempt, maxRetries: maxRetries + 1 }));
+        return await operation();
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        console.log(JSON.stringify({ level: "warn", operation: operationName, attempt, error: lastError.message }));
+        if (attempt <= maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+    console.log(JSON.stringify({ level: "error", operation: operationName, message: "All retries failed" }));
+    throw lastError;
+  }
+
   async generateRoadmap(transcript: string, userId: string): Promise<any> {
-    try {
+    return this.withRetry(async () => {
       const prompt = this.buildRoadmapPrompt(transcript);
-      
+
       const input = {
         modelId: this.config.modelId,
         contentType: "application/json",
@@ -41,17 +59,14 @@ export class BedrockService {
 
       const command = new InvokeModelCommand(input);
       const response = await this.client.send(command);
-      
+
       if (response.body) {
         const responseBody = JSON.parse(new TextDecoder().decode(response.body));
         return this.validateRoadmapResponse(responseBody);
       }
-      
+
       throw new Error("Empty response from Bedrock");
-    } catch (error) {
-      console.error("Bedrock service error:", error);
-      throw error;
-    }
+    }, "generateRoadmap");
   }
 
   private buildRoadmapPrompt(transcript: string): string {
@@ -98,9 +113,9 @@ Return ONLY valid JSON in this exact schema:
   }
 
   async generateRevision(roadmapId: string, instructions: string): Promise<any> {
-    try {
+    return this.withRetry(async () => {
       const prompt = this.buildRevisionPrompt(roadmapId, instructions);
-      
+
       const input = {
         modelId: this.config.modelId,
         contentType: "application/json",
@@ -115,17 +130,14 @@ Return ONLY valid JSON in this exact schema:
 
       const command = new InvokeModelCommand(input);
       const response = await this.client.send(command);
-      
+
       if (response.body) {
         const responseBody = JSON.parse(new TextDecoder().decode(response.body));
         return this.validateRevisionResponse(responseBody);
       }
-      
+
       throw new Error("Empty response from Bedrock");
-    } catch (error) {
-      console.error("Bedrock revision error:", error);
-      throw error;
-    }
+    }, "generateRevision");
   }
 
   private buildRevisionPrompt(roadmapId: string, instructions: string): string {
