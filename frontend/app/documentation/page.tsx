@@ -4,16 +4,16 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Sparkles, Play, Moon, Sun, BookOpen, Home, AlertCircle, CheckCircle2, AlertTriangle, Bug } from 'lucide-react';
 import { MicButton, MicButtonState } from '@/components/ui/MicButton';
-import { TranscriptionLiveView } from '@/components/ui/TranscriptionLiveView';
+import { TranscriptionLiveView } from '@/components/brain-dump/TranscriptionLiveView';
 import { LoadingOrchestrator } from '@/components/ui/LoadingOrchestrator';
 import { RoadmapCanvas, RoadmapItem } from '@/components/roadmap/RoadmapCanvas';
 import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput';
 import { ExportButton } from '@/components/ui/ExportButton';
-import { BrainDumpInput } from '@/components/BrainDumpInput';
-import { ActionItemsList } from '@/components/ActionItemsList';
-import { Task, TaskStatus } from '@/components/TaskCard';
-import { Toast, ToastType } from '@/components/Toast';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
+import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
+import { Task, TaskStatus } from '@/components/ui/TaskCard';
+import { Toast, ToastType } from '@/components/ui/Toast';
+import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { cn } from '@/lib/utils';
 
 // Composant qui crash pour tester l'ErrorBoundary
@@ -241,9 +241,9 @@ export default function DocumentationPage() {
                     />
                     <TranscriptionLiveView 
                       text="Ceci est une prévisualisation de la transcription qui s'anime mot par mot." 
-                      isStreaming={micState === 'recording'}
-                    />
-                  </div>
+                      isRecording={micState === 'recording'}
+                      onTextChange={(val) => console.log(val)}
+                    />                  </div>
                 </div>
 
                 <div className="space-y-4">

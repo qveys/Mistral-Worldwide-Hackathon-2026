@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Task, TaskCard, TaskStatus } from './TaskCard';
+import { Task, TaskCard, TaskStatus } from '../ui/TaskCard';
 import { ListTodo, Filter } from 'lucide-react';
 
 interface ActionItemsListProps {

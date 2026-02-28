@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Send, Eraser } from 'lucide-react';
+import { Send, Eraser } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MicButton, MicButtonState } from './ui/MicButton';
-import { TranscriptionLiveView } from './ui/TranscriptionLiveView';
+import { MicButton, MicButtonState } from '../ui/MicButton';
+import { TranscriptionLiveView } from './TranscriptionLiveView';
 
 interface BrainDumpInputProps {
   onGenerate: (text: string) => void;
@@ -16,25 +16,14 @@ interface BrainDumpInputProps {
 export function BrainDumpInput({ onGenerate, isProcessing = false, className }: BrainDumpInputProps) {
   const [text, setText] = useState("");
   const [micState, setMicState] = useState<MicButtonState>('idle');
-  const [isEditing, setIsEditing] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (micState === 'recording') {
-      setIsEditing(false);
-    }
-    return () => clearInterval(interval);
-  }, [micState]);
 
   const handleMicClick = () => {
     if (micState === 'idle') {
       setMicState('recording');
     } else if (micState === 'recording') {
       setMicState('idle');
-      setIsEditing(true);
     }
   };
 
@@ -46,7 +35,6 @@ export function BrainDumpInput({ onGenerate, isProcessing = false, className }: 
 
   const clearText = () => {
     setText("");
-    setIsEditing(false);
   };
 
   return (
@@ -77,43 +65,13 @@ export function BrainDumpInput({ onGenerate, isProcessing = false, className }: 
               )}
             </div>
 
-            {/* Main Input Zone */}
-            <div className="relative min-h-[140px] mb-4">
-              {micState === 'recording' ? (
-                <TranscriptionLiveView text={text} isStreaming={true} className="bg-transparent shadow-none border-none p-0 min-h-[140px]" />
-              ) : (
-                <div className="relative group">
-                  <textarea
-                    ref={textareaRef}
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onFocus={() => setIsEditing(true)}
-                    placeholder=""
-                    className="w-full min-h-[140px] bg-transparent border-none focus:ring-0 text-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none py-1"
-                  />
-                  
-                  <AnimatePresence>
-                    {!text && !isEditing && (
-                      <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-center space-y-3"
-                      >
-                        <motion.p 
-                          animate={{ opacity: [0.4, 0.7, 0.4] }}
-                          transition={{ duration: 3, repeat: Infinity }}
-                          className="text-xl font-medium text-slate-400 dark:text-slate-600"
-                        >
-                          Parlez ou écrivez ici...
-                        </motion.p>
-                        <Sparkles className="text-blue-300 dark:text-blue-900/50 animate-bounce" size={24} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
+            {/* Unified Transcription/Input Zone */}
+            <TranscriptionLiveView 
+              text={text}
+              isRecording={micState === 'recording'}
+              onTextChange={setText}
+              className="mb-4"
+            />
 
             {/* Bottom Controls */}
             <div className="flex items-center justify-between border-t border-white/20 dark:border-white/5 pt-4">
