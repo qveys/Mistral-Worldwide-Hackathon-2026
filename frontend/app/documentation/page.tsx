@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { cn } from '@/lib/utils';
-import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download } from 'lucide-react';
+import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download, AlertOctagon } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,6 +40,7 @@ export default function DocumentationPage() {
     const [shouldCrash, setShouldCrash] = useState(false);
     const [isDemoBlocked, setIsDemoBlocked] = useState(true);
     const [isBubbleVisible, setIsBubbleVisible] = useState(false);
+    const [simulateSTTError, setSimulateSTTError] = useState(false);
     const lastPromptRef = useRef<string>('');
 
     // Mock Roadmap Data
@@ -358,24 +359,36 @@ export default function DocumentationPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-4 text-left">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Voice & Transcription
+                                        Brain Dump Fallback
                                     </h3>
-                                    <div className="bg-white/10 dark:bg-black/20 p-8 rounded-[2.5rem] border border-white/20 space-y-6 flex flex-col items-center">
-                                        <MicButton
-                                            state={micState}
-                                            onClick={() =>
-                                                setMicState(
-                                                    micState === 'idle' ? 'recording' : 'idle',
-                                                )
-                                            }
-                                        />
-                                        <TranscriptionLiveView
-                                            text="Ceci est une prévisualisation de la transcription qui s'anime mot par mot."
-                                            isRecording={micState === 'recording'}
-                                            onTextChange={(val) => console.log(val)}
-                                        />
+                                    <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Composant Interactif</p>
+                                            <button 
+                                                onClick={() => setSimulateSTTError(!simulateSTTError)}
+                                                className={cn(
+                                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all flex items-center gap-2",
+                                                    simulateSTTError ? "bg-amber-500 text-white" : "bg-slate-800 text-slate-400 hover:text-white"
+                                                )}
+                                            >
+                                                <AlertOctagon size={12} />
+                                                {simulateSTTError ? "Mode Fallback Actif" : "Simuler Timeout Micro"}
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="relative">
+                                            {/* Note: In a real app, the BrainDumpInput would receive an external error signal or handle it internally. 
+                                                Here we show how it looks when the internal fallback is triggered. */}
+                                            <BrainDumpInput onGenerate={() => {}} />
+                                            {simulateSTTError && (
+                                                <div className="absolute inset-0 pointer-events-none border-2 border-amber-500/20 rounded-3xl" />
+                                            )}
+                                        </div>
+                                        <p className="text-[10px] text-slate-500 italic">
+                                            * En conditions réelles, le mode manuel s&apos;active si le micro met plus de 5s à répondre.
+                                        </p>
                                     </div>
                                 </div>
 
