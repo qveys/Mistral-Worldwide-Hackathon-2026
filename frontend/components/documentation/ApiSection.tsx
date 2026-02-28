@@ -63,12 +63,12 @@ const roadmap = await echomaps.brainDump.generate({
   options: { includeGraph: true }
 });`}
         </pre>
-        <Zap className="absolute -right-8 -bottom-8 text-white/5 group-hover:text-orange-500/10 transition-colors" size={240} />
+        <Zap className="absolute -right-8 -bottom-8 text-white/5 group-hover:text-blue-500/10 transition-colors" size={240} />
       </div>
 
       <div className="grid grid-cols-1 gap-4">
         {endpoints.map((ep, i) => (
-          <Card key={i} className="p-6 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl hover:border-orange-500/30 transition-all group">
+          <Card key={i} className="p-6 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl hover:border-blue-500/30 transition-all group">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <span className={cn(
@@ -97,8 +97,8 @@ const roadmap = await echomaps.brainDump.generate({
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="p-8 bg-indigo-50 dark:bg-slate-800 rounded-[2.5rem] border-2 border-indigo-200 dark:border-slate-600 shadow-lg dark:shadow-xl space-y-4">
-        <div className="h-12 w-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-lg">
+      <div className="p-8 bg-blue-50 dark:bg-slate-800 rounded-[2.5rem] border-2 border-blue-200 dark:border-slate-600 shadow-lg dark:shadow-xl space-y-4">
+        <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
           <Globe size={24} />
         </div>
         <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">Webhooks</h4>

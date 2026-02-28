@@ -30,7 +30,7 @@ export const CaptureSection = ({
       {/* Compact Voice Showcase */}
       <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[2.5rem] p-8 flex items-center gap-10 shadow-lg dark:shadow-xl">
         <div className="flex-shrink-0 flex flex-col items-center gap-3 pr-10 border-r-2 border-slate-200 dark:border-slate-600">
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#ff4f00] italic">Live Mic</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400 italic">Live Mic</span>
           <MicButton state={micState} onClick={() => setMicState(micState === 'idle' ? 'recording' : 'idle')} />
         </div>
         <div className="flex-1">

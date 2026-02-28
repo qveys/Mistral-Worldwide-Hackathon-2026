@@ -13,7 +13,7 @@ export const FoundationSection = () => (
     
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[2.5rem] p-8 space-y-8 shadow-lg dark:shadow-xl">
-        <div className="flex items-center gap-2 text-[#ff4f00]"><MousePointer2 size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Atomes UI</span></div>
+        <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400"><MousePointer2 size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Atomes UI</span></div>
         <div className="flex flex-wrap gap-4">
           <Button variant="primary">Principal</Button>
           <Button variant="secondary">Secondaire</Button>
@@ -24,11 +24,11 @@ export const FoundationSection = () => (
           <Badge variant="priority" type="high">Urgent</Badge>
           <Badge variant="status" type="doing">In Progress</Badge>
           <Badge variant="estimate">Size: M</Badge>
-          <Spinner size="md" className="text-[#ff4f00] ml-2" />
+          <Spinner size="md" className="text-blue-600 dark:text-blue-400 ml-2" />
         </div>
       </div>
       <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[2.5rem] p-8 space-y-6 shadow-lg dark:shadow-xl">
-        <div className="flex items-center gap-2 text-indigo-500"><Command size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Formulaire</span></div>
+        <div className="flex items-center gap-2 text-blue-500"><Command size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Formulaire</span></div>
         <Input label="Roadmap Name" placeholder="Ex: Launch Project" />
         <Input label="Email" placeholder="user@echo.maps" error="Email invalide" />
       </div>

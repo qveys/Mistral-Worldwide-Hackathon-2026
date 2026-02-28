@@ -24,7 +24,7 @@ export const SystemSection = ({
     
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
       <div className="md:col-span-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[2.5rem] p-8 shadow-lg dark:shadow-xl">
-        <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4f00] mb-6 block">Latency Orchestrator</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-6 block">Latency Orchestrator</span>
         <LoadingOrchestrator className="max-w-none" onCancel={() => showToast("Annulé", "error")} />
       </div>
       <div className="md:col-span-4 space-y-6">

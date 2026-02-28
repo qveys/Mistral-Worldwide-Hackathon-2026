@@ -37,7 +37,7 @@ export const LivePreviewSection = () => {
         
         {/* BUTTONS GALLERY */}
         <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl">
-          <div className="flex items-center gap-2 text-orange-500 mb-2">
+          <div className="flex items-center gap-2 text-blue-500 mb-2">
             <Play size={16} />
             <span className="text-[10px] font-black uppercase tracking-widest italic">Interactions</span>
           </div>
@@ -49,17 +49,17 @@ export const LivePreviewSection = () => {
               </Button>
               <Button variant="secondary">Action Secondaire</Button>
               <Button variant="danger">Zone Critique</Button>
-              <Button variant="primary" className="bg-indigo-600 hover:bg-indigo-700">Custom Brand</Button>
+              <Button variant="primary" className="bg-blue-600 hover:bg-blue-700">Custom Brand</Button>
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all group">
+              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-blue-600 hover:text-white transition-all group">
                 <Settings size={18} className="group-hover:rotate-90 transition-transform duration-500" />
               </button>
-              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all">
+              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                 <Bell size={18} />
               </button>
-              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all">
+              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                 <User size={18} />
               </button>
               <div className="h-10 w-px bg-slate-200 dark:bg-white/10 mx-2" />
@@ -115,7 +115,7 @@ export const LivePreviewSection = () => {
 
         {/* INPUTS & SEARCH */}
         <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl lg:col-span-2">
-          <div className="flex items-center gap-2 text-purple-500 mb-2">
+          <div className="flex items-center gap-2 text-blue-500 mb-2">
             <Search size={16} />
             <span className="text-[10px] font-black uppercase tracking-widest italic">Saisie de données</span>
           </div>
@@ -146,7 +146,7 @@ export const LivePreviewSection = () => {
                 <span className="text-[9px] font-black uppercase text-slate-400 block mb-3">Sélection Rapide</span>
                 <div className="flex gap-2">
                   {['Web', 'Mobile', 'API'].map(t => (
-                    <button key={t} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-orange-500 transition-colors">
+                    <button key={t} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-blue-500 transition-colors">
                       {t}
                     </button>
                   ))}
@@ -155,9 +155,9 @@ export const LivePreviewSection = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-orange-500/5 rounded-2xl border border-orange-500/10">
+              <div className="flex items-center justify-between p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                 <div className="flex items-center gap-3">
-                  <Spinner size="sm" className="text-orange-500" />
+                  <Spinner size="sm" className="text-blue-500" />
                   <span className="text-[10px] font-black uppercase italic dark:text-white">Traitement...</span>
                 </div>
                 <Badge variant="status" type="doing">Active</Badge>

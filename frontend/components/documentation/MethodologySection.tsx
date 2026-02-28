@@ -9,8 +9,8 @@ const steps = [
     icon: Mic,
     title: "Capture & STT",
     description: "La voix de l'utilisateur est capturée en temps réel via Web Audio API et transformée en texte brut via l'API Mistral (Voxtral).",
-    color: "text-orange-500",
-    bg: "bg-orange-500/10"
+    color: "text-blue-500",
+    bg: "bg-blue-500/10"
   },
   {
     icon: Brain,
@@ -23,8 +23,8 @@ const steps = [
     icon: Network,
     title: "Graphe de Dépendances",
     description: "Les tâches sont liées logiquement pour former un graphe acyclique dirigé (DAG), identifiant les goulots d'étranglement.",
-    color: "text-indigo-500",
-    bg: "bg-indigo-500/10"
+    color: "text-blue-500",
+    bg: "bg-blue-500/10"
   },
   {
     icon: Layout,
@@ -63,7 +63,7 @@ export const MethodologySection = () => (
           <p className="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
             {step.description}
           </p>
-          <div className="mt-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#ff4f00] opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="mt-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
             Détails techniques <ArrowRight size={12} />
           </div>
           <div className="absolute top-0 right-0 p-8 text-8xl font-black italic text-slate-100 dark:text-white/5 -z-10 group-hover:-translate-y-2 transition-transform">
@@ -74,7 +74,7 @@ export const MethodologySection = () => (
     </div>
 
     {/* Philosophy Box */}
-    <div className="bg-[#ff4f00] rounded-[3rem] p-12 text-white shadow-2xl shadow-orange-500/20 relative overflow-hidden">
+    <div className="bg-blue-600 rounded-[3rem] p-12 text-white shadow-2xl shadow-blue-500/20 relative overflow-hidden">
       <div className="relative z-10 space-y-4 max-w-2xl">
         <h3 className="text-3xl font-black uppercase tracking-tighter italic leading-tight">La Philosophie EchoMaps</h3>
         <p className="text-lg font-medium opacity-90 leading-relaxed">

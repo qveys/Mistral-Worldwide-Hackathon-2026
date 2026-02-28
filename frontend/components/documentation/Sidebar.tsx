@@ -15,7 +15,7 @@ interface SidebarProps {
 const navButtonBase =
   'w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left group overflow-hidden';
 const navButtonActive =
-  'bg-[#ff4f00] text-white shadow-xl shadow-orange-500/20 scale-[1.02]';
+  'bg-blue-600 text-white shadow-xl shadow-blue-500/20 scale-[1.02]';
 const navButtonInactive =
   'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300';
 
@@ -45,7 +45,7 @@ function NavItemButton({
         size={18}
         className={cn(
           isCollapsed ? "" : "mt-0.5",
-          isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-[#ff4f00]'
+          isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
         )}
       />
       {!isCollapsed && (
@@ -56,7 +56,7 @@ function NavItemButton({
           <span
             className={cn(
               'text-[9px] font-medium opacity-70 leading-none mt-1',
-              isActive ? 'text-orange-100' : 'text-slate-500 dark:text-slate-400'
+              isActive ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'
             )}
           >
             {item.desc}
@@ -83,7 +83,7 @@ export const Sidebar = ({
     )}>
       <div className={cn("flex items-center gap-3 px-2", isCollapsed ? "justify-center" : "justify-between")}>
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex-shrink-0 h-8 w-8 bg-[#ff4f00] rounded-lg flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+          <div className="flex-shrink-0 h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
             <Box size={18} />
           </div>
           {!isCollapsed && (
@@ -135,7 +135,7 @@ export const Sidebar = ({
             isCollapsed && "justify-center px-0"
           )}
         >
-          <Home size={18} className="flex-shrink-0 group-hover:text-[#ff4f00]" />
+          <Home size={18} className="flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
           {!isCollapsed && (
             <span className="text-xs font-bold uppercase tracking-widest whitespace-nowrap">
               Retour Accueil

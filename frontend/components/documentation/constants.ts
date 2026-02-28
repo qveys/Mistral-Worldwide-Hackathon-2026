@@ -42,7 +42,7 @@ export const MOCK_ROADMAP: Roadmap = {
   title: 'EchoMaps Launch Plan',
   objectives: [
     { id: 'obj-1', title: 'Core Infrastructure', color: 'blue' },
-    { id: 'obj-2', title: 'Product Launch', color: 'orange' }
+    { id: 'obj-2', title: 'Product Launch', color: 'blue' }
   ],
   timeSlots: [
     {
