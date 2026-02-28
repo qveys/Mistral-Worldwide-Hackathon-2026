@@ -1,7 +1,7 @@
-import { Layers, Brain, Network, Zap, Eye, Server, CircuitBoard } from 'lucide-react';
-import type { Roadmap } from '@/components/roadmap/RoadmapCanvas';
+import { Layers, Brain, Network, Zap, Eye, Terminal, Microscope } from 'lucide-react';
+import { Roadmap } from '@/components/roadmap/RoadmapCanvas';
 
-export type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system' | 'live-preview' | 'roadmap' | 'backend';
+export type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system' | 'live-preview' | 'api' | 'methodology';
 
 export interface NavItem {
   id: DocCategory;
@@ -17,13 +17,13 @@ export const NAV_ITEMS_COMPONENTS: NavItem[] = [
   { id: 'system', label: 'Infrastructure', icon: Zap, desc: 'Feedback & Résilience' },
 ];
 
-export const NAV_ITEMS_LIVE_PREVIEW: NavItem[] = [
-  { id: 'live-preview', label: 'Live Preview', icon: Eye, desc: 'Demonstration des composants' },
-  { id: 'roadmap', label: 'Roadmap', icon: CircuitBoard, desc: 'Demonstration de la roadmap' },
+export const NAV_ITEMS_DOCS: NavItem[] = [
+  { id: 'methodology', label: 'Méthodologie', icon: Microscope, desc: 'Processus & IA' },
+  { id: 'api', label: 'API Reference', icon: Terminal, desc: 'Endpoints & Webhooks' },
 ];
 
-export const NAV_ITEMS_BACKEND: NavItem[] = [
-  { id: 'backend', label: 'Backend', icon: Server, desc: 'Documentation du backend' },
+export const NAV_ITEMS_LIVE_PREVIEW: NavItem[] = [
+  { id: 'live-preview', label: 'Live Preview', icon: Eye, desc: 'Galerie interactive' },
 ];
 
 export interface NavSection {
@@ -31,11 +31,10 @@ export interface NavSection {
   items: NavItem[];
 }
 
-/** Single source of truth for sidebar sections — add/remove here only */
 export const NAV_SECTIONS: NavSection[] = [
   { title: 'Composants', items: NAV_ITEMS_COMPONENTS },
-  { title: 'Live Preview', items: NAV_ITEMS_LIVE_PREVIEW },
-  { title: 'Backend', items: NAV_ITEMS_BACKEND },
+  { title: 'Documentation', items: NAV_ITEMS_DOCS },
+  { title: 'Lab', items: NAV_ITEMS_LIVE_PREVIEW },
 ];
 
 export const MOCK_ROADMAP: Roadmap = {

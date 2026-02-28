@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 // Components
@@ -16,9 +17,12 @@ import { CaptureSection } from '@/components/documentation/CaptureSection';
 import { StrategySection } from '@/components/documentation/StrategySection';
 import { SystemSection } from '@/components/documentation/SystemSection';
 import { LivePreviewSection } from '@/components/documentation/LivePreviewSection';
+import { MethodologySection } from '@/components/documentation/MethodologySection';
+import { ApiSection } from '@/components/documentation/ApiSection';
 import { DocCategory, MOCK_ROADMAP } from '@/components/documentation/constants';
 
-export default function DocumentationPage() {
+function DocumentationContent() {
+  const searchParams = useSearchParams();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeCategory, setActiveCategory] = useState<DocCategory>('foundation');
   const [roadmapViewMode, setRoadmapViewMode] = useState<'timeline' | 'graph'>('timeline');
@@ -32,6 +36,13 @@ export default function DocumentationPage() {
   });
 
   const showToast = (message: string, type: ToastType) => setToast({ isVisible: true, message, type });
+
+  useEffect(() => {
+    const category = searchParams.get('category') as DocCategory;
+    if (category) {
+      setActiveCategory(category);
+    }
+  }, [searchParams]);
 
   const tasks = useMemo(() => MOCK_ROADMAP.timeSlots.flatMap(slot => slot.tasks), []);
 
@@ -91,9 +102,19 @@ export default function DocumentationPage() {
             )}
 
             {activeCategory === 'live-preview' && <LivePreviewSection />}
+            {activeCategory === 'methodology' && <MethodologySection />}
+            {activeCategory === 'api' && <ApiSection />}
           </AnimatePresence>
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DocumentationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#fafafa] flex items-center justify-center font-black uppercase italic tracking-tighter text-4xl">Chargement...</div>}>
+      <DocumentationContent />
+    </Suspense>
   );
 }
