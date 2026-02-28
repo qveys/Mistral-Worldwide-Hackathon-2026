@@ -6,6 +6,7 @@ import { ClarificationBubble } from '@/components/brain-dump/ClarificationBubble
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
 import { RoadmapCanvas, Roadmap, RoadmapTimeSlot, RoadmapObjective, RoadmapTask } from '@/components/roadmap/RoadmapCanvas';
+import { DependencyGraph } from '@/components/roadmap/DependencyGraph';
 import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput';
 import { ReviseInput } from '@/components/roadmap/ReviseInput';
 import { ExportButton } from '@/components/ui/ExportButton';
@@ -20,7 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { cn } from '@/lib/utils';
-import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download, AlertOctagon } from 'lucide-react';
+import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download, AlertOctagon, Share2, Network } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +35,7 @@ function CrashingComponent() {
 export default function DocumentationPage() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [view, setView] = useState<'flow' | 'catalog'>('flow');
+    const [roadmapViewMode, setRoadmapViewMode] = useState<'timeline' | 'graph'>('timeline');
     const [isLoading, setIsLoading] = useState(false);
     const [showRoadmap, setShowRoadmap] = useState(false);
     const [micState, setMicState] = useState<MicButtonState>('idle');
@@ -43,7 +45,7 @@ export default function DocumentationPage() {
     const [simulateSTTError, setSimulateSTTError] = useState(false);
     const lastPromptRef = useRef<string>('');
 
-    // Mock Roadmap Data
+    // Mock Roadmap Data with Dependencies
     const mockRoadmap: Roadmap = {
       id: 'demo-roadmap',
       title: 'EchoMaps Launch Plan',
@@ -57,26 +59,29 @@ export default function DocumentationPage() {
           period: 'AM',
           tasks: [
             { id: 'rt-1', title: 'Setup Cloud Infrastructure', status: 'done', priority: 'high', estimate: 'L', objectiveId: 'obj-1' },
-            { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1' }
+            { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-1'] }
           ]
         },
         {
           day: 1,
           period: 'PM',
           tasks: [
-            { id: 'rt-3', title: 'Authentication Service', status: 'backlog', priority: 'high', estimate: 'M', objectiveId: 'obj-1' },
-            { id: 'rt-4', title: 'Landing Page Prototype', status: 'backlog', priority: 'medium', estimate: 'S', objectiveId: 'obj-2' }
+            { id: 'rt-3', title: 'Authentication Service', status: 'backlog', priority: 'high', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-2'] },
+            { id: 'rt-4', title: 'Landing Page Prototype', status: 'backlog', priority: 'medium', estimate: 'S', objectiveId: 'obj-2', dependencies: ['rt-2'] }
           ]
         },
         {
           day: 2,
           period: 'AM',
           tasks: [
-            { id: 'rt-5', title: 'Beta Testing Group Setup', status: 'backlog', priority: 'low', estimate: 'S', objectiveId: 'obj-2', isBlocked: true, blockedBy: ['Landing Page Prototype'] }
+            { id: 'rt-5', title: 'Beta Testing Group Setup', status: 'backlog', priority: 'low', estimate: 'S', objectiveId: 'obj-2', isBlocked: true, blockedBy: ['Landing Page Prototype'], dependencies: ['rt-4'] }
           ]
         }
       ]
     };
+
+    // Flat list of tasks for graph and other views
+    const allTasks: Task[] = mockRoadmap.timeSlots.flatMap(slot => slot.tasks);
 
     // Toast State
     const [toast, setToast] = useState<{
@@ -90,29 +95,7 @@ export default function DocumentationPage() {
         type: 'success',
     });
 
-    const [tasks, setTasks] = useState<Task[]>([
-        {
-            id: '1',
-            title: "Définir l'architecture backend",
-            priority: 'high',
-            status: 'doing',
-            estimate: 'M',
-        },
-        {
-            id: '2',
-            title: 'Choisir la stack frontend',
-            priority: 'medium',
-            status: 'done',
-            estimate: 'S',
-        },
-        {
-            id: '3',
-            title: 'Mise en place du CI/CD',
-            priority: 'low',
-            status: 'backlog',
-            estimate: 'L',
-        }
-    ]);
+    const [tasks, setTasks] = useState<Task[]>(allTasks);
 
     const showToast = (
         message: string,
@@ -266,9 +249,34 @@ export default function DocumentationPage() {
                         {showRoadmap && !isLoading && (
                             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
                                 <div className="flex justify-between items-end px-4">
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white uppercase tracking-tighter italic">
-                                        Votre Roadmap
-                                    </h2>
+                                    <div className="space-y-4">
+                                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white uppercase tracking-tighter italic">
+                                            Votre Roadmap
+                                        </h2>
+                                        {/* Toggle View Mode */}
+                                        <div className="flex bg-white/40 dark:bg-black/40 p-1 rounded-xl border border-white/20 w-fit">
+                                            <button 
+                                                onClick={() => setRoadmapViewMode('timeline')}
+                                                className={cn(
+                                                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all",
+                                                    roadmapViewMode === 'timeline' ? "bg-white dark:bg-slate-800 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"
+                                                )}
+                                            >
+                                                <Layout size={14} />
+                                                Timeline
+                                            </button>
+                                            <button 
+                                                onClick={() => setRoadmapViewMode('graph')}
+                                                className={cn(
+                                                    "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase transition-all",
+                                                    roadmapViewMode === 'graph' ? "bg-white dark:bg-slate-800 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700"
+                                                )}
+                                            >
+                                                <Network size={14} />
+                                                Graphe
+                                            </button>
+                                        </div>
+                                    </div>
                                     <ExportButton
                                         markdown="# Roadmap\n\n- Phase 1: MVP"
                                         data={{ title: 'Roadmap', phases: ['MVP'] }}
@@ -279,7 +287,27 @@ export default function DocumentationPage() {
                                     {shouldCrash ? (
                                         <CrashingComponent />
                                     ) : (
-                                        <RoadmapCanvas roadmap={mockRoadmap} onTaskStatusChange={(id, status) => showToast(`Task ${id} to ${status}`, 'success')} />
+                                        <AnimatePresence mode="wait">
+                                            {roadmapViewMode === 'timeline' ? (
+                                                <motion.div
+                                                    key="timeline"
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: 20 }}
+                                                >
+                                                    <RoadmapCanvas roadmap={mockRoadmap} onTaskStatusChange={handleStatusChange} />
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="graph"
+                                                    initial={{ opacity: 0, x: 20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -20 }}
+                                                >
+                                                    <DependencyGraph tasks={tasks} onStatusChange={handleStatusChange} />
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     )}
                                 </ErrorBoundary>
 
@@ -379,8 +407,6 @@ export default function DocumentationPage() {
                                         </div>
                                         
                                         <div className="relative">
-                                            {/* Note: In a real app, the BrainDumpInput would receive an external error signal or handle it internally. 
-                                                Here we show how it looks when the internal fallback is triggered. */}
                                             <BrainDumpInput onGenerate={() => {}} />
                                             {simulateSTTError && (
                                                 <div className="absolute inset-0 pointer-events-none border-2 border-amber-500/20 rounded-3xl" />
@@ -439,17 +465,25 @@ export default function DocumentationPage() {
                             <div className="space-y-12 text-left">
                                 <div className="space-y-4">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Dependency Visualization
+                                    </h3>
+                                    <div className="bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 overflow-hidden shadow-2xl">
+                                        <div className="p-4 border-b border-white/10 flex items-center gap-2 bg-white/5">
+                                            <Network size={16} className="text-blue-500" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Graphe de dépendances (React Flow)</span>
+                                        </div>
+                                        <DependencyGraph tasks={tasks} className="h-[400px] border-none rounded-none" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Objective Molecule
                                     </h3>
                                     <ObjectiveCard 
                                         title="Lancer le MVP"
                                         priority="high"
-                                        tasks={[
-                                            { id: 't1', title: "Setup Database", status: 'done', priority: 'high', estimate: 'M' },
-                                            { id: 't2', title: "Auth Integration", status: 'doing', priority: 'high', estimate: 'L' },
-                                            { id: 't3', title: "Landing Page", status: 'backlog', priority: 'medium', estimate: 'S' },
-                                            { id: 't4', title: "Deploy to Prod", status: 'backlog', priority: 'high', estimate: 'M' },
-                                        ]}
+                                        tasks={tasks}
                                     />
                                 </div>
 
@@ -524,16 +558,6 @@ export default function DocumentationPage() {
                                             Test Error + Retry
                                         </button>
                                     </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Action List (Grouped)
-                                    </h3>
-                                    <ActionItemsList
-                                        tasks={tasks}
-                                        onStatusChange={handleStatusChange}
-                                    />
                                 </div>
 
                                 <div className="space-y-4 text-left">
