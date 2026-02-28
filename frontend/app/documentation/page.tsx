@@ -5,8 +5,9 @@ import { TranscriptionLiveView } from '@/components/brain-dump/TranscriptionLive
 import { ClarificationBubble } from '@/components/brain-dump/ClarificationBubble';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
-import { RoadmapCanvas, RoadmapItem } from '@/components/roadmap/RoadmapCanvas';
+import { RoadmapCanvas, Roadmap, RoadmapTimeSlot, RoadmapObjective, RoadmapTask } from '@/components/roadmap/RoadmapCanvas';
 import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput';
+import { ReviseInput } from '@/components/roadmap/ReviseInput';
 import { ExportButton } from '@/components/ui/ExportButton';
 import { LoadingOrchestrator } from '@/components/ui/LoadingOrchestrator';
 import { MicButton, MicButtonState } from '@/components/ui/MicButton';
@@ -19,7 +20,7 @@ import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { cn } from '@/lib/utils';
-import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain } from 'lucide-react';
+import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain, Layout, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,6 +41,41 @@ export default function DocumentationPage() {
     const [isDemoBlocked, setIsDemoBlocked] = useState(true);
     const [isBubbleVisible, setIsBubbleVisible] = useState(false);
     const lastPromptRef = useRef<string>('');
+
+    // Mock Roadmap Data
+    const mockRoadmap: Roadmap = {
+      id: 'demo-roadmap',
+      title: 'EchoMaps Launch Plan',
+      objectives: [
+        { id: 'obj-1', title: 'Core Infrastructure', color: 'blue' },
+        { id: 'obj-2', title: 'Product Launch', color: 'orange' }
+      ],
+      timeSlots: [
+        {
+          day: 1,
+          period: 'AM',
+          tasks: [
+            { id: 'rt-1', title: 'Setup Cloud Infrastructure', status: 'done', priority: 'high', estimate: 'L', objectiveId: 'obj-1' },
+            { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1' }
+          ]
+        },
+        {
+          day: 1,
+          period: 'PM',
+          tasks: [
+            { id: 'rt-3', title: 'Authentication Service', status: 'backlog', priority: 'high', estimate: 'M', objectiveId: 'obj-1' },
+            { id: 'rt-4', title: 'Landing Page Prototype', status: 'backlog', priority: 'medium', estimate: 'S', objectiveId: 'obj-2' }
+          ]
+        },
+        {
+          day: 2,
+          period: 'AM',
+          tasks: [
+            { id: 'rt-5', title: 'Beta Testing Group Setup', status: 'backlog', priority: 'low', estimate: 'S', objectiveId: 'obj-2', isBlocked: true, blockedBy: ['Landing Page Prototype'] }
+          ]
+        }
+      ]
+    };
 
     // Toast State
     const [toast, setToast] = useState<{
@@ -242,26 +278,7 @@ export default function DocumentationPage() {
                                     {shouldCrash ? (
                                         <CrashingComponent />
                                     ) : (
-                                        <RoadmapCanvas title="Plan d'Exécution Stratégique">
-                                            <RoadmapItem
-                                                title="Phase 1: MVP"
-                                                description="Lancement de la version de base avec les fonctionnalités essentielles."
-                                                period="Mars - Avril"
-                                                status="done"
-                                            />
-                                            <RoadmapItem
-                                                title="Phase 2: Scale"
-                                                description="Optimisation des performances et montée en charge."
-                                                period="Mai - Juin"
-                                                status="in-progress"
-                                            />
-                                            <RoadmapItem
-                                                title="Phase 3: Global"
-                                                description="Déploiement international et nouvelles langues."
-                                                period="Juillet - Août"
-                                                status="todo"
-                                            />
-                                        </RoadmapCanvas>
+                                        <RoadmapCanvas roadmap={mockRoadmap} onTaskStatusChange={(id, status) => showToast(`Task ${id} to ${status}`, 'success')} />
                                     )}
                                 </ErrorBoundary>
 
@@ -275,10 +292,10 @@ export default function DocumentationPage() {
                                             <Sparkles size={24} className="text-blue-500" />
                                             Affiner la vision
                                         </h3>
-                                        <RoadmapRevisionInput
-                                            onUpdate={(rev) => {
+                                        <ReviseInput 
+                                            onRevise={(ins) => {
                                                 showToast('Demande de révision envoyée', 'success');
-                                                console.log('Revision requested:', rev);
+                                                console.log('Revision requested:', ins);
                                             }}
                                         />
                                     </div>
@@ -441,6 +458,30 @@ export default function DocumentationPage() {
                                     </div>
                                 </div>
 
+                                <div className="space-y-4 text-left">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Timeline Canvas
+                                    </h3>
+                                    <div className="p-6 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 h-[500px] overflow-hidden">
+                                        <RoadmapCanvas roadmap={mockRoadmap} className="h-full" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 text-left">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Roadmap Revision
+                                    </h3>
+                                    <div className="space-y-8">
+                                        <div className="space-y-2">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">Standard Revision Input</p>
+                                            <ReviseInput 
+                                                onRevise={(ins) => showToast(`Révision demandée : ${ins}`, "success")} 
+                                                isProcessing={isLoading}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="space-y-4">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Toasts & Retry Logic
@@ -520,20 +561,21 @@ export default function DocumentationPage() {
                                         Loading & Orchestration
                                     </h3>
                                     <LoadingOrchestrator
-                                        activeStep="roadmap"
+                                        onCancel={() => showToast("Opération annulée", "error")}
                                         className="max-w-none"
                                     />
                                 </div>
 
                                 <div className="space-y-4 text-left">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Export & Inputs
+                                        Export Actions
                                     </h3>
-                                    <div className="flex items-center gap-4 bg-white/10 p-4 rounded-3xl border border-white/20">
-                                        <ExportButton markdown="# Test" data={{}} />
-                                        <div className="flex-1">
-                                            <RoadmapRevisionInput onUpdate={() => {}} />
+                                    <div className="flex items-center gap-4 bg-white/10 p-6 rounded-[2rem] border border-white/20 shadow-xl">
+                                        <div className="flex-1 space-y-1">
+                                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Exporter les données</p>
+                                            <p className="text-[10px] text-slate-400">Markdown, JSON ou PDF</p>
                                         </div>
+                                        <ExportButton markdown="# Test" data={{}} />
                                     </div>
                                 </div>
                             </div>

@@ -62,9 +62,6 @@ export function TaskCard({
         scale: 1,
         filter: isBlocked ? 'grayscale(0.8)' : 'grayscale(0)'
       }}
-      whileHover={!isBlocked ? { scale: 1.01 } : {}}
-        scale: 1
-      }}
       whileHover={!isBlocked ? { scale: 1.02 } : {}}
       exit={{ opacity: 0, scale: 0.95 }}
       className={cn(
