@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "aws-solution-architect": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "computedHash": "6d18f2a008a9766859cf3fd771c56863a64071cbf50b3c99437640815572833c"
+    },
+    "backend-patterns": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "computedHash": "24d5803368c402ed5a72541dbbd0cb9975c56e574cdf4b45332f54991186301a"
+    },
+    "next-best-practices": {
+      "source": "vercel-labs/next-skills",
+      "sourceType": "github",
+      "computedHash": "515ba75178bd44875812d9a560bdf14651f86709f89cf1d4f209638e879807f3"
+    },
+    "prompt-engineering": {
+      "source": "inference-sh-9/skills",
+      "sourceType": "github",
+      "computedHash": "ed50e39c950e1a13646ae222e1ac44fac6939cf97efcde84ba29c7a1123f85e4"
+    },
+    "speech-to-text": {
+      "source": "elevenlabs/skills",
+      "sourceType": "github",
+      "computedHash": "31d6b1b47d294bb521834132ea19959bb8b1a0e2a9adc41d12ede18205d8ceab"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "computedHash": "e688fcd4c5693e14ebd00d48e982dbd2be060fbea89f5f60531e79c704a1bc28"
+    }
+  }
+}
