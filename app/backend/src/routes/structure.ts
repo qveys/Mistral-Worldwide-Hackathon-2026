@@ -1,9 +1,12 @@
 import { Router } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
+import { StorageService } from '../services/storage.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
+const storageService = new StorageService();
 
 // Request schema for structure endpoint
 const StructureRequestSchema = z.object({
@@ -52,8 +55,17 @@ router.post('/structure', async (req, res) => {
     
     // Validate response before sending
     const validatedResponse = StructureResponseSchema.parse(response);
-    
-    res.json(validatedResponse);
+
+    // Persist the project so it can be retrieved later via GET /api/project/:id
+    const projectId = uuidv4();
+    await storageService.saveProject({
+      id: projectId,
+      userId: validatedRequest.userId,
+      roadmap: validatedResponse.roadmap,
+      metadata: validatedResponse.metadata
+    });
+
+    res.json({ projectId, ...validatedResponse });
   } catch (error) {
     console.error('Structure endpoint error:', error);
     if (error instanceof z.ZodError) {
