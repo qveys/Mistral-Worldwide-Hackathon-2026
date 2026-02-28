@@ -1,0 +1,1 @@
+# Mistral-Worldwide-Hackathon-2026
