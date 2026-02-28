@@ -46,7 +46,6 @@ export function TaskCard({
   className 
 }: TaskCardProps) {
   const [showTooltip, setShowTooltip] = useState(false);
-
   const handleStatusClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isBlocked) return;
@@ -64,6 +63,9 @@ export function TaskCard({
         filter: isBlocked ? 'grayscale(0.8)' : 'grayscale(0)'
       }}
       whileHover={!isBlocked ? { scale: 1.01 } : {}}
+        scale: 1
+      }}
+      whileHover={!isBlocked ? { scale: 1.02 } : {}}
       exit={{ opacity: 0, scale: 0.95 }}
       className={cn(
         "group p-4 rounded-2xl bg-white/40 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm transition-all relative",
