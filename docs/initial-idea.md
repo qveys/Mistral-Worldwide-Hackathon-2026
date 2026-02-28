@@ -2,6 +2,7 @@
 
 nom de l'app : EchoMaps
 
+
 ## 📌 Pitch
 **Chaos to Clarity** prend un *brain dump* vocal ou textuel désorganisé et le transforme en une **roadmap structurée**, une **liste de tâches prioritaires et un planning clair** en temps réel.  
 Objectif : rendre productif immédiatement, avec interactivité, retour utilisateur et visualisation attractive.
@@ -55,9 +56,12 @@ Objectif : rendre productif immédiatement, avec interactivité, retour utilisat
 - Composants :
   - Enregistreur audio
   - Zone de texte avec l'audio retranscrit modifiable
+  - Sélecteur d' "Action Items" (To-Do List)
+  - Module de "Priorisation" (Matrice de décision)
   - Barres de progression gamifiées
   - Formulaires de révision interactive
   - Graphique d'activités (inspiration Github)
+  bouton d'Export / Intégration (Connectivité)
 
 ---
 
@@ -117,14 +121,12 @@ Endpoints :
 
 ---
 
-## 🏆 4) Optimisation pour gagner
-
-### ✅ Ce qui tape fort avec ce projet
-- **Input naturel** vocal ou texte désorganisé
-- **Output concret** → plan d’action
-- **Interactions bidirectionnelles**
-- **Visualisation attractive**
-- **Multi-modalité** (voix / texte / visual)
+## ✅ 4) Checklist
+   - [] frontend du site stylé et utilisable rapidement
+   - [] CRUD création de roadmap
+   - [] CRUD utilisateurs
+   - [] Appels à ElevenLabs AI pour le voice to text
+   - [] Génération de roadmap par Mistral AI hébergé via appel API
 
 ---
 
