@@ -44,10 +44,19 @@ function DocumentationContent() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    return () => document.documentElement.classList.remove('dark');
+  }, [isDarkMode]);
+
   const tasks = useMemo(() => MOCK_ROADMAP.timeSlots.flatMap(slot => slot.tasks), []);
 
   return (
-    <div className={cn('min-h-screen flex transition-colors duration-500', isDarkMode ? 'dark bg-[#0a0a0a]' : 'bg-[#fafafa]')}>
+    <div className={cn('min-h-screen flex transition-colors duration-500', isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100')}>
       <Toast 
         isVisible={toast.isVisible} 
         message={toast.message} 
@@ -69,7 +78,7 @@ function DocumentationContent() {
         onToggleTheme={() => setIsDarkMode(!isDarkMode)} 
       />
 
-      <main className="flex-1 p-12 overflow-y-auto">
+      <main className="flex-1 p-12 overflow-y-auto bg-slate-100 dark:bg-slate-950">
         <div className="max-w-5xl mx-auto">
           <AnimatePresence mode="wait">
             {activeCategory === 'foundation' && <FoundationSection />}
@@ -113,7 +122,7 @@ function DocumentationContent() {
 
 export default function DocumentationPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#fafafa] flex items-center justify-center font-black uppercase italic tracking-tighter text-4xl">Chargement...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-black uppercase italic tracking-tighter text-4xl text-slate-700">Chargement...</div>}>
       <DocumentationContent />
     </Suspense>
   );

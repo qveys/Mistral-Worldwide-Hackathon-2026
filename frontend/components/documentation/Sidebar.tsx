@@ -17,7 +17,7 @@ const navButtonBase =
 const navButtonActive =
   'bg-[#ff4f00] text-white shadow-xl shadow-orange-500/20 scale-[1.02]';
 const navButtonInactive =
-  'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400';
+  'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300';
 
 function NavItemButton({
   item,
@@ -45,7 +45,7 @@ function NavItemButton({
         size={18}
         className={cn(
           isCollapsed ? "" : "mt-0.5",
-          isActive ? 'text-white' : 'text-slate-400 dark:text-slate-600 group-hover:text-[#ff4f00]'
+          isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-[#ff4f00]'
         )}
       />
       {!isCollapsed && (
@@ -56,7 +56,7 @@ function NavItemButton({
           <span
             className={cn(
               'text-[9px] font-medium opacity-70 leading-none mt-1',
-              isActive ? 'text-orange-50' : 'text-slate-400'
+              isActive ? 'text-orange-100' : 'text-slate-500 dark:text-slate-400'
             )}
           >
             {item.desc}
@@ -78,7 +78,7 @@ export const Sidebar = ({
 
   return (
     <aside className={cn(
-      "h-screen sticky top-0 border-r border-slate-200 dark:border-white/5 bg-white/50 dark:bg-black/20 backdrop-blur-xl p-4 flex flex-col gap-8 z-20 transition-all duration-300 ease-in-out",
+      "h-screen sticky top-0 border-r-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-4 flex flex-col gap-8 z-20 transition-all duration-300 ease-in-out",
       isCollapsed ? "w-20" : "w-80"
     )}>
       <div className={cn("flex items-center gap-3 px-2", isCollapsed ? "justify-center" : "justify-between")}>
@@ -88,10 +88,10 @@ export const Sidebar = ({
           </div>
           {!isCollapsed && (
             <div className="whitespace-nowrap">
-              <h1 className="text-sm font-black uppercase tracking-tighter italic dark:text-white">
+              <h1 className="text-sm font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">
                 EchoMaps
               </h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase tracking-widest">
                 Documentation
               </p>
             </div>
@@ -100,7 +100,7 @@ export const Sidebar = ({
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
-          className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg text-slate-400 transition-colors"
+          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 transition-colors"
         >
           {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
         </button>
@@ -110,7 +110,7 @@ export const Sidebar = ({
         {NAV_SECTIONS.map((section) => (
           <nav key={section.title} className="space-y-1">
             {!isCollapsed && (
-              <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 whitespace-nowrap">
+              <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400 mb-2 whitespace-nowrap">
                 {section.title}
               </p>
             )}
@@ -127,11 +127,11 @@ export const Sidebar = ({
         ))}
       </div>
 
-      <div className="pt-6 border-t border-slate-200 dark:border-white/5 space-y-4 overflow-hidden">
+      <div className="pt-6 border-t-2 border-slate-300 dark:border-slate-600 space-y-4 overflow-hidden">
         <Link
           href="/"
           className={cn(
-            "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all text-slate-500 group overflow-hidden",
+            "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-300 group overflow-hidden",
             isCollapsed && "justify-center px-0"
           )}
         >
@@ -145,7 +145,7 @@ export const Sidebar = ({
         <button
           onClick={onToggleTheme}
           className={cn(
-            "w-full flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-white/5 rounded-xl text-slate-600 dark:text-slate-300 overflow-hidden",
+            "w-full flex items-center justify-between px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 overflow-hidden",
             isCollapsed && "justify-center px-0"
           )}
         >

@@ -12,7 +12,7 @@ export const FoundationSection = () => (
     <SectionHeader title="Design System" description="Atomes et fondations graphiques de l'interface." />
     
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[2.5rem] p-8 space-y-8 shadow-lg dark:shadow-xl">
         <div className="flex items-center gap-2 text-[#ff4f00]"><MousePointer2 size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Atomes UI</span></div>
         <div className="flex flex-wrap gap-4">
           <Button variant="primary">Principal</Button>
@@ -27,7 +27,7 @@ export const FoundationSection = () => (
           <Spinner size="md" className="text-[#ff4f00] ml-2" />
         </div>
       </div>
-      <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-6 shadow-sm">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[2.5rem] p-8 space-y-6 shadow-lg dark:shadow-xl">
         <div className="flex items-center gap-2 text-indigo-500"><Command size={16} /><span className="text-[10px] font-black uppercase tracking-widest italic">Formulaire</span></div>
         <Input label="Roadmap Name" placeholder="Ex: Launch Project" />
         <Input label="Email" placeholder="user@echo.maps" error="Email invalide" />

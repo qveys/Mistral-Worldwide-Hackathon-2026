@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { SectionHeader } from './SectionHeader';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { cn } from '@/lib/utils';
 import { Terminal, Copy, Globe, Lock, Code2, Zap } from 'lucide-react';
 
 const endpoints = [
@@ -67,7 +68,7 @@ const roadmap = await echomaps.brainDump.generate({
 
       <div className="grid grid-cols-1 gap-4">
         {endpoints.map((ep, i) => (
-          <Card key={i} className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm border-slate-200/50 dark:border-white/5 hover:border-orange-500/30 transition-all group">
+          <Card key={i} className="p-6 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl hover:border-orange-500/30 transition-all group">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <span className={cn(
@@ -80,14 +81,14 @@ const roadmap = await echomaps.brainDump.generate({
               </div>
               <div className="flex items-center gap-3">
                 {ep.auth && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-white/5 rounded-full text-[9px] font-black uppercase text-slate-400">
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-full text-[9px] font-black uppercase text-slate-400">
                     <Lock size={10} /> API Key
                   </div>
                 )}
                 <Badge variant="status" type="done">Stable</Badge>
               </div>
             </div>
-            <p className="mt-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+            <p className="mt-4 text-sm text-slate-700 dark:text-slate-200 font-medium">
               {ep.desc}
             </p>
           </Card>
@@ -96,20 +97,20 @@ const roadmap = await echomaps.brainDump.generate({
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div className="p-8 bg-indigo-600/5 rounded-[2.5rem] border border-indigo-500/10 space-y-4">
+      <div className="p-8 bg-indigo-50 dark:bg-slate-800 rounded-[2.5rem] border-2 border-indigo-200 dark:border-slate-600 shadow-lg dark:shadow-xl space-y-4">
         <div className="h-12 w-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-lg">
           <Globe size={24} />
         </div>
-        <h4 className="text-lg font-black uppercase italic dark:text-white">Webhooks</h4>
+        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">Webhooks</h4>
         <p className="text-sm text-slate-500 font-medium leading-relaxed">
           Recevez des notifications en temps réel lorsque la génération d&apos;une roadmap est terminée ou si une action nécessite une intervention manuelle.
         </p>
       </div>
-      <div className="p-8 bg-blue-600/5 rounded-[2.5rem] border border-blue-500/10 space-y-4">
+      <div className="p-8 bg-blue-50 dark:bg-slate-800 rounded-[2.5rem] border-2 border-blue-200 dark:border-slate-600 shadow-lg dark:shadow-xl space-y-4">
         <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
           <Code2 size={24} />
         </div>
-        <h4 className="text-lg font-black uppercase italic dark:text-white">Custom LLM</h4>
+        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">Custom LLM</h4>
         <p className="text-sm text-slate-500 font-medium leading-relaxed">
           Option pour utiliser vos propres modèles Mistral ou configurer des prompts système personnalisés via l&apos;API.
         </p>
@@ -117,5 +118,3 @@ const roadmap = await echomaps.brainDump.generate({
     </div>
   </motion.div>
 );
-
-import { cn } from '@/lib/utils';

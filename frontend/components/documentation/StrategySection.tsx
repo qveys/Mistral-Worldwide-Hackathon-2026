@@ -23,8 +23,8 @@ export const StrategySection = ({
     <SectionHeader title="Intelligence Visuals" description="Plan d'exécution généré et graphe de dépendances." />
     
     <div className="space-y-12">
-      <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[3rem] overflow-hidden shadow-2xl h-[600px] relative">
-        <div className="absolute top-6 right-6 z-10 flex bg-white/80 dark:bg-black/40 backdrop-blur-md p-1 rounded-xl border border-slate-200 dark:border-white/10">
+      <div className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-[3rem] overflow-hidden shadow-lg dark:shadow-xl h-[600px] relative">
+        <div className="absolute top-6 right-6 z-10 flex bg-white dark:bg-slate-700 p-1 rounded-xl border-2 border-slate-300 dark:border-slate-500">
           <button onClick={() => setRoadmapViewMode('timeline')} className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all", roadmapViewMode === 'timeline' ? "bg-slate-900 text-white dark:bg-white dark:text-black shadow-md" : "text-slate-400")}>Timeline</button>
           <button onClick={() => setRoadmapViewMode('graph')} className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all", roadmapViewMode === 'graph' ? "bg-slate-900 text-white dark:bg-white dark:text-black shadow-md" : "text-slate-400")}>Graphe</button>
         </div>

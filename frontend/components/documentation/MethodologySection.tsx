@@ -50,17 +50,17 @@ export const MethodologySection = () => (
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {steps.map((step, index) => (
-        <Card key={index} className="p-8 bg-white/50 dark:bg-black/20 backdrop-blur-sm border-slate-200/50 dark:border-white/5 flex flex-col gap-6 relative group overflow-hidden">
+        <Card key={index} className="p-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl flex flex-col gap-6 relative group overflow-hidden">
           <div className="flex items-center gap-4">
             <div className={`h-14 w-14 rounded-2xl ${step.bg} ${step.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
               <step.icon size={28} />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Étape 0{index + 1}</span>
-              <h3 className="text-xl font-black uppercase tracking-tighter italic dark:text-white leading-tight">{step.title}</h3>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Étape 0{index + 1}</span>
+              <h3 className="text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white leading-tight font-bold">{step.title}</h3>
             </div>
           </div>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
             {step.description}
           </p>
           <div className="mt-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#ff4f00] opacity-0 group-hover:opacity-100 transition-opacity">

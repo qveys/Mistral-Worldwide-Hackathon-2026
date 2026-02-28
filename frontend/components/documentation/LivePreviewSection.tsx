@@ -36,7 +36,7 @@ export const LivePreviewSection = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* BUTTONS GALLERY */}
-        <Card className="p-8 space-y-8 bg-white/50 dark:bg-black/20 backdrop-blur-sm border-slate-200/50 dark:border-white/5">
+        <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl">
           <div className="flex items-center gap-2 text-orange-500 mb-2">
             <Play size={16} />
             <span className="text-[10px] font-black uppercase tracking-widest italic">Interactions</span>
@@ -53,13 +53,13 @@ export const LivePreviewSection = () => {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button className="p-3 bg-slate-100 dark:bg-white/5 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all group">
+              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all group">
                 <Settings size={18} className="group-hover:rotate-90 transition-transform duration-500" />
               </button>
-              <button className="p-3 bg-slate-100 dark:bg-white/5 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all">
+              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all">
                 <Bell size={18} />
               </button>
-              <button className="p-3 bg-slate-100 dark:bg-white/5 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all">
+              <button className="p-3 bg-slate-200 dark:bg-slate-700 rounded-xl hover:bg-[#ff4f00] hover:text-white transition-all">
                 <User size={18} />
               </button>
               <div className="h-10 w-px bg-slate-200 dark:bg-white/10 mx-2" />
@@ -69,7 +69,7 @@ export const LivePreviewSection = () => {
         </Card>
 
         {/* DATA DISPLAY & BADGES */}
-        <Card className="p-8 space-y-8 bg-white/50 dark:bg-black/20 backdrop-blur-sm border-slate-200/50 dark:border-white/5">
+        <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl">
           <div className="flex items-center gap-2 text-blue-500 mb-2">
             <Sparkles size={16} />
             <span className="text-[10px] font-black uppercase tracking-widest italic">États & Statuts</span>
@@ -114,7 +114,7 @@ export const LivePreviewSection = () => {
         </Card>
 
         {/* INPUTS & SEARCH */}
-        <Card className="p-8 space-y-8 bg-white/50 dark:bg-black/20 backdrop-blur-sm border-slate-200/50 dark:border-white/5 lg:col-span-2">
+        <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl lg:col-span-2">
           <div className="flex items-center gap-2 text-purple-500 mb-2">
             <Search size={16} />
             <span className="text-[10px] font-black uppercase tracking-widest italic">Saisie de données</span>
@@ -142,11 +142,11 @@ export const LivePreviewSection = () => {
                 type="email"
                 error={searchQuery.length > 0 && !searchQuery.includes('@') ? "Email invalide" : undefined}
               />
-              <div className="p-4 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10">
+              <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl border-2 border-slate-200 dark:border-slate-600">
                 <span className="text-[9px] font-black uppercase text-slate-400 block mb-3">Sélection Rapide</span>
                 <div className="flex gap-2">
                   {['Web', 'Mobile', 'API'].map(t => (
-                    <button key={t} className="px-3 py-1.5 bg-white dark:bg-black/40 rounded-lg text-[10px] font-bold dark:text-white border border-slate-200 dark:border-white/10 hover:border-orange-500 transition-colors">
+                    <button key={t} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-orange-500 transition-colors">
                       {t}
                     </button>
                   ))}
