@@ -1,0 +1,44 @@
+{
+  "slug": "product-launch",
+  "title": "Lancement Produit",
+  "description": "Template pour planifier le lancement d'un nouveau produit",
+  "icon": "rocket",
+  "examples": ["App mobile", "SaaS", "Produit physique"],
+  "defaultTasks": [
+    {
+      "id": "task-1",
+      "title": "Etude de marche",
+      "description": "Analyser la concurrence, identifier le public cible",
+      "priority": 1,
+      "dependencies": []
+    },
+    {
+      "id": "task-2",
+      "title": "Definir le MVP",
+      "description": "Lister les fonctionnalites essentielles pour le lancement",
+      "priority": 1,
+      "dependencies": ["task-1"]
+    },
+    {
+      "id": "task-3",
+      "title": "Developper le prototype",
+      "description": "Construire la premiere version fonctionnelle du produit",
+      "priority": 2,
+      "dependencies": ["task-2"]
+    },
+    {
+      "id": "task-4",
+      "title": "Beta test et feedback",
+      "description": "Tester avec des utilisateurs pilotes et iterer",
+      "priority": 2,
+      "dependencies": ["task-3"]
+    },
+    {
+      "id": "task-5",
+      "title": "Lancement et marketing",
+      "description": "Deployer en production, communiquer et acquerir les premiers utilisateurs",
+      "priority": 3,
+      "dependencies": ["task-4"]
+    }
+  ]
+}

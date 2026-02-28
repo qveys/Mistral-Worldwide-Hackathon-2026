@@ -1,0 +1,44 @@
+{
+  "slug": "etudiant",
+  "title": "Projet Etudiant",
+  "description": "Template pour organiser un projet academique ou de fin d'etudes",
+  "icon": "graduation-cap",
+  "examples": ["Memoire de master", "Projet de groupe", "Stage de fin d'etudes"],
+  "defaultTasks": [
+    {
+      "id": "task-1",
+      "title": "Definir le sujet et la problematique",
+      "description": "Choisir un sujet precis et formuler la question de recherche",
+      "priority": 1,
+      "dependencies": []
+    },
+    {
+      "id": "task-2",
+      "title": "Recherche bibliographique",
+      "description": "Collecter et analyser les sources academiques pertinentes",
+      "priority": 1,
+      "dependencies": ["task-1"]
+    },
+    {
+      "id": "task-3",
+      "title": "Rediger le plan detaille",
+      "description": "Structurer le document avec introduction, parties et conclusion",
+      "priority": 2,
+      "dependencies": ["task-2"]
+    },
+    {
+      "id": "task-4",
+      "title": "Redaction du contenu",
+      "description": "Ecrire chaque section selon le plan etabli",
+      "priority": 2,
+      "dependencies": ["task-3"]
+    },
+    {
+      "id": "task-5",
+      "title": "Relecture et soutenance",
+      "description": "Corriger, formater et preparer la presentation orale",
+      "priority": 3,
+      "dependencies": ["task-4"]
+    }
+  ]
+}
