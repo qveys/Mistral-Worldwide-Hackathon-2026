@@ -1,5 +1,7 @@
 # 🚀 Projet Hackathon – Chaos to Clarity
 
+nom de l'app : EchoMaps
+
 ## 📌 Pitch
 **Chaos to Clarity** prend un *brain dump* vocal ou textuel désorganisé et le transforme en une **roadmap structurée**, une **liste de tâches prioritaires et un planning clair** en temps réel.  
 Objectif : rendre productif immédiatement, avec interactivité, retour utilisateur et visualisation attractive.
@@ -10,36 +12,19 @@ Objectif : rendre productif immédiatement, avec interactivité, retour utilisat
 
 ### 1️⃣ MVP (Must-Have)
 - **Input**
-  - Enregistrement audio (WebAudio) ou saisie texte
-  - Transcription voix → texte
-- **Processing**
-  - LLM structure :
-    - Objectifs principaux
-    - Liste des tâches atomiques
-    - Dépendances simples
-    - Estimation (Small / Medium / Large)
-    - Priorités automatiques
-  - JSON structuré
-- **Output**
-  - UI « Kanban » (Backlog / Doing / Done)
-  - Checklist exportable (Markdown / JSON)
-  - Boucle interactive :  
-    - commandes vocales ou textuelles pour :
-      - modifier priorité
-      - fusionner/supprimer une tâche
-      - renommer / reclasser
-
----
+  
+  - Enregistrement audio (ElevenLabs) ou saisie texte
+  - Transcription voix → texte en direct
+  - Ajuster le texte généré et générer une roadmap organisée à partir de ce texte, une liste de tâches prioritaires et un planning clair.
 
 ### 2️⃣ Nice to Have
-- **Roadmap hebdomadaire automatique**
 - **Templates prédéfinis**
   - Étudiant : révisions
   - Freelance : projet client
   - Productivité perso
 - **Notifications légères**
   - “Prochaine action”
-  - rappels amicaux
+  - rappels amicaux (quotidients)
 - **Partage public**
   - Lien read-only vers roadmap
   - Export PDF
@@ -47,8 +32,6 @@ Objectif : rendre productif immédiatement, avec interactivité, retour utilisat
 ---
 
 ### 3️⃣ Effet “Wouah”
-Choisir **une seule** option spectaculaire (à implémenter après MVP solide) :
-
 #### Option A — Live Brain Dump
 - L’écran se remplit **en direct** pendant que l’utilisateur parle
 - L’agent pose des **questions de clarification** pertinentes
@@ -67,19 +50,18 @@ Choisir **une seule** option spectaculaire (à implémenter après MVP solide) :
 ## 🧱 2) Architecture AWS ( idéale pour 48h)
 
 ### 🌍 Frontend
-**Next.js / React**  
+**Next.js**  
 - Déploiement : **AWS Amplify Hosting**
 - Composants :
   - Enregistreur audio
-  - Kanban / Timeline
+  - Zone de texte avec l'audio retranscrit modifiable
   - Barres de progression gamifiées
   - Formulaires de révision interactive
+  - Graphique d'activités (inspiration Github)
 
 ---
 
 ### 🔗 Backend
-
-**API Gateway** → **AWS Lambda (Python)**
 
 Endpoints :
 | Endpoint | Rôle |
@@ -89,29 +71,16 @@ Endpoints :
 | `POST /revise` | Revisions (patch sur plan) |
 | `GET /project/:id` | Récupérer projet |
 
-Option temps réel :
-- **WebSocket API Gateway** pour events (suggestions, clarification)
-
 ---
 
 ### 🧠 IA – AWS Bedrock
 - Modèles :
   - **Bedrock – Mistral Large**
-  - (Option) **Amazon Transcribe** pour streaming audio si disponible
+  - ElevenLabs pour streaming audio
 - Jobs :
   - Transcription
   - Structuration
   - Révisions interactives
-
----
-
-### 💾 Stockage
-- **S3** : audio upload temporaire
-- **DynamoDB**
-  - Projets
-  - Tâches
-  - Versions
-  - Historique de révision
 
 ---
 
@@ -135,46 +104,16 @@ Option temps réel :
 ### 🧑‍💻 Équipe (3 personnes)
 - **Dev 1 – Front**
   - WebAudio
-  - UI Kanban
   - Timeline / Roadmap
 - **Dev 2 – Backend**
   - API Gateway + Lambda
-  - DynamoDB
   - S3
   - Auth minimale
-- **Dev 3 – Produit / Prompts**
+- **Dev 3 – ElevenLabs**
   - Prompts LLM
   - JSON schema
   - Boucle interactive
   - Démo script
-
----
-
-### 🗓️ Planning recommandé
-
-#### Jour 1 – Matin (0–4h)
-- Projet scaffolding
-- Structure API basique (`/structure`)
-- UI minimal affichant JSON structuré
-
-#### Jour 1 – Après-midi (4–10h)
-- Ajout audio → transcription
-- Boucle révision (patch)
-- Stockage DynamoDB + persist
-
-#### Jour 1 – Soir (10–14h)
-- Stabilisation fundamentals
-- Début d’option “Wouah”
-
-#### Jour 2 – Matin (14–20h)
-- Finaliser “Wouah”
-- Scénarios utiles (3)
-- Export / partage
-
-#### Jour 2 – Midi – Soir (20–24h)
-- Freeze features
-- Tests finaux
-- Pitch + vidéos / captures
 
 ---
 
@@ -284,25 +223,9 @@ Respond in plain language.
 ⸻
 
 🏁 Résultat attendu
-	•	Une webapp fonctionnelle dans 48h
-	•	Une expérience fluide vocal → plan
-	•	Démo live qui impressionne
+	•	Une webapp fonctionnelle
+	•	Une expérience fluide vocale to text → plan
+	•	Démo live
 	•	Facile à juger + compréhensible en 5 minutes
 
 ⸻
-
-🏆 Bonus pour gagner
-	•	Tests automatisés basiques
-	•	Documentation pitch + captures
-	•	Landing page simple mais claire
-
-⸻
-
-
----
-
-Si tu veux, je peux aussi te générer :
-✅ la **landing page HTML/MDX**  
-✅ une **checklist QA**  
-✅ un **script de pitch vidéo de 90s**  
-prêt à l’enregistrer pour ta soumission hackathon.
