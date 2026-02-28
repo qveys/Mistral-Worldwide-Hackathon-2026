@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
+import { DEMO_ROADMAP } from '../mocks/demoRoadmap.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 // Request schema for structure endpoint
 const StructureRequestSchema = z.object({
@@ -30,9 +32,15 @@ const StructureResponseSchema = z.object({
 
 router.post('/structure', async (req, res) => {
   try {
+    if (DEMO_MODE) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      res.json(DEMO_ROADMAP);
+      return;
+    }
+
     // Validate request
     const validatedRequest = StructureRequestSchema.parse(req.body);
-    
+
     // Call Bedrock service to generate roadmap
     const startTime = Date.now();
     const roadmapData = await bedrockService.generateRoadmap(
