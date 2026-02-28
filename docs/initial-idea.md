@@ -105,27 +105,7 @@ Endpoints :
   - Erreurs LLM
   - Coût estimation par request
 
----
-
-## 🎯 3) 48h Hackathon Roadmap
-
-### 🧑‍💻 Équipe (3 personnes)
-- **Dev 1 – Front**
-  - WebAudio
-  - Timeline / Roadmap
-- **Dev 2 – Backend**
-  - API Gateway + Lambda
-  - S3
-  - Auth minimale
-- **Dev 3 – ElevenLabs**
-  - Prompts LLM
-  - JSON schema
-  - Boucle interactive
-  - Démo script
-
----
-
-## ✅ 4) Checklist
+  # ✅ 4) Checklist
    - [] frontend du site stylé et utilisable rapidement avec une box avec le texte modifiable, et des questions posées pour 'améliorer' le texte.
    - [] CRUD création de roadmap
    - [] CRUD utilisateurs
