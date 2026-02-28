@@ -10,14 +10,14 @@ Description des services backend et de leurs responsabilités.
 
 **Route :** `POST /transcribe`
 
-**Responsabilité :** Convertir l'audio en texte via ElevenLabs.
+**Responsabilité :** Convertir l'audio en texte via Voxtral.
 
-| Aspect | Détail |
-| ------ | ------ |
-| **Input** | Audio (stream ou fichier) selon le format ElevenLabs. |
-| **Output** | Texte transcrit. |
-| **Dépendance** | ElevenLabs API (WebSocket ou REST). |
-| **Erreur** | `try/catch` + log CloudWatch si échec ElevenLabs. |
+| Aspect         | Détail                                             |
+| -------------- | -------------------------------------------------- |
+| **Input**      | Audio (stream ou fichier) selon le format Voxtral. |
+| **Output**     | Texte transcrit.                                   |
+| **Dépendance** | Voxtral API (WebSocket ou REST).                   |
+| **Erreur**     | `try/catch` + log CloudWatch si échec Voxtral.     |
 
 ---
 
@@ -27,13 +27,13 @@ Description des services backend et de leurs responsabilités.
 
 **Responsabilité :** Transformer un brain dump (texte) en roadmap JSON structurée via Mistral.
 
-| Aspect | Détail |
-| ------ | ------ |
-| **Input** | `{ text: string }` — brain dump brut. |
-| **Output** | `Roadmap` — objectives, tasks (avec `dependsOn`), timeline. |
+| Aspect         | Détail                                                         |
+| -------------- | -------------------------------------------------------------- |
+| **Input**      | `{ text: string }` — brain dump brut.                          |
+| **Output**     | `Roadmap` — objectives, tasks (avec `dependsOn`), timeline.    |
 | **Dépendance** | AWS Bedrock (Mistral Large `mistral.mistral-large-2402-v1:0`). |
-| **Validation** | Zod : `roadmapSchema.parse(result)` avant envoi au client. |
-| **Erreur** | Rejet si JSON invalide ou cycle détecté dans les dépendances. |
+| **Validation** | Zod : `roadmapSchema.parse(result)` avant envoi au client.     |
+| **Erreur**     | Rejet si JSON invalide ou cycle détecté dans les dépendances.  |
 
 ---
 
@@ -43,13 +43,13 @@ Description des services backend et de leurs responsabilités.
 
 **Responsabilité :** Appliquer une instruction utilisateur sur un plan existant (patch JSON).
 
-| Aspect | Détail |
-| ------ | ------ |
-| **Input** | `{ projectId: string, instruction: string, roadmap: Roadmap }`. |
-| **Output** | `Roadmap` — plan mis à jour (objectives, tasks, timeline, `dependsOn`). |
-| **Dépendance** | AWS Bedrock (Mistral Large). |
-| **Validation** | Zod + détection de cycles avant retour. |
-| **Erreur** | Rejet si instruction ambiguë ou JSON invalide. |
+| Aspect         | Détail                                                                  |
+| -------------- | ----------------------------------------------------------------------- |
+| **Input**      | `{ projectId: string, instruction: string, roadmap: Roadmap }`.         |
+| **Output**     | `Roadmap` — plan mis à jour (objectives, tasks, timeline, `dependsOn`). |
+| **Dépendance** | AWS Bedrock (Mistral Large).                                            |
+| **Validation** | Zod + détection de cycles avant retour.                                 |
+| **Erreur**     | Rejet si instruction ambiguë ou JSON invalide.                          |
 
 ---
 
@@ -59,22 +59,22 @@ Description des services backend et de leurs responsabilités.
 
 **Responsabilité :** Récupérer un projet sauvegardé.
 
-| Aspect | Détail |
-| ------ | ------ |
-| **Input** | `id` — identifiant du projet. |
-| **Output** | `Roadmap` ou 404 si inexistant. |
-| **Dépendance** | S3 ou stockage local (hackathon 48h). |
+| Aspect          | Détail                                 |
+| --------------- | -------------------------------------- |
+| **Input**       | `id` — identifiant du projet.          |
+| **Output**      | `Roadmap` ou 404 si inexistant.        |
+| **Dépendance**  | S3 ou stockage local (hackathon 48h).  |
 | **Permissions** | Lecture seule pour les liens partagés. |
 
 ---
 
 ## 🌐 Services Externes
 
-### ElevenLabs
+### Voxtral
 
 - **Rôle :** Speech-to-Text (STT) en temps réel.
 - **Usage :** WebSocket pour streaming audio → transcription.
-- **Config :** `ELEVENLABS_API_KEY` en variable d'environnement.
+- **Config :** `MISTRAL_API_KEY` en variable d'environnement.
 
 ### AWS Bedrock (Mistral Large)
 
@@ -104,7 +104,7 @@ backend/
 │   ├── revise.ts        # POST /revise
 │   └── project.ts       # GET /project/:id
 ├── services/
-│   ├── elevenlabs.ts    # Client ElevenLabs
+│   ├── Voxtral.ts    # Client Voxtral
 │   ├── bedrock.ts       # Client Bedrock, callMistral
 │   └── storage.ts       # S3 ou persistance
 ├── prompts/
