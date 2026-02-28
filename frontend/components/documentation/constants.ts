@@ -1,7 +1,7 @@
-import { Layers, Brain, Network, Zap, Eye, Server } from 'lucide-react';
-import { Roadmap } from '@/components/roadmap/RoadmapCanvas';
+import { Layers, Brain, Network, Zap, Eye, Server, CircuitBoard } from 'lucide-react';
+import type { Roadmap } from '@/components/roadmap/RoadmapCanvas';
 
-export type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system' | 'live-preview' | 'backend';
+export type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system' | 'live-preview' | 'roadmap' | 'backend';
 
 export interface NavItem {
   id: DocCategory;
@@ -19,6 +19,7 @@ export const NAV_ITEMS_COMPONENTS: NavItem[] = [
 
 export const NAV_ITEMS_LIVE_PREVIEW: NavItem[] = [
   { id: 'live-preview', label: 'Live Preview', icon: Eye, desc: 'Demonstration des composants' },
+  { id: 'roadmap', label: 'Roadmap', icon: CircuitBoard, desc: 'Demonstration de la roadmap' },
 ];
 
 export const NAV_ITEMS_BACKEND: NavItem[] = [

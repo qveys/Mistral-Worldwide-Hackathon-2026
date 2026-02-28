@@ -15,6 +15,7 @@ import { FoundationSection } from '@/components/documentation/FoundationSection'
 import { CaptureSection } from '@/components/documentation/CaptureSection';
 import { StrategySection } from '@/components/documentation/StrategySection';
 import { SystemSection } from '@/components/documentation/SystemSection';
+import { LivePreviewSection } from '@/components/documentation/LivePreviewSection';
 import { DocCategory, MOCK_ROADMAP } from '@/components/documentation/constants';
 
 export default function DocumentationPage() {
@@ -88,6 +89,8 @@ export default function DocumentationPage() {
                 showToast={showToast}
               />
             )}
+
+            {activeCategory === 'live-preview' && <LivePreviewSection />}
           </AnimatePresence>
         </div>
       </main>

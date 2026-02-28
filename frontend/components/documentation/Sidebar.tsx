@@ -89,7 +89,7 @@ export const Sidebar = ({
           {!isCollapsed && (
             <div className="whitespace-nowrap">
               <h1 className="text-sm font-black uppercase tracking-tighter italic dark:text-white">
-                EchoMaps <span className="text-[#ff4f00]">UI</span>
+                EchoMaps
               </h1>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                 Documentation

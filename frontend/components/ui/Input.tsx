@@ -5,11 +5,12 @@ import { cn } from '@/lib/utils';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  description?: string;
   error?: string;
   className?: string;
 }
 
-export function Input({ label, error, className, ...props }: InputProps) {
+export function Input({ label, description, error, className, ...props }: InputProps) {
   return (
     <div className={cn("w-full space-y-2", className)}>
       {label && (
@@ -25,6 +26,11 @@ export function Input({ label, error, className, ...props }: InputProps) {
         )}
         {...props}
       />
+      {description && !error && (
+        <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 ml-2">
+          {description}
+        </p>
+      )}
       {error && (
         <p className="text-[10px] font-bold text-red-500 ml-2 uppercase tracking-wider italic">
           {error}

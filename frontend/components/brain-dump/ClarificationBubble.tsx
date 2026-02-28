@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Send, X, messageCircle } from 'lucide-react';
+import { Brain, Send, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ClarificationBubbleProps {
