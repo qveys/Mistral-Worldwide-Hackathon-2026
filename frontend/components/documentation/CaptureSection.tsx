@@ -1,9 +1,9 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { SectionHeader } from './SectionHeader';
 import { MicButton, MicButtonState } from '@/components/ui/MicButton';
 import { TranscriptionLiveView } from '@/components/brain-dump/TranscriptionLiveView';
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
+import { ToastType } from '@/components/ui/Toast';
 import { cn } from '@/lib/utils';
 
 interface CaptureSectionProps {
@@ -12,7 +12,7 @@ interface CaptureSectionProps {
   simulateSTTError: boolean;
   setSimulateSTTError: (value: boolean) => void;
   setIsBubbleVisible: (value: boolean) => void;
-  showToast: (message: string, type: any) => void;
+  showToast: (message: string, type: ToastType) => void;
 }
 
 export const CaptureSection = ({

@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { TaskCard, TaskStatus, TaskPriority, TaskEstimate } from '../ui/TaskCard';
-import { Calendar, Clock, Target, ChevronRight } from 'lucide-react';
+import { Target,} from 'lucide-react';
 
 export interface RoadmapTask {
   id: string;
@@ -15,6 +15,7 @@ export interface RoadmapTask {
   objectiveId: string;
   isBlocked?: boolean;
   blockedBy?: string[];
+  dependencies?: string[];
 }
 
 export interface RoadmapObjective {
