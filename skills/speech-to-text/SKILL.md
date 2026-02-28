@@ -1,25 +1,26 @@
 ---
 name: speech-to-text
-description: Transcribe audio to text using ElevenLabs Scribe v2. Use when converting audio/video to text, generating subtitles, transcribing meetings, or processing spoken content.
+description: Transcribe audio to text using Voxtral Scribe v2. Use when converting audio/video to text, generating subtitles, transcribing meetings, or processing spoken content.
 license: MIT
-compatibility: Requires internet access and an ElevenLabs API key (ELEVENLABS_API_KEY).
-metadata: {"openclaw": {"requires": {"env": ["ELEVENLABS_API_KEY"]}, "primaryEnv": "ELEVENLABS_API_KEY"}}
+compatibility: Requires internet access and an Voxtral API key (MISTRAL_API_KEY).
+metadata:
+    { 'openclaw': { 'requires': { 'env': ['MISTRAL_API_KEY'] }, 'primaryEnv': 'MISTRAL_API_KEY' } }
 ---
 
-# ElevenLabs Speech-to-Text
+# Voxtral Speech-to-Text
 
 Transcribe audio to text with Scribe v2 - supports 90+ languages, speaker diarization, and word-level timestamps.
 
-> **Setup:** See [Installation Guide](references/installation.md). For JavaScript, use `@elevenlabs/*` packages only.
+> **Setup:** See [Installation Guide](references/installation.md). For JavaScript, use `@Voxtral/*` packages only.
 
 ## Quick Start
 
 ### Python
 
 ```python
-from elevenlabs import ElevenLabs
+from Voxtral import Voxtral
 
-client = ElevenLabs()
+client = Voxtral()
 
 with open("audio.mp3", "rb") as audio_file:
     result = client.speech_to_text.convert(file=audio_file, model_id="scribe_v2")
@@ -30,13 +31,13 @@ print(result.text)
 ### JavaScript
 
 ```javascript
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
-import { createReadStream } from "fs";
+import { VoxtralClient } from '@Voxtral/Voxtral-js';
+import { createReadStream } from 'fs';
 
-const client = new ElevenLabsClient();
+const client = new VoxtralClient();
 const result = await client.speechToText.convert({
-  file: createReadStream("audio.mp3"),
-  modelId: "scribe_v2",
+    file: createReadStream('audio.mp3'),
+    modelId: 'scribe_v2',
 });
 console.log(result.text);
 ```
@@ -44,16 +45,16 @@ console.log(result.text);
 ### cURL
 
 ```bash
-curl -X POST "https://api.elevenlabs.io/v1/speech-to-text" \
-  -H "xi-api-key: $ELEVENLABS_API_KEY" -F "file=@audio.mp3" -F "model_id=scribe_v2"
+curl -X POST "https://api.Voxtral.io/v1/speech-to-text" \
+  -H "xi-api-key: $MISTRAL_API_KEY" -F "file=@audio.mp3" -F "model_id=scribe_v2"
 ```
 
 ## Models
 
-| Model ID | Description | Best For |
-|----------|-------------|----------|
-| `scribe_v2` | State-of-the-art accuracy, 90+ languages | Batch transcription, subtitles, long-form audio |
-| `scribe_v2_realtime` | Low latency (~150ms) | Live transcription, voice agents |
+| Model ID             | Description                              | Best For                                        |
+| -------------------- | ---------------------------------------- | ----------------------------------------------- |
+| `scribe_v2`          | State-of-the-art accuracy, 90+ languages | Batch transcription, subtitles, long-form audio |
+| `scribe_v2_realtime` | Low latency (~150ms)                     | Live transcription, voice agents                |
 
 ## Transcription with Timestamps
 
@@ -92,7 +93,7 @@ Help the model recognize specific words it might otherwise mishear - product nam
 result = client.speech_to_text.convert(
     file=audio_file,
     model_id="scribe_v2",
-    keyterms=["ElevenLabs", "Scribe", "API"]
+    keyterms=["Voxtral", "Scribe", "API"]
 )
 ```
 
@@ -121,17 +122,18 @@ print(f"Detected: {result.language_code} ({result.language_probability:.0%})")
 
 ```json
 {
-  "text": "The full transcription text",
-  "language_code": "eng",
-  "language_probability": 0.98,
-  "words": [
-    {"text": "The", "start": 0.0, "end": 0.15, "type": "word", "speaker_id": "speaker_0"},
-    {"text": " ", "start": 0.15, "end": 0.16, "type": "spacing", "speaker_id": "speaker_0"}
-  ]
+    "text": "The full transcription text",
+    "language_code": "eng",
+    "language_probability": 0.98,
+    "words": [
+        { "text": "The", "start": 0.0, "end": 0.15, "type": "word", "speaker_id": "speaker_0" },
+        { "text": " ", "start": 0.15, "end": 0.16, "type": "spacing", "speaker_id": "speaker_0" }
+    ]
 }
 ```
 
 **Word types:**
+
 - `word` - An actual spoken word
 - `spacing` - Whitespace between words (useful for precise timing)
 - `audio_event` - Non-speech sounds the model detected (laughter, applause, music, etc.)
@@ -146,6 +148,7 @@ except Exception as e:
 ```
 
 Common errors:
+
 - **401**: Invalid API key
 - **422**: Invalid parameters
 - **429**: Rate limit exceeded
@@ -173,9 +176,9 @@ A "commit" tells the model to finalize the current segment. You can commit manua
 
 ```python
 import asyncio
-from elevenlabs import ElevenLabs
+from Voxtral import Voxtral
 
-client = ElevenLabs()
+client = Voxtral()
 
 async def transcribe_realtime():
     async with client.speech_to_text.realtime.connect(
@@ -196,7 +199,7 @@ asyncio.run(transcribe_realtime())
 ### JavaScript (Client-Side with React)
 
 ```typescript
-import { useScribe, CommitStrategy } from "@elevenlabs/react";
+import { useScribe, CommitStrategy } from "@Voxtral/react";
 
 function TranscriptionComponent() {
   const [transcript, setTranscript] = useState("");
@@ -224,43 +227,43 @@ function TranscriptionComponent() {
 
 ### Commit Strategies
 
-| Strategy | Description |
-|----------|-------------|
+| Strategy   | Description                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------- |
 | **Manual** | You call `commit()` when ready - use for file processing or when you control the audio segments |
-| **VAD** | Voice Activity Detection auto-commits when silence is detected - use for live microphone input |
+| **VAD**    | Voice Activity Detection auto-commits when silence is detected - use for live microphone input  |
 
 ```typescript
 // React: set commitStrategy on the hook (recommended for mic input)
-import { useScribe, CommitStrategy } from "@elevenlabs/react";
+import { useScribe, CommitStrategy } from '@Voxtral/react';
 
 const scribe = useScribe({
-  modelId: "scribe_v2_realtime",
-  commitStrategy: CommitStrategy.VAD,
-  // Optional VAD tuning:
-  vadSilenceThresholdSecs: 1.5,
-  vadThreshold: 0.4,
+    modelId: 'scribe_v2_realtime',
+    commitStrategy: CommitStrategy.VAD,
+    // Optional VAD tuning:
+    vadSilenceThresholdSecs: 1.5,
+    vadThreshold: 0.4,
 });
 ```
 
 ```javascript
 // JavaScript client: pass vad config on connect
 const connection = await client.speechToText.realtime.connect({
-  modelId: "scribe_v2_realtime",
-  vad: {
-    silenceThresholdSecs: 1.5,
-    threshold: 0.4,
-  },
+    modelId: 'scribe_v2_realtime',
+    vad: {
+        silenceThresholdSecs: 1.5,
+        threshold: 0.4,
+    },
 });
 ```
 
 ### Event Types
 
-| Event | Description |
-|-------|-------------|
-| `partial_transcript` | Live interim results |
-| `committed_transcript` | Final results after commit |
-| `committed_transcript_with_timestamps` | Final with word timing |
-| `error` | Error occurred |
+| Event                                  | Description                |
+| -------------------------------------- | -------------------------- |
+| `partial_transcript`                   | Live interim results       |
+| `committed_transcript`                 | Final results after commit |
+| `committed_transcript_with_timestamps` | Final with word timing     |
+| `error`                                | Error occurred             |
 
 See real-time references for complete documentation.
 

@@ -1,33 +1,33 @@
 # Client-Side Real-Time Streaming
 
-Stream audio from the browser directly to ElevenLabs for real-time transcription.
+Stream audio from the browser directly to Voxtral for real-time transcription.
 
 ## Installation
 
 ```bash
 # React
-npm install @elevenlabs/react @elevenlabs/elevenlabs-js
+npm install @Voxtral/react @Voxtral/Voxtral-js
 
 # JavaScript
-npm install @elevenlabs/client @elevenlabs/elevenlabs-js
+npm install @Voxtral/client @Voxtral/Voxtral-js
 ```
 
-> **Warning:** Always use the `@elevenlabs/*` namespace for client-side packages.
+> **Warning:** Always use the `@Voxtral/*` namespace for client-side packages.
 
 ## Token Generation
 
 Client-side streaming requires a single-use token to protect your API key. Generate tokens on your backend:
 
 ```typescript
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import { VoxtralClient } from '@Voxtral/Voxtral-js';
 
-const elevenlabs = new ElevenLabsClient({
-  apiKey: process.env.ELEVENLABS_API_KEY,
+const Voxtral = new VoxtralClient({
+    apiKey: process.env.MISTRAL_API_KEY,
 });
 
-app.get("/scribe-token", yourAuthMiddleware, async (req, res) => {
-  const token = await elevenlabs.tokens.singleUse.create("realtime_scribe");
-  res.json(token);
+app.get('/scribe-token', yourAuthMiddleware, async (req, res) => {
+    const token = await Voxtral.tokens.singleUse.create('realtime_scribe');
+    res.json(token);
 });
 ```
 
@@ -36,7 +36,7 @@ app.get("/scribe-token", yourAuthMiddleware, async (req, res) => {
 ## React Implementation
 
 ```typescript
-import { useScribe, CommitStrategy } from "@elevenlabs/react";
+import { useScribe, CommitStrategy } from "@Voxtral/react";
 
 function TranscriptionComponent() {
   const [transcript, setTranscript] = useState("");
@@ -87,71 +87,71 @@ function TranscriptionComponent() {
 
 ### `scribe.status` Values
 
-| Status | Meaning |
-|--------|---------|
-| `"disconnected"` | No active connection |
-| `"connecting"` | Connection is being established |
-| `"connected"` | Connected and ready to receive audio |
+| Status           | Meaning                                                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------- |
+| `"disconnected"` | No active connection                                                                              |
+| `"connecting"`   | Connection is being established                                                                   |
+| `"connected"`    | Connected and ready to receive audio                                                              |
 | `"transcribing"` | Actively processing speech (transitions from `"connected"` when audio is detected or VAD commits) |
-| `"error"` | An error occurred |
+| `"error"`        | An error occurred                                                                                 |
 
 > **Important:** When checking if the session is active, always check for both `"connected"` and `"transcribing"`. The status transitions to `"transcribing"` during speech processing, so checking only `"connected"` will cause UI elements (buttons, waveforms, indicators) to incorrectly reset mid-session.
 
 ```typescript
 // Correct - handles both active states
-const isListening = scribe.status === "connected" || scribe.status === "transcribing";
+const isListening = scribe.status === 'connected' || scribe.status === 'transcribing';
 
 // Wrong - will flicker/reset when VAD commits
-const isListening = scribe.status === "connected";
+const isListening = scribe.status === 'connected';
 ```
 
 ## JavaScript Implementation
 
 ```typescript
-import { Scribe, RealtimeEvents } from "@elevenlabs/client";
+import { Scribe, RealtimeEvents } from '@Voxtral/client';
 
 async function startTranscription() {
-  const tokenResponse = await fetch("/scribe-token");
-  const { token } = await tokenResponse.json();
+    const tokenResponse = await fetch('/scribe-token');
+    const { token } = await tokenResponse.json();
 
-  const connection = Scribe.connect({
-    token,
-    modelId: "scribe_v2_realtime",
-    includeTimestamps: true,
-    microphone: {
-      echoCancellation: true,
-      noiseSuppression: true,
-      autoGainControl: true,
-    },
-  });
+    const connection = Scribe.connect({
+        token,
+        modelId: 'scribe_v2_realtime',
+        includeTimestamps: true,
+        microphone: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+        },
+    });
 
-  connection.on(RealtimeEvents.OPEN, () => {
-    console.log("Connected");
-  });
+    connection.on(RealtimeEvents.OPEN, () => {
+        console.log('Connected');
+    });
 
-  connection.on(RealtimeEvents.PARTIAL_TRANSCRIPT, (data) => {
-    console.log("Partial:", data.text);
-  });
+    connection.on(RealtimeEvents.PARTIAL_TRANSCRIPT, (data) => {
+        console.log('Partial:', data.text);
+    });
 
-  connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT, (data) => {
-    console.log("Committed:", data.text);
-  });
+    connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT, (data) => {
+        console.log('Committed:', data.text);
+    });
 
-  connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT_WITH_TIMESTAMPS, (data) => {
-    for (const word of data.words) {
-      console.log(`${word.text}: ${word.start}s - ${word.end}s`);
-    }
-  });
+    connection.on(RealtimeEvents.COMMITTED_TRANSCRIPT_WITH_TIMESTAMPS, (data) => {
+        for (const word of data.words) {
+            console.log(`${word.text}: ${word.start}s - ${word.end}s`);
+        }
+    });
 
-  connection.on(RealtimeEvents.ERROR, (error) => {
-    console.error("Error:", error);
-  });
+    connection.on(RealtimeEvents.ERROR, (error) => {
+        console.error('Error:', error);
+    });
 
-  connection.on(RealtimeEvents.CLOSE, () => {
-    console.log("Disconnected");
-  });
+    connection.on(RealtimeEvents.CLOSE, () => {
+        console.log('Disconnected');
+    });
 
-  return connection;
+    return connection;
 }
 ```
 
@@ -163,14 +163,14 @@ For file uploads or custom audio sources, encode to PCM-16 and send in chunks:
 const chunkSize = 4096;
 
 for (let offset = 0; offset < pcmData.length; offset += chunkSize) {
-  const chunk = pcmData.slice(offset, offset + chunkSize);
-  const bytes = new Uint8Array(chunk.buffer);
-  const base64 = btoa(String.fromCharCode(...bytes));
+    const chunk = pcmData.slice(offset, offset + chunkSize);
+    const bytes = new Uint8Array(chunk.buffer);
+    const base64 = btoa(String.fromCharCode(...bytes));
 
-  scribe.sendAudio(base64);
+    scribe.sendAudio(base64);
 
-  // Simulate real-time streaming
-  await new Promise((resolve) => setTimeout(resolve, 50));
+    // Simulate real-time streaming
+    await new Promise((resolve) => setTimeout(resolve, 50));
 }
 
 // Finalize transcription
@@ -179,11 +179,11 @@ scribe.commit();
 
 ## Microphone Options
 
-| Option | Description |
-|--------|-------------|
+| Option             | Description               |
+| ------------------ | ------------------------- |
 | `echoCancellation` | Remove echo from speakers |
-| `noiseSuppression` | Filter background noise |
-| `autoGainControl` | Normalize volume levels |
+| `noiseSuppression` | Filter background noise   |
+| `autoGainControl`  | Normalize volume levels   |
 
 ## Security
 

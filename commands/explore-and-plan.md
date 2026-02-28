@@ -30,7 +30,7 @@ Write a detailed implementation plan including:
 - Key decisions with brief justification (DRY, KISS, SOLID)
 - TypeScript types / Zod schemas to define
 - Prompt engineering if Mistral is involved (JSON-only output strategy)
-- ElevenLabs WebSocket flow if voice is involved
+- Voxtral WebSocket flow if voice is involved
 - Error handling strategy (try/catch + CloudWatch log pattern)
 - Optimistic UI if real-time update is needed
 
@@ -44,7 +44,7 @@ Follow the EchoMaps coding rules from `agents.md`:
 
 1. **Atomic Design** — small, reusable components in `components/ui/`
 2. **TypeScript strict** — no `any`, use Zod for LLM outputs
-3. **Error handling** — every Bedrock/ElevenLabs call gets try/catch + structured log
+3. **Error handling** — every Bedrock/Voxtral call gets try/catch + structured log
 4. **JSON-First** — Mistral always returns pure JSON
 5. **Optimistic UI** — show transcription state immediately
 
@@ -72,7 +72,9 @@ When done, write a short PR description in the repo's `changelog.md` following t
 
 ```markdown
 ## [x.x.x] - YYYY-MM-DD
+
 ### 🚀 Added / 🧠 AI / 🔧 Fixed
+
 - Short bullet: what changed and why
 ```
 
