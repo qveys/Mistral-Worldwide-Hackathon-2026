@@ -11,7 +11,7 @@ import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput'
 import { ExportButton } from '@/components/ui/ExportButton';
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
-import { Task, TaskStatus } from '@/components/ui/TaskCard';
+import { Task, TaskCard, TaskStatus } from '@/components/ui/TaskCard';
 import { Toast, ToastType } from '@/components/ui/Toast';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { cn } from '@/lib/utils';
@@ -260,8 +260,37 @@ export default function DocumentationPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Action List</h3>
-                  <ActionItemsList tasks={tasks} onStatusChange={handleStatusChange} />
+                  <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Action List & Task States</h3>
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase ml-2">Standard List</p>
+                      <ActionItemsList tasks={tasks} onStatusChange={handleStatusChange} />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase ml-2">Individual Task States</p>
+                      <div className="grid grid-cols-1 gap-3">
+                        <TaskCard 
+                          task={{ id: 's1', title: "Tâche en attente (Backlog)", priority: 'low', status: 'backlog', estimate: 'S' }}
+                          onStatusChange={() => {}}
+                        />
+                        <TaskCard 
+                          task={{ id: 's2', title: "Tâche en cours (Doing)", priority: 'medium', status: 'doing', estimate: 'M' }}
+                          onStatusChange={() => {}}
+                        />
+                        <TaskCard 
+                          task={{ id: 's3', title: "Tâche terminée (Done)", priority: 'high', status: 'done', estimate: 'L' }}
+                          onStatusChange={() => {}}
+                        />
+                        <TaskCard 
+                          task={{ id: 's4', title: "Tâche bloquée (Blocked)", priority: 'high', status: 'backlog', estimate: 'M' }}
+                          isBlocked={true}
+                          blockedBy={["Infrastructure Setup"]}
+                          onStatusChange={() => {}}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
