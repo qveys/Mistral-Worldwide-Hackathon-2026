@@ -2,9 +2,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { type Request, type Response } from 'express';
 import { createServer } from 'http';
-import structureRouter from './routes/structure';
-import reviseRouter from './routes/revise';
-import { VoxstralService } from './services/voxstral';
+import structureRouter from './routes/structure.js';
+import reviseRouter from './routes/revise.js';
+import { VoxstralService } from './services/voxstral.js';
 
 dotenv.config();
 
@@ -28,11 +28,11 @@ const server = createServer(app);
 const voxstralService = new VoxstralService(server);
 
 // Handle Voxstral transcription events
-voxstralService.on('transcription_update', (data) => {
+voxstralService.on('transcription_update', (data: any) => {
   console.log(`Transcription update: ${data.transcript.substring(0, 50)}...`);
 });
 
-voxstralService.on('transcription_complete', (data) => {
+voxstralService.on('transcription_complete', (data: any) => {
   console.log(`Transcription complete (${data.durationMs}ms): ${data.transcript.substring(0, 100)}...`);
   // Here you could automatically call the /structure endpoint with the transcript
 });

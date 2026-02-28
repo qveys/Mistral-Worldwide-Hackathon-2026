@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { BedrockService } from '../services/bedrock';
+import { BedrockService } from '../services/bedrock.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
