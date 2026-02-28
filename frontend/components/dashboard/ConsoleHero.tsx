@@ -20,7 +20,7 @@ export function ConsoleHero() {
       </div>
       <div className="relative z-10 flex items-center gap-4">
         <Link href="/">
-          <Button size="lg" className="h-14 px-8 bg-zinc-100 text-black hover:bg-white rounded-2xl font-bold transition-all shadow-2xl shadow-white/5 group/btn">
+          <Button className="h-14 px-8 bg-zinc-100 text-black hover:bg-white rounded-2xl font-bold transition-all shadow-2xl shadow-white/5 group/btn">
             <Mic size={18} className="mr-2 group-hover/btn:scale-110 transition-transform" />
             New Brain Dump
           </Button>

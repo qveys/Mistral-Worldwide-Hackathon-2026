@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   ChevronRight,
   Zap,
@@ -34,14 +34,6 @@ const recentProjects = [
 ];
 
 export default function DashboardOverview() {
-  const [mounted, setMounted] = useState(false);
-
-  // Only show the heatmap once mounted to be extra safe, 
-  // though static data fixes the core issue
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <div className="p-6 lg:p-8">
       <div className="max-w-7xl mx-auto grid grid-cols-12 gap-4 auto-rows-[160px]">
@@ -49,11 +41,7 @@ export default function DashboardOverview() {
           <ConsoleHero />
 
           <div className="col-span-12 lg:col-span-4 row-span-2">
-            {mounted ? (
-              <ActivityHeatmap data={STATIC_ACTIVITY_DATA} />
-            ) : (
-              <div className="bg-[#161618] border border-zinc-800/50 rounded-[2rem] p-8 h-full animate-pulse" />
-            )}
+            <ActivityHeatmap data={STATIC_ACTIVITY_DATA} />
           </div>
 
           {/* Box 3: Roadmaps List */}

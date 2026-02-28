@@ -50,7 +50,7 @@ export default function RoadmapsPage() {
         </div>
         
         <Link href="/">
-          <Button size="lg" className="h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-bold transition-all shadow-2xl shadow-white/5 group text-sm">
+          <Button className="h-14 px-8 bg-white text-black hover:bg-zinc-200 rounded-2xl font-bold transition-all shadow-2xl shadow-white/5 group text-sm">
             <Plus size={18} className="mr-2 group-hover:rotate-90 transition-transform" />
             Initialize Roadmap
           </Button>
