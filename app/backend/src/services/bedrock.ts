@@ -97,10 +97,8 @@ Return ONLY valid JSON in this exact schema:
     return RoadmapResponseSchema.parse(response);
   }
 
-  async generateRevision(roadmapId: string, instructions: string): Promise<any> {
+  async invokeModel(prompt: string): Promise<any> {
     try {
-      const prompt = this.buildRevisionPrompt(roadmapId, instructions);
-      
       const input = {
         modelId: this.config.modelId,
         contentType: "application/json",
@@ -115,63 +113,15 @@ Return ONLY valid JSON in this exact schema:
 
       const command = new InvokeModelCommand(input);
       const response = await this.client.send(command);
-      
+
       if (response.body) {
-        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-        return this.validateRevisionResponse(responseBody);
+        return JSON.parse(new TextDecoder().decode(response.body));
       }
-      
+
       throw new Error("Empty response from Bedrock");
     } catch (error) {
-      console.error("Bedrock revision error:", error);
+      console.error("Bedrock invoke error:", error);
       throw error;
     }
-  }
-
-  private buildRevisionPrompt(roadmapId: string, instructions: string): string {
-    return `Revise the existing roadmap ${roadmapId} based on these instructions:
-
-${instructions}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "revisedRoadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "status": "unchanged" | "modified" | "removed" | "added",
-      "dependencies": ["string"]
-    }
-  ],
-  "changesSummary": {
-    "itemsModified": number,
-    "itemsAdded": number,
-    "itemsRemoved": number,
-    "confidenceScore": number (0-1)
-  }
-}`;
-  }
-
-  private validateRevisionResponse(response: any): any {
-    const RevisionResponseSchema = z.object({
-      revisedRoadmap: z.array(z.object({
-        id: z.string(),
-        title: z.string(),
-        description: z.string(),
-        priority: z.number().min(1).max(5),
-        status: z.enum(["unchanged", "modified", "removed", "added"]),
-        dependencies: z.array(z.string()).optional()
-      })),
-      changesSummary: z.object({
-        itemsModified: z.number(),
-        itemsAdded: z.number(),
-        itemsRemoved: z.number(),
-        confidenceScore: z.number().min(0).max(1)
-      })
-    });
-    
-    return RevisionResponseSchema.parse(response);
   }
 }
