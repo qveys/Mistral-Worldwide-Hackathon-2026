@@ -51,7 +51,7 @@ export function Badge({ children, variant = 'default', type, className }: BadgeP
 
   return (
     <div className={cn(
-      "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border border-transparent transition-all",
+      "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider border border-transparent transition-all",
       getStyles(),
       className
     )}>

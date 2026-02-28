@@ -237,9 +237,9 @@ export default function DocumentationPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-                                    <div className="md:col-span-8 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 shadow-sm">
+                                    <div className="md:col-span-8 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4f00] mb-6 block">Latency Orchestrator</span>
-                                        <LoadingOrchestrator className="max-w-none shadow-none border-none p-0 bg-transparent" />
+                                        <LoadingOrchestrator className="max-w-none" onCancel={() => {}} />
                                     </div>
                                     <div className="md:col-span-4 space-y-6">
                                         {/* COMPACT RESILIENCE */}
