@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Eraser, Send, Sparkles } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { MicButton, MicButtonState } from './ui/MicButton';
-import { TranscriptionLiveView } from './ui/TranscriptionLiveView';
+import { MicButton, MicButtonState } from '../ui/MicButton';
+import { TranscriptionLiveView } from './TranscriptionLiveView';
 
 interface BrainDumpInputProps {
     onGenerate: (text: string) => void;
@@ -113,7 +113,8 @@ export function BrainDumpInput({
                             {micState === 'recording' ? (
                                 <TranscriptionLiveView
                                     text={text}
-                                    isStreaming={true}
+                                    isRecording={true}
+                                    onTextChange={setManualText}
                                     className="bg-transparent shadow-none border-none p-0 min-h-[140px]"
                                 />
                             ) : (

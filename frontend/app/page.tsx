@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { Zap } from 'lucide-react';
-import { QuickStart } from '@/components/QuickStart';
+import { QuickStart } from '@/components/brain-dump/QuickStart';
 
 export const metadata: Metadata = {
   title: 'EchoMaps | Chaos to Clarity',
