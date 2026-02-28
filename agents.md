@@ -1,52 +1,77 @@
-# 🗺️ EchoMaps - AI Agent System & Vibe Context
+# 🗺️ EchoMaps — AI Agent Context
 
-## 🎯 Vision du Projet
-Transformer le chaos mental (audio/texte) en roadmaps structurées et actionnables en temps réel. 
-**Vibe :** Productivité immédiate, interface "calme mais puissante", feedback loop instantané.
+## 🎯 Project Vision
+Transform a chaotic voice/text **brain dump** into a structured, actionable roadmap in real-time.  
+**Vibe:** Productivity-first. Interface "calm but powerful". Instant feedback loop.
 
-## 🛠️ Tech Stack & Architecture
-- **Frontend :** Next.js 16 (App Router), TailwindCSS.
-- **Backend :** Node.js / Express (TypeScript).
-- **AI Core :** AWS Bedrock (Mistral Large) pour la logique de structuration.
-- **Voice :** ElevenLabs SDK pour le Speech-to-Text temps réel.
-- **Infrastructure :** AWS Amplify Hosting, AWS Lambda, CloudWatch.
+## 🛠️ Tech Stack
+| Layer | Tech | Key detail |
+|-------|------|------------|
+| Frontend | Next.js 16 App Router + TailwindCSS | Framer Motion for animations |
+| Backend | Express (TypeScript) | Deployed on AWS Lambda |
+| AI | AWS Bedrock → Mistral Large | `mistral.mistral-large-2402-v1:0` |
+| Voice | ElevenLabs WebSocket SDK | Real-time STT stream |
+| Validation | Zod | All LLM outputs validated before frontend |
+| Infra | AWS Amplify Hosting, CloudWatch | Logs: latency, LLM errors, cost/request |
 
-## 👥 Les Agents & Rôles
-### 1. The Architect (Main Agent)
-- **Goal :** Coordonner le flux entre l'entrée audio et la sortie JSON.
-- **Persona :** Expert en systèmes distribués et en UX minimaliste.
-- **Responsabilité :** Garantir que le `JSON Schema` est strictement respecté.
+## 📜 Coding Rules (Non-Negotiable)
+1. **Atomic Design** — UI components must be small & reusable in `src/components/ui/`
+2. **TypeScript Strict** — zero `any`. Zod validates every LLM JSON output.
+3. **Error Handling** — every Bedrock/ElevenLabs call: `try/catch` + CloudWatch structured log
+4. **JSON-First** — Mistral always responds in pure JSON. No prose in AI responses.
+5. **Optimistic UI** — show transcription state immediately; reconcile after Bedrock reply
+6. **DRY + KISS** — extract shared logic to `src/lib/`. Avoid over-engineering.
+7. **Separation of Concerns** — UI (`src/components/`) ↔ Logic (`src/hooks/`, `src/lib/`)
 
-### 2. The Prompt Engineer
-- **Goal :** Optimiser les appels AWS Bedrock.
-- **Skills :** Maîtrise des techniques de "Chain of Thought" et "Few-Shot Prompting".
+## � Agent Roles
 
-### 3. The UI/UX Crafter
-- **Goal :** Créer des composants React atomiques et animés (Framer Motion).
-- **Vibe :** Visualisation de données type "Linear" ou "Raycast".
+### 🏛️ The Architect (Main Agent)
+- Coordinates the audio input → JSON output flow
+- Enforces the JSON schema (see `docs/initial-idea.md`)
+- Reviews PRPs in `PRPs/` before implementation starts
 
-## 📜 Coding Rules (The "Vibes")
-1. **Atomic Design :** Tout composant UI doit être petit et réutilisable dans `components/ui`.
-2. **Type Safety :** TypeScript strict partout. Pas de `any`.
-3. **Error Handling :** Chaque appel API (Bedrock/ElevenLabs) doit avoir un bloc try/catch avec logging CloudWatch.
-4. **JSON-First :** Mistral doit toujours répondre en JSON pur pour la structuration des roadmaps.
-5. **Real-time Vibe :** Utiliser des états "optimistic UI" pour l'affichage de la transcription.
+### ⚗️ The Prompt Engineer
+- Owns all Bedrock prompt files in `backend/prompts/`
+- Technique: Chain-of-Thought + JSON-only output enforcement
+- Always validates prompt output against Zod schema before shipping
 
-## 🧰 Available Skills (Toolbox)
-*L'agent doit appeler ces skills pour exécuter des tâches réelles :*
-- `get_aws_bedrock_config` : Récupère les credentials et régions pour Mistral.
-- `generate_mistral_prompt` : Prépare le prompt de structuration selon le schema JSON fourni.
-- `setup_elevenlabs_socket` : Initialise le flux WebSocket pour le STT.
-- `validate_roadmap_schema` : Valide que le JSON généré est compatible avec le frontend.
+### 🎨 The UI/UX Crafter
+- Builds atomic React components (Framer Motion animations)
+- Visual references: Linear, Raycast design systems
+- Never hardcodes styles — uses Tailwind utility classes
 
-## 🔄 Workflow de Développement
-1. **Input :** L'utilisateur parle -> ElevenLabs STT.
-2. **Process :** Texte brut -> Skill `generate_mistral_prompt` -> AWS Bedrock.
-3. **Output :** JSON structuré -> Frontend (Roadmap View).
-4. **Refine :** "Not what I meant" -> Envoi du patch JSON via `POST /revise`.
+## 🔄 Data Flow
+```
+User speaks
+  → ElevenLabs WebSocket → transcript (optimistic UI update)
+  → POST /structure → AWS Bedrock (Mistral Large)
+  → Zod validates JSON → RoadmapSchema
+  → Frontend renders: RoadmapCanvas + PriorityMatrix
+  → User says "revise X" → POST /revise → patch JSON → re-render
+```
 
-## 📌 Mémoire du Projet (Changelog Intentionnel)
-- [ ] Initialisation du boilerplate Next.js + Express.
-- [ ] Setup AWS Bedrock (Mistral Large).
-- [ ] Integration ElevenLabs WebSocket.
-- [ ] Création de la matrice de priorité UI.
+## 🧰 Skills Toolbox
+| Skill | Path | Use when |
+|-------|------|----------|
+| Next.js best practices | `skills/next-best-practices/` | App Router, RSC, data fetching |
+| Backend patterns | `skills/backend-patterns/` | Express routes, middleware |
+| Prompt engineering | `skills/prompt-engineering/` | Mistral prompt design |
+| Speech-to-text | `skills/speech-to-text/` | ElevenLabs WebSocket setup |
+| AWS architecture | `skills/aws-solution-architect/` | Bedrock, Lambda, CloudWatch |
+| UI/UX | `skills/ui-ux-pro-max/` | Component design, animations |
+
+## Current State (see changelog.md)
+- [] Next.js + Express boilerplate
+- [] AWS Bedrock Mistral integration (`call_mistral_bedrock` skill)
+- [] ElevenLabs hook (`useElevenLabs` WebSocket)
+- [] UI: `RoadmapCanvas`, `BrainDumpInput`, `PriorityMatrix`
+- [ ] Focus Mode
+- [ ] XP/Gamification system
+- [ ] Real-time sync optimization (WebSocket latency)
+
+## ⚠️ Anti-Patterns to Avoid
+- Multi-agent chaining without clear necessity
+- Secondary features before MVP is stable
+- UI that doesn't clearly display the plan
+- Prompts that allow non-JSON output from Mistral
+- Hardcoded AWS credentials (always use env vars)
