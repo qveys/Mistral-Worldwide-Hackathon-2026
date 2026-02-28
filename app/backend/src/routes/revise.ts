@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
+import { RevisionResponseSchema } from '../schemas/roadmap.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
@@ -12,25 +13,7 @@ const ReviseRequestSchema = z.object({
   userId: z.string().uuid()
 });
 
-// Response schema for revise endpoint
-const ReviseResponseSchema = z.object({
-  revisedRoadmap: z.array(z.object({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    priority: z.number().min(1).max(5),
-    status: z.enum(["unchanged", "modified", "removed", "added"]),
-    dependencies: z.array(z.string()).optional()
-  })),
-  changesSummary: z.object({
-    itemsModified: z.number(),
-    itemsAdded: z.number(),
-    itemsRemoved: z.number(),
-    confidenceScore: z.number().min(0).max(1)
-  })
-});
-
-router.post('/revise', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     // Validate request
     const validatedRequest = ReviseRequestSchema.parse(req.body);
@@ -53,7 +36,7 @@ router.post('/revise', async (req, res) => {
     };
     
     // Validate response before sending
-    const validatedResponse = ReviseResponseSchema.parse(response);
+    const validatedResponse = RevisionResponseSchema.parse(response);
     
     res.json(validatedResponse);
   } catch (error) {

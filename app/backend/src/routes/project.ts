@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// GET /api/project — list projects for a user (optional userId query param)
+// GET /api/project — list projects for a user (required userId query param)
 router.get('/', async (req, res) => {
   try {
     const userIdQuery = req.query.userId;

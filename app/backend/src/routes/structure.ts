@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
 import { StorageService } from '../services/storage.js';
+import { RoadmapResponseSchema } from '../schemas/roadmap.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
@@ -15,23 +16,7 @@ const StructureRequestSchema = z.object({
   sessionId: z.string().uuid()
 });
 
-// Response schema for structure endpoint
-const StructureResponseSchema = z.object({
-  roadmap: z.array(z.object({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    priority: z.number().min(1).max(5),
-    dependencies: z.array(z.string()).optional()
-  })),
-  metadata: z.object({
-    processingTimeMs: z.number(),
-    modelUsed: z.string(),
-    confidenceScore: z.number().min(0).max(1)
-  })
-});
-
-router.post('/structure', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     // Validate request
     const validatedRequest = StructureRequestSchema.parse(req.body);
@@ -54,7 +39,7 @@ router.post('/structure', async (req, res) => {
     };
     
     // Validate response before sending
-    const validatedResponse = StructureResponseSchema.parse(response);
+    const validatedResponse = RoadmapResponseSchema.parse(response);
 
     // Persist the project so it can be retrieved later via GET /api/project/:id
     const projectId = uuidv4();

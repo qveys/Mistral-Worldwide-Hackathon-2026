@@ -1,31 +1,19 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { z } from 'zod';
-
-// Schema for a stored project
-const TaskSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
-  priority: z.number().min(1).max(5),
-  dependencies: z.array(z.string()).optional()
-});
+import { TaskSchema, RoadmapMetadataSchema } from '../schemas/roadmap.js';
 
 const ProjectSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
   roadmap: z.array(TaskSchema),
-  metadata: z.object({
-    processingTimeMs: z.number(),
-    modelUsed: z.string(),
-    confidenceScore: z.number().min(0).max(1)
-  }),
+  metadata: RoadmapMetadataSchema,
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime()
 });
 
 export type Project = z.infer<typeof ProjectSchema>;
-export type Task = z.infer<typeof TaskSchema>;
+export type { Task } from '../schemas/roadmap.js';
 
 export class StorageService {
   private storageDir: string;
@@ -43,13 +31,16 @@ export class StorageService {
   }
 
   async saveProject(project: Omit<Project, 'createdAt' | 'updatedAt'> & { createdAt?: string; updatedAt?: string }): Promise<Project> {
+    // Validate ID as UUID at service level to prevent path traversal
+    z.string().uuid().parse(project.id);
+
     await this.ensureStorageDir();
 
     const now = new Date().toISOString();
     const fullProject: Project = {
       ...project,
       createdAt: project.createdAt ?? now,
-      updatedAt: now
+      updatedAt: project.updatedAt ?? now
     };
 
     const validated = ProjectSchema.parse(fullProject);
@@ -60,7 +51,11 @@ export class StorageService {
   }
 
   async getProject(projectId: string): Promise<Project | null> {
-    const filePath = this.getProjectFilePath(projectId);
+    // Validate ID as UUID at service level to prevent path traversal
+    const idValidation = z.string().uuid().safeParse(projectId);
+    if (!idValidation.success) return null;
+
+    const filePath = this.getProjectFilePath(idValidation.data);
 
     try {
       const content = await fs.readFile(filePath, 'utf-8');

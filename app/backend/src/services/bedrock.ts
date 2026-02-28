@@ -1,5 +1,6 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
+import { RoadmapResponseSchema, RevisionResponseSchema, type RoadmapResponse, type RevisionResponse } from "../schemas/roadmap.js";
 
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
@@ -23,7 +24,7 @@ export class BedrockService {
     this.client = new BedrockRuntimeClient({ region: this.config.region });
   }
 
-  async generateRoadmap(transcript: string, userId: string): Promise<any> {
+  async generateRoadmap(transcript: string, userId: string): Promise<RoadmapResponse> {
     try {
       const prompt = this.buildRoadmapPrompt(transcript);
       
@@ -78,26 +79,11 @@ Return ONLY valid JSON in this exact schema:
 }`;
   }
 
-  private validateRoadmapResponse(response: any): any {
-    const RoadmapResponseSchema = z.object({
-      roadmap: z.array(z.object({
-        id: z.string(),
-        title: z.string(),
-        description: z.string(),
-        priority: z.number().min(1).max(5),
-        dependencies: z.array(z.string()).optional()
-      })),
-      metadata: z.object({
-        processingTimeMs: z.number(),
-        modelUsed: z.string(),
-        confidenceScore: z.number().min(0).max(1)
-      })
-    });
-    
+  private validateRoadmapResponse(response: unknown): RoadmapResponse {
     return RoadmapResponseSchema.parse(response);
   }
 
-  async generateRevision(roadmapId: string, instructions: string): Promise<any> {
+  async generateRevision(roadmapId: string, instructions: string): Promise<RevisionResponse> {
     try {
       const prompt = this.buildRevisionPrompt(roadmapId, instructions);
       
@@ -154,24 +140,7 @@ Return ONLY valid JSON in this exact schema:
 }`;
   }
 
-  private validateRevisionResponse(response: any): any {
-    const RevisionResponseSchema = z.object({
-      revisedRoadmap: z.array(z.object({
-        id: z.string(),
-        title: z.string(),
-        description: z.string(),
-        priority: z.number().min(1).max(5),
-        status: z.enum(["unchanged", "modified", "removed", "added"]),
-        dependencies: z.array(z.string()).optional()
-      })),
-      changesSummary: z.object({
-        itemsModified: z.number(),
-        itemsAdded: z.number(),
-        itemsRemoved: z.number(),
-        confidenceScore: z.number().min(0).max(1)
-      })
-    });
-    
+  private validateRevisionResponse(response: unknown): RevisionResponse {
     return RevisionResponseSchema.parse(response);
   }
 }
