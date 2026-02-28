@@ -2,6 +2,7 @@
 
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
 import { TranscriptionLiveView } from '@/components/brain-dump/TranscriptionLiveView';
+import { ClarificationBubble } from '@/components/brain-dump/ClarificationBubble';
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
 import { RoadmapCanvas, RoadmapItem } from '@/components/roadmap/RoadmapCanvas';
@@ -9,12 +10,19 @@ import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput'
 import { ExportButton } from '@/components/ui/ExportButton';
 import { LoadingOrchestrator } from '@/components/ui/LoadingOrchestrator';
 import { MicButton, MicButtonState } from '@/components/ui/MicButton';
-import { Task, TaskStatus } from '@/components/ui/TaskCard';
+import { Task, TaskCard, TaskStatus } from '@/components/ui/TaskCard';
 import { Toast, ToastType } from '@/components/ui/Toast';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Spinner } from '@/components/ui/Spinner';
+import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { cn } from '@/lib/utils';
-import { BookOpen, Home, Moon, Play, Sparkles, Sun } from 'lucide-react';
+import { BookOpen, Home, Moon, Play, Sparkles, Sun, Bug, CheckCircle2, AlertTriangle, AlertCircle, Lock, messageCircle, Brain } from 'lucide-react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Composant qui crash pour tester l'ErrorBoundary
 function CrashingComponent() {
@@ -29,6 +37,8 @@ export default function DocumentationPage() {
     const [showRoadmap, setShowRoadmap] = useState(false);
     const [micState, setMicState] = useState<MicButtonState>('idle');
     const [shouldCrash, setShouldCrash] = useState(false);
+    const [isDemoBlocked, setIsDemoBlocked] = useState(true);
+    const [isBubbleVisible, setIsBubbleVisible] = useState(false);
     const lastPromptRef = useRef<string>('');
 
     // Toast State
@@ -64,14 +74,7 @@ export default function DocumentationPage() {
             priority: 'low',
             status: 'backlog',
             estimate: 'L',
-        },
-        {
-            id: '4',
-            title: 'Configuration de la base de données',
-            priority: 'high',
-            status: 'backlog',
-            estimate: 'M',
-        },
+        }
     ]);
 
     const showToast = (
@@ -115,6 +118,17 @@ export default function DocumentationPage() {
                 isDarkMode ? 'dark bg-slate-950' : 'bg-slate-50',
             )}
         >
+            {/* Clarification Bubble Demo */}
+            <ClarificationBubble 
+                isVisible={isBubbleVisible}
+                question="Est-ce que l'authentification doit être gérée par un service externe ou en local ?"
+                onReply={(ans) => {
+                    showToast(`IA a reçu : "${ans}"`, 'success');
+                    setIsBubbleVisible(false);
+                }}
+                onIgnore={() => setIsBubbleVisible(false)}
+            />
+
             {/* Toast Notification */}
             <Toast
                 isVisible={toast.isVisible}
@@ -274,7 +288,7 @@ export default function DocumentationPage() {
                     </section>
                 ) : (
                     <section className="space-y-12">
-                        <header className="space-y-2 px-2">
+                        <header className="space-y-2 px-2 text-left">
                             <h1 className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">
                                 Documentation
                             </h1>
@@ -283,9 +297,50 @@ export default function DocumentationPage() {
                             </p>
                         </header>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 text-left">
                             {/* Left Column */}
-                            <div className="space-y-12">
+                            <div className="space-y-12 text-left">
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Atomic Primitives
+                                    </h3>
+                                    <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 space-y-8">
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Buttons</p>
+                                            <div className="flex flex-wrap gap-3">
+                                                <Button variant="primary">Primary</Button>
+                                                <Button variant="secondary">Secondary</Button>
+                                                <Button variant="danger">Danger</Button>
+                                                <Button variant="primary" isLoading>Loading</Button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Badges</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                <Badge variant="priority" type="high">High</Badge>
+                                                <Badge variant="status" type="doing">In Progress</Badge>
+                                                <Badge variant="estimate">Size: M</Badge>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Input</p>
+                                            <Input label="Nom du Projet" placeholder="Ex: Mon Super Hackathon" />
+                                            <Input label="Email" placeholder="user@example.com" error="Email invalide" defaultValue="invalid-email" />
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Spinners</p>
+                                            <div className="flex items-center gap-6">
+                                                <Spinner size="sm" />
+                                                <Spinner size="md" className="text-blue-500" />
+                                                <Spinner size="lg" className="text-[#ff4f00]" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="space-y-4">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Voice & Transcription
@@ -303,7 +358,86 @@ export default function DocumentationPage() {
                                             text="Ceci est une prévisualisation de la transcription qui s'anime mot par mot."
                                             isRecording={micState === 'recording'}
                                             onTextChange={(val) => console.log(val)}
-                                        />{' '}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 text-left">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Task States (Interactive)
+                                    </h3>
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between px-2">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Simulateur de blocage</p>
+                                            <button 
+                                                onClick={() => setIsDemoBlocked(!isDemoBlocked)}
+                                                className={cn(
+                                                    "w-10 h-5 rounded-full transition-colors relative",
+                                                    isDemoBlocked ? "bg-red-500" : "bg-slate-300 dark:bg-slate-700"
+                                                )}
+                                            >
+                                                <motion.div 
+                                                    animate={{ x: isDemoBlocked ? 20 : 2 }}
+                                                    className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
+                                                />
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <TaskCard 
+                                                task={{ id: 'demo-1', title: "Tâche interactive (Utilisez le switch)", priority: 'high', status: 'backlog', estimate: 'M' }}
+                                                isBlocked={isDemoBlocked}
+                                                blockedBy={["Configuration du serveur", "Validation Sécurité"]}
+                                                onStatusChange={() => showToast("Statut mis à jour", "success")}
+                                            />
+                                            <div className="h-[1px] bg-slate-200 dark:bg-white/5 my-2" />
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase px-2">Galerie de statuts</p>
+                                            <TaskCard 
+                                                task={{ id: 's1', title: "Tâche en attente (Backlog)", priority: 'low', status: 'backlog', estimate: 'S' }}
+                                                onStatusChange={() => {}}
+                                            />
+                                            <TaskCard 
+                                                task={{ id: 's3', title: "Tâche terminée (Done)", priority: 'high', status: 'done', estimate: 'L' }}
+                                                onStatusChange={() => {}}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Column */}
+                            <div className="space-y-12 text-left">
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        Objective Molecule
+                                    </h3>
+                                    <ObjectiveCard 
+                                        title="Lancer le MVP"
+                                        priority="high"
+                                        tasks={[
+                                            { id: 't1', title: "Setup Database", status: 'done', priority: 'high', estimate: 'M' },
+                                            { id: 't2', title: "Auth Integration", status: 'doing', priority: 'high', estimate: 'L' },
+                                            { id: 't3', title: "Landing Page", status: 'backlog', priority: 'medium', estimate: 'S' },
+                                            { id: 't4', title: "Deploy to Prod", status: 'backlog', priority: 'high', estimate: 'M' },
+                                        ]}
+                                    />
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
+                                        AI Clarification
+                                    </h3>
+                                    <div className="p-8 bg-white/10 dark:bg-black/20 rounded-[2.5rem] border border-white/20 flex flex-col items-center gap-4">
+                                        <div className="h-12 w-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                                            <Brain size={24} />
+                                        </div>
+                                        <p className="text-sm text-slate-500 text-center font-medium">Tester l&apos;apparition de la bulle de question IA :</p>
+                                        <button 
+                                            onClick={() => setIsBubbleVisible(true)}
+                                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-tighter italic shadow-xl hover:scale-105 transition-all"
+                                        >
+                                            Déclencher Question
+                                        </button>
                                     </div>
                                 </div>
 
@@ -340,32 +474,15 @@ export default function DocumentationPage() {
 
                                 <div className="space-y-4">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Action List
+                                        Action List (Grouped)
                                     </h3>
                                     <ActionItemsList
                                         tasks={tasks}
                                         onStatusChange={handleStatusChange}
                                     />
                                 </div>
-                            </div>
 
-                            {/* Right Column */}
-                            <div className="space-y-12">
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                                        Layout & Canvas
-                                    </h3>
-                                    <div className="bg-white/10 p-6 rounded-[2.5rem] border border-white/20">
-                                        <RoadmapItem
-                                            title="Composant RoadmapItem"
-                                            description="Un item individuel de la roadmap avec son statut et sa période."
-                                            period="Q1 2026"
-                                            status="in-progress"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
+                                <div className="space-y-4 text-left">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Error Boundary State
                                     </h3>
@@ -374,10 +491,10 @@ export default function DocumentationPage() {
                                             onClick={() => setShouldCrash(true)}
                                             className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-tighter italic shadow-xl hover:scale-105 transition-all"
                                         >
-                                            Simuler Crash
+                                            <Bug size={18} /> Simuler Crash
                                         </button>
                                         {shouldCrash && (
-                                            <div className="w-full mt-4">
+                                            <div className="w-full mt-4 text-left">
                                                 <ErrorBoundary
                                                     fallback={
                                                         <div className="p-4 bg-red-50 text-red-600 rounded-xl text-center font-bold border border-red-100">
@@ -398,7 +515,7 @@ export default function DocumentationPage() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-4 text-left">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Loading & Orchestration
                                     </h3>
@@ -408,7 +525,7 @@ export default function DocumentationPage() {
                                     />
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-4 text-left">
                                     <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
                                         Export & Inputs
                                     </h3>
