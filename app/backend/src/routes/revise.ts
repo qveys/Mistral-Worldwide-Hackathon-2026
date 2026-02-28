@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { BedrockService } from '../services/bedrock';
 
 const router = Router();
+const bedrockService = new BedrockService();
 
 // Request schema for revise endpoint
 const ReviseRequestSchema = z.object({
@@ -28,40 +30,38 @@ const ReviseResponseSchema = z.object({
   })
 });
 
-router.post('/revise', (req, res) => {
+router.post('/revise', async (req, res) => {
   try {
     // Validate request
     const validatedRequest = ReviseRequestSchema.parse(req.body);
     
-    // TODO: Implement Bedrock integration for revision
-    const mockResponse = {
-      revisedRoadmap: [
-        {
-          id: "task-1",
-          title: "Implement core API",
-          description: "Build Express routes and validation with Zod",
-          priority: 1,
-          status: "modified",
-          dependencies: []
-        }
-      ],
+    // Call Bedrock service to generate revision
+    const startTime = Date.now();
+    const revisionData = await bedrockService.generateRevision(
+      validatedRequest.roadmapId,
+      validatedRequest.revisionInstructions
+    );
+    const processingTimeMs = Date.now() - startTime;
+    
+    // Enhance response with processing metadata
+    const response = {
+      ...revisionData,
       changesSummary: {
-        itemsModified: 1,
-        itemsAdded: 0,
-        itemsRemoved: 0,
-        confidenceScore: 0.92
+        ...revisionData.changesSummary,
+        processingTimeMs
       }
     };
     
     // Validate response before sending
-    const validatedResponse = ReviseResponseSchema.parse(mockResponse);
+    const validatedResponse = ReviseResponseSchema.parse(response);
     
     res.json(validatedResponse);
   } catch (error) {
+    console.error('Revise endpoint error:', error);
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Invalid request", details: error.errors });
     } else {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
     }
   }
 });

@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { BedrockService } from '../services/bedrock';
 
 const router = Router();
+const bedrockService = new BedrockService();
 
 // Request schema for structure endpoint
 const StructureRequestSchema = z.object({
@@ -26,39 +28,38 @@ const StructureResponseSchema = z.object({
   })
 });
 
-router.post('/structure', (req, res) => {
+router.post('/structure', async (req, res) => {
   try {
     // Validate request
     const validatedRequest = StructureRequestSchema.parse(req.body);
     
-    // TODO: Implement Bedrock integration
-    // This is a placeholder response for now
-    const mockResponse = {
-      roadmap: [
-        {
-          id: "task-1",
-          title: "Implement core API",
-          description: "Build Express routes and validation",
-          priority: 1,
-          dependencies: []
-        }
-      ],
+    // Call Bedrock service to generate roadmap
+    const startTime = Date.now();
+    const roadmapData = await bedrockService.generateRoadmap(
+      validatedRequest.transcript,
+      validatedRequest.userId
+    );
+    const processingTimeMs = Date.now() - startTime;
+    
+    // Enhance response with processing metadata
+    const response = {
+      ...roadmapData,
       metadata: {
-        processingTimeMs: 120,
-        modelUsed: "mistral-large",
-        confidenceScore: 0.95
+        ...roadmapData.metadata,
+        processingTimeMs
       }
     };
     
     // Validate response before sending
-    const validatedResponse = StructureResponseSchema.parse(mockResponse);
+    const validatedResponse = StructureResponseSchema.parse(response);
     
     res.json(validatedResponse);
   } catch (error) {
+    console.error('Structure endpoint error:', error);
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Invalid request", details: error.errors });
     } else {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
     }
   }
 });
