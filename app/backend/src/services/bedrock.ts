@@ -1,5 +1,6 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
+import { buildStructurePrompt } from "../prompts/structure.js";
 
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
@@ -25,7 +26,7 @@ export class BedrockService {
 
   async generateRoadmap(transcript: string, userId: string): Promise<any> {
     try {
-      const prompt = this.buildRoadmapPrompt(transcript);
+      const prompt = buildStructurePrompt(transcript);
       
       const input = {
         modelId: this.config.modelId,
@@ -52,30 +53,6 @@ export class BedrockService {
       console.error("Bedrock service error:", error);
       throw error;
     }
-  }
-
-  private buildRoadmapPrompt(transcript: string): string {
-    return `You are an AI strategic planning assistant. Convert this brain dump into a structured roadmap:
-
-${transcript}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "roadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "dependencies": ["string"]
-    }
-  ],
-  "metadata": {
-    "processingTimeMs": number,
-    "modelUsed": "string",
-    "confidenceScore": number (0-1)
-  }
-}`;
   }
 
   private validateRoadmapResponse(response: any): any {

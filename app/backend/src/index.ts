@@ -4,6 +4,7 @@ import express, { type Request, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { createServer } from 'http';
 import { createRequire } from 'module';
+import healthRouter from './routes/health.js';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
 import { VoxstralService } from './services/voxstral.js';
@@ -21,24 +22,24 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Rate limiting: 10 requests per minute per IP on /api/*
+// Rate limiting: 10 requests per minute per IP on /api/structure and /api/revise
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 10,
   standardHeaders: 'draft-7',
-  legacyHeaders: false,
-});
-app.use('/api', apiLimiter);
-
-// Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-    res.json({
-        status: 'ok',
-        version,
-        uptime: Math.floor((Date.now() - startTime) / 1000),
-        timestamp: new Date().toISOString(),
+  legacyHeaders: true,
+  handler: (_req: Request, res: Response) => {
+    res.status(429).json({
+      error: 'TooManyRequests',
+      message: 'Too many requests from this IP, please retry later.',
     });
+  },
 });
+app.use('/api/structure', apiLimiter);
+app.use('/api/revise', apiLimiter);
+
+// Health check route
+app.use('/health', healthRouter({ version, startTime }));
 
 // API routes
 app.use('/api/structure', structureRouter);
