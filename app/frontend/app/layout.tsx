@@ -43,10 +43,8 @@ export default async function RootLayout({
     headersList.get("x-next-intl-locale") ?? routing.defaultLocale;
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${futuraround.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-      >
+    <html lang={locale} suppressHydrationWarning className={`${futuraround.variable} ${geistSans.variable} ${geistMono.variable}`}>
+      <body className="font-sans antialiased">
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>

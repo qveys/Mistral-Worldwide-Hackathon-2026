@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Zap, Eye, EyeOff, Cpu } from 'lucide-react';
+import { Zap, Eye, EyeOff, Cpu, Mic } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { Button } from '@/components/ui/Button';
@@ -42,8 +42,8 @@ export function IntegrationSection() {
                 <div className="w-5 h-5 bg-[#ff4f00] rounded-sm rotate-45" />
               </div>
               <div>
-                <h4 className={cn("font-bold text-sm", isDarkMode ? "text-white" : "text-slate-900")}>Mistral Large 2</h4>
-                <p className={cn("text-[10px] font-mono", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Primary Neural Engine</p>
+                <h4 className={cn("font-bold text-sm", isDarkMode ? "text-white" : "text-slate-900")}>Mistral Large 3</h4>
+                <p className={cn("text-[10px] font-mono", isDarkMode ? "text-zinc-500" : "text-slate-600")}>mistral.mistral-large-2407-v1:0</p>
               </div>
             </div>
             <Button variant="ghost" className={cn("h-8 text-[9px] uppercase font-black", isDarkMode ? "text-zinc-500 hover:text-white" : "text-slate-600 hover:text-slate-900")}>Change Model</Button>
@@ -65,6 +65,28 @@ export function IntegrationSection() {
                 {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Voxtral (Voice STT) */}
+        <div className={cn(
+          "p-6 rounded-2xl space-y-6",
+          isDarkMode ? "bg-zinc-900/50 border border-zinc-800" : "bg-slate-50 border border-slate-300"
+        )}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "h-10 w-10 rounded-lg flex items-center justify-center",
+                isDarkMode ? "bg-black border border-zinc-800" : "bg-black border border-slate-300"
+              )}>
+                <Mic size={20} className="text-[#ff4f00]" />
+              </div>
+              <div>
+                <h4 className={cn("font-bold text-sm", isDarkMode ? "text-white" : "text-slate-900")}>Voxtral</h4>
+                <p className={cn("text-[10px] font-mono", isDarkMode ? "text-zinc-500" : "text-slate-600")}>voxtral-mini-transcribe-realtime-2602</p>
+              </div>
+            </div>
+            <span className={cn("text-[9px] font-black uppercase px-2 py-1 rounded", isDarkMode ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-700")}>Voice STT</span>
           </div>
         </div>
 

@@ -42,7 +42,7 @@ export function ErrorLayout({ code, title, message, icon, labels }: ErrorLayoutP
             <div className="max-w-md w-full space-y-12 relative z-10 text-center">
                 {/* Animated Icon */}
                 <div className="flex justify-center">
-                    <div className="h-24 w-24 bg-zinc-900 border border-zinc-800 rounded-[2rem] flex items-center justify-center text-violet-500 shadow-2xl shadow-violet-500/10 animate-pulse">
+                    <div className="h-24 w-24 bg-zinc-900 border border-zinc-800 rounded-[2rem] flex items-center justify-center text-blue-500 shadow-2xl shadow-blue-500/10 animate-pulse">
                         <Icon size={48} />
                     </div>
                 </div>
@@ -80,7 +80,7 @@ export function ErrorLayout({ code, title, message, icon, labels }: ErrorLayoutP
                     <div className="font-mono text-[9px] text-zinc-700 space-y-1.5 flex flex-col items-center">
                         <p>{`> TRACE_ID: echomaps-${traceId}`}</p>
                         <p>{`> TIMESTAMP: ${timestamp}`}</p>
-                        <p className="text-violet-900">{`> connection_sync_terminated`}</p>
+                        <p className="text-blue-900">{`> connection_sync_terminated`}</p>
                     </div>
                 </div>
             </div>

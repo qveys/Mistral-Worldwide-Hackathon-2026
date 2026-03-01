@@ -17,7 +17,7 @@ export function ProfileSection() {
       isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"
     )}>
       <div className={cn("flex items-center gap-3 border-b pb-6", isDarkMode ? "border-zinc-800/50" : "border-slate-200")}>
-        <User size={18} className="text-violet-500" />
+        <User size={18} className="text-blue-600 dark:text-blue-400" />
         <h3 className={cn("text-sm font-bold uppercase tracking-widest", isDarkMode ? "text-white" : "text-slate-900")}>{t('identityProfile')}</h3>
       </div>
 
