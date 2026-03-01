@@ -166,7 +166,7 @@
         "roadmapsPageInitializeRoadmap": "Initialiser la roadmap",
         "roadmapsPageNewCluster": "Nouveau cluster de roadmap",
         "newRoadmapDescription": "Parlez ou écrivez votre idée. Mistral structurera votre roadmap.",
-        "inferenceSpeedValue": "84,2 t/s",
+        "inferenceSpeedValue": "86,2 t/s",
         "inferenceSpeedDetail": "42 ms LATENCE",
         "topologicalSortValue": "Sain",
         "topologicalSortDetail": "VÉRIFIÉ",

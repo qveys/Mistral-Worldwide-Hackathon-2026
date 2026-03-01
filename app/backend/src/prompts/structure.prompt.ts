@@ -95,22 +95,32 @@ ${ROADMAP_SCHEMA_DESCRIPTION}${includePlanning ? '\n  // + planning field as des
 
 /**
  * Build a retry prompt when Zod validation fails.
- * Includes the validation error so the model can fix its output.
+ * Includes the validation error AND the expected schema so the model can fix its output.
  */
 export function buildRetryPrompt(
     previousOutput: string,
     zodError: string,
 ): { system: string; user: string } {
     const system = `You are a JSON correction assistant. The previous JSON output failed schema validation.
-Fix the JSON to match the required schema. Return ONLY valid JSON. No explanation.`;
+Fix the JSON to EXACTLY match the required schema. Return ONLY valid JSON. No markdown fences. No explanation. No text before or after the JSON.
 
-    const user = `Previous output:
+REQUIRED SCHEMA:
+${ROADMAP_SCHEMA_DESCRIPTION}
+
+CRITICAL RULES:
+- Each objective MUST have: "id" (string), "text" (string), "priority" ("high"|"medium"|"low")
+- Each task MUST have: "id" (string), "title" (string), "objectiveId" (string), "status" ("backlog"|"doing"|"done"), "estimate" ("S"|"M"|"L"), "priority" ("high"|"medium"|"low"), "dependsOn" (string[])
+- objectives array MUST have at least 1 item
+- tasks array MUST have at least 1 item
+- If the brain dump is too vague, invent a reasonable objective and task based on the input.`;
+
+    const user = `Previous output that failed validation:
 ${previousOutput}
 
-Validation error:
+Validation errors:
 ${zodError}
 
-Fix the JSON and return it.`;
+Fix the JSON to match the schema exactly. Return ONLY the corrected JSON.`;
 
     return { system, user };
 }
