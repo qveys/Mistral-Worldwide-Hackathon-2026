@@ -37,7 +37,8 @@
     "themeLight": "Passer en mode clair",
     "themeDark": "Passer en mode sombre",
     "settings": "Paramètres",
-    "exit": "Quitter"
+    "exit": "Quitter",
+    "logout": "Déconnexion"
   },
   "errors": {
     "systemInterrupt": "System Interrupt / Error {code}",

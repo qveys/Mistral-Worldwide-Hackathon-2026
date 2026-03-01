@@ -16,8 +16,9 @@ import {
   Moon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
+import { useAuth } from '@/lib/AuthContext';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 export function DashboardSidebar({
@@ -28,8 +29,15 @@ export function DashboardSidebar({
   onToggle: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { isDarkMode, toggleTheme } = useDashboardTheme();
+  const { logout } = useAuth();
   const t = useTranslations('nav');
+
+  const handleExit = () => {
+    logout();
+    router.push('/');
+  };
 
   const navItems = [
     { id: 'dash', labelKey: 'console' as const, icon: LayoutDashboard, href: '/dashboard' },
@@ -111,10 +119,10 @@ export function DashboardSidebar({
           {!isCollapsed && <span>{t('settings')}</span>}
         </Link>
 
-        <Link href="/" className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
+        <button type="button" onClick={handleExit} aria-label={t('exit')} className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
           <LogOut size={22} />
           {!isCollapsed && <span>{t('exit')}</span>}
-        </Link>
+        </button>
       </div>
     </aside>
   );

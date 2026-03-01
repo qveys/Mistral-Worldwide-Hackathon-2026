@@ -3,6 +3,22 @@ import path from 'node:path';
 import { logger } from '../lib/logger.js';
 const LOCAL_DATA_DIR = path.resolve(process.cwd(), 'data');
 const USERS_FILE = path.join(LOCAL_DATA_DIR, 'users.json');
+
+function readUsersFromDisk() {
+    if (!fs.existsSync(USERS_FILE)) {
+        logger.warn('AuthController', 'users.json not found', { path: USERS_FILE });
+        return null;
+    }
+    const raw = fs.readFileSync(USERS_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+        throw new Error('users.json has invalid format');
+    }
+    return parsed
+        .filter((entry) => typeof entry === 'string')
+        .map((entry) => entry.toLowerCase());
+}
+
 /**
  * POST /auth/login
  * Validates that the given email exists in data/users.json (case-insensitive).
