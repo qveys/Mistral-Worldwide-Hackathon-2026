@@ -26,7 +26,7 @@ export function QuickStart() {
                 const body = await response.json().catch(() => ({}));
                 const apiError = (body as { error?: string }).error;
                 const key = apiError ? getErrorMessageKey(apiError) : null;
-                throw new Error(key ? tErrors(key) : tErrors('failedGenerateRoadmap'));
+                throw new Error(key ? tErrors(key) : apiError || tErrors('failedGenerateRoadmap'));
             }
             const data = (await response.json()) as { projectId?: unknown };
             if (typeof data.projectId !== 'string' || data.projectId.trim() === '') {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_URL } from './api';
 import type { Roadmap } from './types';
 
@@ -23,6 +23,13 @@ export function useStructure(): UseStructureReturn {
     );
     const abortRef = useRef<AbortController | null>(null);
     const fetchProjectAbortRef = useRef<AbortController | null>(null);
+
+    useEffect(() => {
+        return () => {
+            abortRef.current?.abort();
+            fetchProjectAbortRef.current?.abort();
+        };
+    }, []);
 
     const structureBrainDump = useCallback(
         async (text: string, includePlanning: boolean): Promise<Roadmap | null> => {
@@ -83,7 +90,7 @@ export function useStructure(): UseStructureReturn {
             });
 
             if (response.status === 404) {
-                setError('Projet non trouvé');
+                setError('Project not found');
                 return null;
             }
 
