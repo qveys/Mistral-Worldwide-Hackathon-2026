@@ -3,7 +3,6 @@ import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/lib/ThemeContext";
-import { ThemeSwitch } from "@/components/ui/ThemeSwitch";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -40,10 +39,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <ThemeSwitch />
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
