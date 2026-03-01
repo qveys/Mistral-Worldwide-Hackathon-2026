@@ -20,7 +20,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        setIsLoggedIn(!!localStorage.getItem(AUTH_TOKEN_KEY));
+        queueMicrotask(() => {
+            setIsLoggedIn(!!localStorage.getItem(AUTH_TOKEN_KEY));
+        });
     }, []);
 
     const login = useCallback((token: string) => {
