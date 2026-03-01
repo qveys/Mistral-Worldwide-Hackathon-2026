@@ -13,7 +13,6 @@ import { Input } from '@/components/ui/Input';
 export const FoundationSection = () => {
   const t = useTranslations('doc');
   const tTask = useTranslations('taskCard');
-  const tActions = useTranslations('actions');
   return (
   <motion.div key="foundation" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
     <SectionHeader title={t('designSystem')} description={t('sectionDesignSystemDescription')} />
@@ -30,7 +29,7 @@ export const FoundationSection = () => {
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant="priority" type="high">{tTask('priorityHigh')}</Badge>
           <Badge variant="status" type="doing">{tTask('inProgress')}</Badge>
-          <Badge variant="estimate">Size: M</Badge>
+          <Badge variant="estimate">{t('sizeLabel')}: M</Badge>
           <Spinner size="md" className="text-blue-600 dark:text-blue-400 ml-2" />
         </div>
       </div>

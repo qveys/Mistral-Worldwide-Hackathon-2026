@@ -90,7 +90,7 @@ export const LivePreviewSection = () => {
               <Badge variant="status" type="done">{tTask('completed')}</Badge>
               <Badge variant="status" type="doing">{tTask('inProgress')}</Badge>
               <Badge variant="status" type="backlog">{tActions('backlog')}</Badge>
-              <Badge variant="estimate">Size: XL</Badge>
+              <Badge variant="estimate">{t('sizeLabel')}: XL</Badge>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
@@ -152,9 +152,9 @@ export const LivePreviewSection = () => {
               <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl border-2 border-slate-200 dark:border-slate-600">
                 <span className="text-[9px] font-black uppercase text-slate-400 block mb-3">{t('quickSelect')}</span>
                 <div className="flex gap-2">
-                  {[t('web'), t('mobile'), t('api')].map((label) => (
-                    <button key={label} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-blue-500 transition-colors">
-                      {label}
+                  {(['web', 'mobile', 'api'] as const).map((key) => (
+                    <button key={key} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-blue-500 transition-colors">
+                      {t(key)}
                     </button>
                   ))}
                 </div>

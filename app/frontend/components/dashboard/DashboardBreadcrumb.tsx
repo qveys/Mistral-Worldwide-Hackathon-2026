@@ -8,14 +8,14 @@ import { ChevronRight, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
-const SEGMENT_KEYS: Record<string, 'console' | 'roadmaps' | 'activity' | 'timeline' | 'settings' | 'newRoadmap'> = {
+const SEGMENT_KEYS = {
   dashboard: 'console',
   roadmaps: 'roadmaps',
   activity: 'activity',
   timeline: 'timeline',
   settings: 'settings',
   new: 'newRoadmap',
-};
+} as const;
 
 export function DashboardBreadcrumb() {
   const pathname = usePathname();
@@ -27,7 +27,9 @@ export function DashboardBreadcrumb() {
     .split('/')
     .filter(Boolean)
     .map((segment, i, arr) => ({
-      label: SEGMENT_KEYS[segment] ? t(SEGMENT_KEYS[segment]) : segment.charAt(0).toUpperCase() + segment.slice(1),
+      label: segment in SEGMENT_KEYS
+        ? t(SEGMENT_KEYS[segment as keyof typeof SEGMENT_KEYS])
+        : segment.charAt(0).toUpperCase() + segment.slice(1),
       href: '/' + arr.slice(0, i + 1).join('/'),
       isLast: i === arr.length - 1,
     }));

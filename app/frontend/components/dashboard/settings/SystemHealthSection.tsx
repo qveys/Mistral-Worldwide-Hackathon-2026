@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 export function SystemHealthSection() {
   const t = useTranslations('settings');
+  const lastHealthCheckTime = React.useMemo(() => new Date().toLocaleTimeString(), []);
   const systems = [
     { labelKey: 'neuralEngine' as const, statusKey: 'stable' as const, icon: Server, color: 'text-emerald-500' },
     { labelKey: 'primaryDb' as const, statusKey: 'optimal' as const, icon: Database, color: 'text-blue-500' },
@@ -37,7 +38,7 @@ export function SystemHealthSection() {
 
       <div className="pt-6 border-t border-zinc-800/50">
         <p className="text-[10px] text-zinc-600 font-mono italic">
-          {t('lastHealthCheck', { time: new Date().toLocaleTimeString() })}
+          {t('lastHealthCheck', { time: lastHealthCheckTime })}
         </p>
       </div>
     </div>

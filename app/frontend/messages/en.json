@@ -365,6 +365,7 @@
     "actionSecondary": "Secondary Action",
     "zoneCritique": "Critical Zone",
     "customBrand": "Custom Brand",
+    "sizeLabel": "Size",
     "methodologyTitle": "Methodology",
     "stepCaptureTitle": "Capture & STT",
     "stepCaptureDesc": "User voice is captured in real time via Web Audio API and turned into raw text via Mistral (Voxtral) API.",
