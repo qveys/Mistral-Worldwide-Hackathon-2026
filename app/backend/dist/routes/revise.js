@@ -4,11 +4,13 @@ import { BedrockService } from '../services/bedrock.js';
 import { topologicalSort, validateReferentialIntegrity } from '../lib/graph.js';
 const router = Router();
 const bedrockService = new BedrockService();
-// Request schema for revise endpoint
-const ReviseRequestSchema = z.object({
-    roadmapId: z.string().uuid(),
-    revisionInstructions: z.string().min(10, "Revision instructions too short"),
-    userId: z.string().uuid()
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
+const RoadmapItemSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    priority: z.number().min(1).max(5),
+    dependencies: z.array(z.string()).optional()
 });
 // Response schema for revise endpoint
 const ReviseResponseSchema = z.object({
@@ -26,6 +28,9 @@ const ReviseResponseSchema = z.object({
         itemsRemoved: z.number(),
         confidenceScore: z.number().min(0).max(1)
     })
+});
+const ReviseResponseSchema = z.object({
+    roadmap: z.array(RoadmapItemSchema)
 });
 router.post('/revise', async (req, res) => {
     try {
@@ -75,12 +80,12 @@ router.post('/revise', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Revise endpoint error:', error);
+        logRouteError('POST /api/revise', error);
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: "Invalid request", details: error.issues });
         }
         else {
-            res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
+            res.status(500).json({ error: 'Internal server error' });
         }
     }
 });

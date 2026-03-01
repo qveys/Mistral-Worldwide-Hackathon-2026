@@ -7,6 +7,7 @@ import { createRequire } from 'module';
 import healthRouter from './routes/health.js';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
+import projectRouter from './routes/project.js';
 import { VoxstralService } from './services/voxstral.js';
 dotenv.config();
 const require = createRequire(import.meta.url);
@@ -36,6 +37,7 @@ app.use('/health', healthRouter({ version, startTime }));
 // API routes
 app.use('/api/structure', structureRouter);
 app.use('/api/revise', reviseRouter);
+app.use('/api', projectRouter);
 // Create HTTP server and integrate Voxstral WebSocket service
 const server = createServer(app);
 const voxstralService = new VoxstralService(server);
@@ -54,6 +56,7 @@ server.listen(port, () => {
     console.log(`- GET /health`);
     console.log(`- POST /api/structure`);
     console.log(`- POST /api/revise`);
+    console.log(`- GET /api/project/:id`);
     console.log(`- WS / (Voxstral WebSocket)`);
 });
 //# sourceMappingURL=index.js.map

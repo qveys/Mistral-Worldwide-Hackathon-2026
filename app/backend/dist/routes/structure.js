@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { BedrockService } from '../services/bedrock.js';
+import { BedrockService, BedrockValidationExhaustedError } from '../services/bedrock.js';
 const router = Router();
 const bedrockService = new BedrockService();
 // Request schema for structure endpoint
@@ -30,7 +30,7 @@ router.post('/structure', async (req, res) => {
         const validatedRequest = StructureRequestSchema.parse(req.body);
         // Call Bedrock service to generate roadmap
         const startTime = Date.now();
-        const roadmapData = await bedrockService.generateRoadmap(validatedRequest.transcript, validatedRequest.userId);
+        const roadmapData = await bedrockService.generateRoadmap(validatedRequest.transcript);
         const processingTimeMs = Date.now() - startTime;
         // Enhance response with processing metadata
         const response = {

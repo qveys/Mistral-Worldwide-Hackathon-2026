@@ -6,6 +6,7 @@ import type { Server as HttpServer } from 'http';
  */
 export declare class VoxstralService extends EventEmitter {
     private wss;
+    private server;
     private activeConnections;
     private transcriptionSessions;
     constructor(server: HttpServer);
@@ -15,13 +16,7 @@ export declare class VoxstralService extends EventEmitter {
     private simulateVoxstralTranscription;
     private endTranscriptionSession;
     private cleanupConnection;
-    /**
-     * Get active session count
-     */
     getActiveSessionCount(): number;
-    /**
-     * Get active connection count
-     */
     getActiveConnectionCount(): number;
     /**
      * Broadcast message to all connected clients

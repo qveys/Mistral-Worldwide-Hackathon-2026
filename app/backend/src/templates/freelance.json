@@ -1,0 +1,44 @@
+{
+  "slug": "freelance",
+  "title": "Lancement Freelance",
+  "description": "Template pour démarrer une activité de freelance",
+  "icon": "briefcase",
+  "examples": ["Dev freelance", "Design freelance", "Consulting"],
+  "defaultTasks": [
+    {
+      "id": "task-1",
+      "title": "Definir son offre de services",
+      "description": "Identifier ses competences cles et definir ses prestations",
+      "priority": 1,
+      "dependencies": []
+    },
+    {
+      "id": "task-2",
+      "title": "Creer son statut juridique",
+      "description": "Choisir et enregistrer le statut (auto-entrepreneur, SASU, etc.)",
+      "priority": 1,
+      "dependencies": ["task-1"]
+    },
+    {
+      "id": "task-3",
+      "title": "Construire son portfolio",
+      "description": "Creer un site web avec ses realisations et temoignages",
+      "priority": 2,
+      "dependencies": ["task-1"]
+    },
+    {
+      "id": "task-4",
+      "title": "Prospection et reseautage",
+      "description": "Contacter des clients potentiels, rejoindre des plateformes",
+      "priority": 2,
+      "dependencies": ["task-2", "task-3"]
+    },
+    {
+      "id": "task-5",
+      "title": "Premier client et facturation",
+      "description": "Decrocher sa premiere mission et mettre en place la facturation",
+      "priority": 3,
+      "dependencies": ["task-4"]
+    }
+  ]
+}

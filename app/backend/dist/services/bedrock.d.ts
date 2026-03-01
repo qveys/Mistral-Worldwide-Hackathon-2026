@@ -11,9 +11,6 @@ export declare class BedrockService {
     constructor(config?: Partial<z.infer<typeof BedrockConfigSchema>>);
     generateRoadmap(transcript: string, userId: string): Promise<any>;
     private validateRoadmapResponse;
-    generateRevision(roadmapId: string, instructions: string): Promise<any>;
-    private buildRevisionPrompt;
-    private validateRevisionResponse;
 }
 export {};
 //# sourceMappingURL=bedrock.d.ts.map
