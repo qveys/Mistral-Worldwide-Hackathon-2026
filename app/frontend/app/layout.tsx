@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import localFont from "next/font/local";
 import { Geist, Geist_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import { AuthProvider } from "@/lib/AuthContext";
 import "./globals.css";
+
+const futuraround = localFont({
+  src: "../public/fonts/fonnts.com-futuraround-medium.otf",
+  variable: "--font-futuraround",
+  display: "swap",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +45,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${futuraround.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   History,
@@ -11,7 +12,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Target,
-  Command,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -53,8 +53,8 @@ export function DashboardSidebar({
     )}>
       <div className={cn("flex items-center gap-3 px-2", isCollapsed ? "justify-center" : "justify-between")}>
         <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden">
-          <div className="h-8 w-8 bg-zinc-900 dark:bg-zinc-100 rounded-lg flex items-center justify-center text-white dark:text-black flex-shrink-0">
-            <Command size={18} />
+          <div className="h-8 w-8 rounded-lg shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+            <Image src="/logo.png" alt="EchoMaps" width={32} height={32} className="object-contain" />
           </div>
           {!isCollapsed && <span className="font-bold tracking-tight text-zinc-900 dark:text-white text-base uppercase">{t('appName')}</span>}
         </Link>
@@ -71,14 +71,14 @@ export function DashboardSidebar({
               key={item.id} 
               href={item.href}
               className={cn(
-                "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-xs font-medium",
+                "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-sm font-semibold tracking-tight",
                 isActive 
                   ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 shadow-sm" 
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
+                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
                 isCollapsed && "justify-center px-0"
               )}
             >
-              <item.icon size={22} className={cn(isActive ? "text-[#536dfe] dark:text-[#00b0ff]" : "text-zinc-400")} />
+              <item.icon size={22} className={cn(isActive ? "text-violet-500 dark:text-violet-400" : "text-zinc-500 dark:text-zinc-500")} />
               {!isCollapsed && <span>{t(item.labelKey)}</span>}
             </Link>
           );
@@ -91,7 +91,7 @@ export function DashboardSidebar({
           onClick={toggleTheme}
           aria-label={isDarkMode ? t('themeLight') : t('themeDark')}
           className={cn(
-            "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
+            "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-sm font-semibold tracking-tight text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
             isCollapsed && "justify-center px-0"
           )}
         >
@@ -108,10 +108,10 @@ export function DashboardSidebar({
         <Link
           href="/dashboard/settings"
           className={cn(
-            "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-xs font-medium",
+            "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-sm font-semibold tracking-tight",
             pathname === '/dashboard/settings'
               ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800"
-              : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
+              : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
             isCollapsed && "justify-center px-0"
           )}
         >
@@ -119,7 +119,7 @@ export function DashboardSidebar({
           {!isCollapsed && <span>{t('settings')}</span>}
         </Link>
 
-        <button type="button" onClick={handleExit} aria-label={t('exit')} className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
+        <button type="button" onClick={handleExit} aria-label={t('exit')} className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-sm font-semibold tracking-tight text-red-600 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
           <LogOut size={22} />
           {!isCollapsed && <span>{t('exit')}</span>}
         </button>

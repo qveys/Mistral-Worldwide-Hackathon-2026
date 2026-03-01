@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 // Settings Components
 import { SettingsHeader } from '@/components/dashboard/settings/SettingsHeader';
 import { ProfileSection } from '@/components/dashboard/settings/ProfileSection';
