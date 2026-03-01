@@ -1,17 +1,14 @@
 import { Router } from 'express';
 import { getProject } from '../services/storage.js';
-import { isValidProjectId } from '../lib/projectId.js';
+import { assertValidProjectId } from '../lib/projectId.js';
+import { HttpError } from '../lib/httpError.js';
+import { logRouteError } from '../lib/logger.js';
 
 const router = Router();
 
-router.get('/:id', async (req, res) => {
+router.get('/project/:id', async (req, res) => {
   try {
-    const projectId = req.params.id;
-    if (!isValidProjectId(projectId)) {
-      res.status(400).json({ error: 'Invalid project id' });
-      return;
-    }
-
+    const projectId = assertValidProjectId(req.params.id);
     const project = await getProject(projectId);
     if (!project) {
       res.status(404).json({ error: 'Project not found' });
@@ -19,7 +16,11 @@ router.get('/:id', async (req, res) => {
     }
     res.json(project);
   } catch (error) {
-    console.error('Project endpoint error:', error);
+    logRouteError('GET /api/project/:id', error);
+    if (error instanceof HttpError) {
+      res.status(error.statusCode).json({ error: error.message });
+      return;
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 });

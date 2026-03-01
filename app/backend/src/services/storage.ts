@@ -1,36 +1,44 @@
 import { mkdir, readFile, writeFile } from 'fs/promises';
 import * as path from 'node:path';
-import { sanitizeProjectId } from '../lib/projectId.js';
+import type { Roadmap } from '../lib/schema.js';
+import { HttpError } from '../lib/httpError.js';
+import { assertValidProjectId } from '../lib/projectId.js';
 
-const DEFAULT_PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
-const PROJECTS_DIR = path.resolve(process.env.PROJECTS_DIR ?? DEFAULT_PROJECTS_DIR);
+const PROJECTS_DIR = process.env.PROJECTS_DIR || '/tmp/projects';
+const PROJECTS_DIR_RESOLVED = path.resolve(PROJECTS_DIR);
 
 async function ensureDir(): Promise<void> {
   await mkdir(PROJECTS_DIR, { recursive: true });
 }
 
-export async function saveProject(projectId: string, roadmap: unknown): Promise<void> {
+function getProjectFilePath(projectId: string): string {
+  const safeProjectId = assertValidProjectId(projectId);
+  const candidatePath = path.join(PROJECTS_DIR_RESOLVED, `${safeProjectId}.json`);
+  const resolvedPath = path.resolve(candidatePath);
+
+  if (!resolvedPath.startsWith(`${PROJECTS_DIR_RESOLVED}${path.sep}`)) {
+    throw new HttpError('Invalid project path', 400);
+  }
+
+  return resolvedPath;
+}
+
+export async function saveProject(projectId: string, roadmap: Roadmap): Promise<void> {
   await ensureDir();
-  const safeProjectId = sanitizeProjectId(projectId);
-  const filePath = path.join(PROJECTS_DIR, `${safeProjectId}.json`);
+  const filePath = getProjectFilePath(projectId);
   await writeFile(filePath, JSON.stringify(roadmap, null, 2), 'utf-8');
 }
 
-export async function getProject(projectId: string): Promise<unknown | null> {
-  const safeProjectId = sanitizeProjectId(projectId);
-  const filePath = path.join(PROJECTS_DIR, `${safeProjectId}.json`);
+export async function getProject(projectId: string): Promise<Roadmap | null> {
+  const filePath = getProjectFilePath(projectId);
   try {
     const data = await readFile(filePath, 'utf-8');
-    return JSON.parse(data);
+    return JSON.parse(data) as Roadmap;
   } catch (err: unknown) {
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'code' in err &&
-      err.code === 'ENOENT'
-    ) {
+    const fsError = err as NodeJS.ErrnoException;
+    if (fsError.code === 'ENOENT') {
       return null;
     }
-    throw err;
+    throw fsError;
   }
 }
