@@ -28,11 +28,13 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { getErrorMessageKey } from '@/lib/errorMessages';
 
 export default function ProjectPage() {
   const locale = useLocale();
   const t = useTranslations('projectPage');
   const tExport = useTranslations('exportMarkdown');
+  const tErrors = useTranslations('errors');
   const params = useParams();
   const projectId = params.id as string;
 
@@ -41,6 +43,12 @@ export default function ProjectPage() {
   const lastFetchedProjectId = useRef<string | null>(null);
   const [localTasks, setLocalTasks] = useState<RoadmapTask[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'graph' | 'timeline'>('grid');
+  const errorKey = error ? getErrorMessageKey(error) : null;
+  const localizedError = error
+    ? errorKey
+      ? tErrors(errorKey)
+      : tErrors('failedRetrieveProject')
+    : null;
 
   useEffect(() => {
     if (lastFetchedProjectId.current === projectId) return;
@@ -95,7 +103,7 @@ export default function ProjectPage() {
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">
             {t('systemInterrupt')}
           </h2>
-          <p className="text-slate-600 dark:text-zinc-500 italic">&quot;{error}&quot;</p>
+          <p className="text-slate-600 dark:text-zinc-500 italic">&quot;{localizedError}&quot;</p>
           <Link href="/dashboard" className="block">
             <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold uppercase text-xs h-12 rounded-xl">
               {t('returnToConsole')}
@@ -130,7 +138,7 @@ export default function ProjectPage() {
         tableStatus: tExport('tableStatus'),
         tableDependencies: tExport('tableDependencies'),
         planning: tExport('planning'),
-        fromTo: tExport('fromTo'),
+        fromTo: tExport('fromTo', { start: '{start}', end: '{end}' }),
       },
     }
   );
