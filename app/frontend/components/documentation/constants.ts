@@ -1,5 +1,5 @@
+import type { RoadmapCanvasView } from '@/lib/mapRoadmap';
 import { Layers, Brain, Network, Zap, Eye, Terminal, Microscope } from 'lucide-react';
-import { Roadmap } from '@/components/roadmap/RoadmapCanvas';
 
 export type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system' | 'live-preview' | 'api' | 'methodology';
 
@@ -37,7 +37,7 @@ export const NAV_SECTIONS: NavSection[] = [
   { title: 'Lab', items: NAV_ITEMS_LIVE_PREVIEW },
 ];
 
-export const MOCK_ROADMAP: Roadmap = {
+export const MOCK_ROADMAP: RoadmapCanvasView = {
   id: 'demo-roadmap',
   title: 'EchoMaps Launch Plan',
   objectives: [
@@ -48,8 +48,8 @@ export const MOCK_ROADMAP: Roadmap = {
     {
       day: 1, period: 'AM',
       tasks: [
-        { id: 'rt-1', title: 'Setup Cloud Infrastructure', status: 'done', priority: 'high', estimate: 'L', objectiveId: 'obj-1' },
-        { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1', dependencies: ['rt-1'] }
+        { id: 'rt-1', title: 'Setup Cloud Infrastructure', status: 'done', priority: 'high', estimate: 'L', objectiveId: 'obj-1', dependsOn: [] },
+        { id: 'rt-2', title: 'Database Schema Design', status: 'doing', priority: 'medium', estimate: 'M', objectiveId: 'obj-1', dependsOn: ['rt-1'] }
       ]
     }
   ]

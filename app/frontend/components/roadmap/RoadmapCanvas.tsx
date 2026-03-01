@@ -1,46 +1,14 @@
 'use client';
 
+import type { RoadmapCanvasView } from '@/lib/mapRoadmap';
 import { cn } from '@/lib/utils';
 import { motion, Variants } from 'framer-motion';
 import { Target } from 'lucide-react';
 import React from 'react';
-import { TaskCard, TaskEstimate, TaskPriority, TaskStatus } from '../ui/TaskCard';
-
-export interface RoadmapTask {
-    id: string;
-    title: string;
-    status: TaskStatus;
-    priority: TaskPriority;
-    estimate: TaskEstimate;
-    objectiveId: string;
-    isBlocked?: boolean;
-    blockedBy?: string[];
-    dependsOn?: string[];
-    /** @deprecated Use dependsOn instead */
-    dependencies?: string[];
-}
-
-export interface RoadmapObjective {
-    id: string;
-    title: string;
-    color: string; // e.g., 'blue', 'orange', 'green'
-}
-
-export interface RoadmapTimeSlot {
-    day: number;
-    period: 'AM' | 'PM';
-    tasks: RoadmapTask[];
-}
-
-export interface Roadmap {
-    id: string;
-    title: string;
-    objectives: RoadmapObjective[];
-    timeSlots: RoadmapTimeSlot[];
-}
+import { TaskCard, TaskStatus } from '../ui/TaskCard';
 
 interface RoadmapCanvasProps {
-    roadmap?: Roadmap;
+    roadmap?: RoadmapCanvasView;
     onTaskStatusChange?: (taskId: string, newStatus: TaskStatus) => void;
     className?: string;
     /** Wrapper mode: render children in a titled section */
