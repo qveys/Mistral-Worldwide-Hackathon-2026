@@ -1,12 +1,10 @@
+import './load-env.js';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express, { type Request, type Response } from 'express';
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
 import { logger } from './lib/logger.js';
 import { registerRoutes } from './routes/index.js';
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 4000;
