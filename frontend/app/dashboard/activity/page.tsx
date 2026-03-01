@@ -4,7 +4,6 @@ import React from 'react';
 
 // Dashboard Activity Components
 import { ActivityHeader } from '@/components/dashboard/activity/ActivityHeader';
-import { ActivityStats } from '@/components/dashboard/activity/ActivityStats';
 import { ActivityFilters } from '@/components/dashboard/activity/ActivityFilters';
 import { ActivityFeed } from '@/components/dashboard/activity/ActivityFeed';
 import { ActivityInsights } from '@/components/dashboard/activity/ActivityInsights';
@@ -24,7 +23,6 @@ export default function ActivityPage() {
     <div className="p-6 lg:p-10 space-y-8">
       
       <ActivityHeader />
-      <ActivityStats />
 
       <div className="grid grid-cols-12 gap-4">
         

@@ -4,8 +4,14 @@ import React from 'react';
 import { ChevronLeft, ChevronRight, Download, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
+import type { TimelineZoomMode } from '@/components/dashboard/timeline/timeline.constants';
 
-export function TimelineControls() {
+interface TimelineControlsProps {
+  zoomMode: TimelineZoomMode;
+  onZoomModeChange: (mode: TimelineZoomMode) => void;
+}
+
+export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControlsProps) {
   const { isDarkMode } = useDashboardTheme();
 
   return (
@@ -35,15 +41,17 @@ export function TimelineControls() {
       
       <div className="flex items-center gap-2">
         <div className={cn("flex rounded-xl p-1", isDarkMode ? "bg-zinc-900 border border-zinc-800" : "bg-slate-200 border border-slate-300")}>
-          {['Day', 'Week', 'Month'].map((mode) => (
+          {(['day', 'week', 'month'] as const).map((mode) => (
             <button 
               key={mode}
+              type="button"
+              onClick={() => onZoomModeChange(mode)}
               className={cn(
                 "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
-                mode === 'Week' ? (isDarkMode ? "bg-zinc-800 text-white" : "bg-white text-slate-900 shadow-sm") : (isDarkMode ? "text-zinc-600 hover:text-zinc-400" : "text-slate-600 hover:text-slate-900")
+                zoomMode === mode ? (isDarkMode ? "bg-zinc-800 text-white" : "bg-white text-slate-900 shadow-sm") : (isDarkMode ? "text-zinc-600 hover:text-zinc-400" : "text-slate-600 hover:text-slate-900")
               )}
             >
-              {mode}
+              {mode.charAt(0).toUpperCase() + mode.slice(1)}
             </button>
           ))}
         </div>
@@ -54,7 +62,7 @@ export function TimelineControls() {
         )}>
           <Filter size={16} />
         </button>
-        <button className="flex items-center gap-2 px-4 py-2.5 bg-violet-600 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white hover:bg-violet-700 transition-all shadow-lg shadow-violet-600/20">
+        <button className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white transition-all shadow-lg", isDarkMode ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/20" : "bg-blue-500 hover:bg-blue-600 shadow-blue-500/20")}>
           <Download size={14} /> Export
         </button>
       </div>

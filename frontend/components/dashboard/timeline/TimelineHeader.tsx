@@ -15,7 +15,7 @@ export function TimelineHeader() {
         Workspace / Roadmap Timeline
       </div>
       <h2 className={cn("text-4xl lg:text-5xl font-medium tracking-tight leading-tight", isDarkMode ? "text-white" : "text-slate-900")}>
-        Master <span className={cn("italic font-serif text-3xl lg:text-4xl", isDarkMode ? "text-zinc-600" : "text-slate-600")}>Timeline</span>
+        <span className={cn("italic font-serif text-3xl lg:text-4xl", isDarkMode ? "text-zinc-600" : "text-slate-600")}>Timeline</span>
       </h2>
     </div>
   );
