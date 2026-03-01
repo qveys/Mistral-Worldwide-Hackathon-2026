@@ -1,7 +1,10 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
 import { buildStructurePrompt } from "../prompts/structure.js";
-import { buildRevisePrompt } from "../prompts/revise.js";
+const MAX_VALIDATION_RETRIES = 2;
+// Approximate pricing per token for Mistral Large on Bedrock (USD)
+const PRICE_PER_INPUT_TOKEN = 0.004 / 1000;
+const PRICE_PER_OUTPUT_TOKEN = 0.012 / 1000;
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
     region: z.string().default("us-east-1"),
@@ -70,25 +73,29 @@ export class BedrockService {
         });
         this.client = new BedrockRuntimeClient({ region: this.config.region });
     }
-    async generateRoadmap(transcript, userId) {
-        try {
-            const prompt = buildStructurePrompt(transcript);
-            const input = {
-                modelId: this.config.modelId,
-                contentType: "application/json",
-                accept: "application/json",
-                body: JSON.stringify({
-                    prompt,
-                    max_tokens: this.config.maxTokens,
-                    temperature: this.config.temperature,
-                    top_p: 0.9
-                })
-            };
-            const command = new InvokeModelCommand(input);
-            const response = await this.client.send(command);
-            if (response.body) {
-                const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-                return this.validateRoadmapResponse(responseBody);
+    async generateRoadmap(transcript) {
+        const prompt = this.buildRoadmapPrompt(transcript);
+        return this.invokeWithRetry(prompt, 'generateRoadmap', (body) => this.validateRoadmapResponse(body));
+    }
+    async invokeModel(prompt) {
+        const input = {
+            modelId: this.config.modelId,
+            contentType: "application/json",
+            accept: "application/json",
+            body: JSON.stringify({
+                prompt,
+                max_tokens: this.config.maxTokens,
+                temperature: this.config.temperature,
+                top_p: 0.9
+            })
+        };
+        const command = new InvokeModelCommand(input);
+        const response = await this.client.send(command);
+        if (response.body) {
+            const responseEnvelope = JSON.parse(new TextDecoder().decode(response.body));
+            const outputText = extractMistralOutputText(responseEnvelope);
+            if (outputText !== null) {
+                return JSON.parse(outputText);
             }
             return responseEnvelope;
         }
@@ -98,8 +105,9 @@ export class BedrockService {
         return this.invokeWithRetry(prompt, operation, validate);
     }
     async invokeWithRetry(prompt, operation, validate) {
+        const totalAttempts = MAX_VALIDATION_RETRIES + 1;
         let lastZodError;
-        for (let attempt = 1; attempt <= MAX_VALIDATION_RETRIES + 1; attempt++) {
+        for (let attempt = 1; attempt <= totalAttempts; attempt++) {
             const startTime = Date.now();
             try {
                 const input = {
@@ -130,10 +138,14 @@ export class BedrockService {
                         log('warn', 'Model output is not valid JSON, retrying', {
                             operation,
                             attempt,
+                            maxRetries: MAX_VALIDATION_RETRIES,
+                            totalAttempts,
                             latencyMs,
                             error: String(parseError),
                         });
                         if (attempt <= MAX_VALIDATION_RETRIES) {
+                            const delayMs = 1000 * (2 ** (attempt - 1));
+                            await new Promise((resolve) => setTimeout(resolve, delayMs));
                             continue;
                         }
                         throw parseError;
@@ -146,7 +158,14 @@ export class BedrockService {
                 const cost = estimateCost(promptTokens, completionTokens);
                 try {
                     const validated = validate(responseBody);
-                    log('info', 'Bedrock call succeeded', { operation, attempt, latencyMs, ...cost });
+                    log('info', 'Bedrock call succeeded', {
+                        operation,
+                        attempt,
+                        maxRetries: MAX_VALIDATION_RETRIES,
+                        totalAttempts,
+                        latencyMs,
+                        ...cost,
+                    });
                     return validated;
                 }
                 catch (validationError) {
@@ -155,11 +174,15 @@ export class BedrockService {
                         log('warn', 'Zod validation failed, retrying', {
                             operation,
                             attempt,
+                            maxRetries: MAX_VALIDATION_RETRIES,
+                            totalAttempts,
                             latencyMs,
-                            zodErrors: validationError.errors,
+                            zodErrors: validationError.issues,
                             ...cost,
                         });
                         if (attempt <= MAX_VALIDATION_RETRIES) {
+                            const delayMs = 1000 * (2 ** (attempt - 1));
+                            await new Promise((resolve) => setTimeout(resolve, delayMs));
                             continue;
                         }
                     }
@@ -177,9 +200,19 @@ export class BedrockService {
         log('error', 'Bedrock validation retries exhausted', {
             operation,
             maxRetries: MAX_VALIDATION_RETRIES,
-            zodErrors: lastZodError?.errors,
+            zodErrors: lastZodError?.issues,
         });
         throw new BedrockValidationExhaustedError(`Bedrock response validation failed after ${MAX_VALIDATION_RETRIES + 1} attempts`, MAX_VALIDATION_RETRIES + 1, lastZodError);
+    }
+    buildRoadmapPrompt(transcript) {
+        return `${buildStructurePrompt(transcript)}
+
+Ajoute aussi l'objet "metadata" avec:
+{
+  "processingTimeMs": number,
+  "modelUsed": "string",
+  "confidenceScore": number (0-1)
+}`;
     }
     validateRoadmapResponse(response) {
         const RoadmapResponseSchema = z.object({
@@ -188,7 +221,7 @@ export class BedrockService {
                 title: z.string(),
                 description: z.string(),
                 priority: z.number().min(1).max(5),
-                dependencies: z.array(z.string()).optional()
+                dependsOn: z.array(z.string()).default([])
             })),
             metadata: z.object({
                 processingTimeMs: z.number(),
@@ -197,55 +230,6 @@ export class BedrockService {
             })
         });
         return RoadmapResponseSchema.parse(response);
-    }
-    async generateRevision(roadmapId, instructions) {
-        try {
-            const prompt = this.buildRevisionPrompt(roadmapId, instructions);
-            const input = {
-                modelId: this.config.modelId,
-                contentType: "application/json",
-                accept: "application/json",
-                body: JSON.stringify({
-                    prompt,
-                    max_tokens: this.config.maxTokens,
-                    temperature: this.config.temperature,
-                    top_p: 0.9
-                })
-            };
-            const command = new InvokeModelCommand(input);
-            const response = await this.client.send(command);
-            if (response.body) {
-                const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-                return this.validateRevisionResponse(responseBody);
-            }
-            throw new Error("Empty response from Bedrock");
-        }
-        catch (error) {
-            console.error("Bedrock revision error:", error);
-            throw error;
-        }
-    }
-    buildRevisionPrompt(roadmapId, instructions) {
-        return buildRevisePrompt(roadmapId, instructions);
-    }
-    validateRevisionResponse(response) {
-        const RevisionResponseSchema = z.object({
-            revisedRoadmap: z.array(z.object({
-                id: z.string(),
-                title: z.string(),
-                description: z.string(),
-                priority: z.number().min(1).max(5),
-                status: z.enum(["unchanged", "modified", "removed", "added"]),
-                dependsOn: z.array(z.string()).default([])
-            })),
-            changesSummary: z.object({
-                itemsModified: z.number(),
-                itemsAdded: z.number(),
-                itemsRemoved: z.number(),
-                confidenceScore: z.number().min(0).max(1)
-            })
-        });
-        return RevisionResponseSchema.parse(response);
     }
 }
 //# sourceMappingURL=bedrock.js.map

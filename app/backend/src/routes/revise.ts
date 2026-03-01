@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { BedrockService } from '../services/bedrock.js';
-import { topologicalSort, validateReferentialIntegrity } from '../lib/graph.js';
+import { BedrockService, BedrockValidationExhaustedError } from '../services/bedrock.js';
+import { buildRevisePrompt } from '../prompts/revise.js';
+import { saveProject } from '../services/storage.js';
+import { DEMO_REVISED_ROADMAP } from '../mocks/demoRoadmap.js';
+import { roadmapSchema } from '../lib/schema.js';
+import { hasCycle, topologicalSort } from '../lib/dependencyGraph.js';
+import { validateDependencyIntegrity, validateTimelineConstraints } from '../lib/validation.js';
+import { HttpError } from '../lib/httpError.js';
+import { logRouteError } from '../lib/logger.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
@@ -14,88 +21,57 @@ const ReviseRequestSchema = z.object({
   roadmap: roadmapSchema,
 });
 
-// Response schema for revise endpoint
-const ReviseResponseSchema = z.object({
-  revisedRoadmap: z.array(z.object({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    priority: z.number().min(1).max(5),
-    status: z.enum(["unchanged", "modified", "removed", "added"]),
-    dependsOn: z.array(z.string()).default([])
-  })),
-  changesSummary: z.object({
-    itemsModified: z.number(),
-    itemsAdded: z.number(),
-    itemsRemoved: z.number(),
-    confidenceScore: z.number().min(0).max(1)
-  })
-});
+const ReviseResponseSchema = roadmapSchema;
 
 router.post('/', async (req, res) => {
   try {
-    // Validate request
-    const validatedRequest = ReviseRequestSchema.parse(req.body);
-
-    // Call Bedrock service to generate revision
-    const startTime = Date.now();
-    const revisionData = await bedrockService.generateRevision(
-      validatedRequest.roadmapId,
-      validatedRequest.revisionInstructions
-    );
-    const processingTimeMs = Date.now() - startTime;
-
-    // Enhance response with processing metadata
-    const response = {
-      ...revisionData,
-      changesSummary: {
-        ...revisionData.changesSummary,
-        processingTimeMs
-      }
-    };
-
-    // Validate response schema
-    const validatedResponse = ReviseResponseSchema.parse(response);
-
-    // Validate referential integrity
-    const integrityResult = validateReferentialIntegrity(
-      validatedResponse.revisedRoadmap.map(t => ({ id: t.id, dependsOn: t.dependsOn }))
-    );
-    if (!integrityResult.valid) {
-      res.status(400).json({ error: "Referential integrity violation", details: integrityResult.errors });
+    if (DEMO_MODE) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      res.json(ReviseResponseSchema.parse(DEMO_REVISED_ROADMAP));
       return;
     }
 
-    // Build adjacency list as prerequisite -> dependents for topological sorting
-    const adjacencyList = new Map<string, string[]>();
-    for (const task of validatedResponse.revisedRoadmap) {
-      adjacencyList.set(task.id, []);
+    const { projectId, userId, instruction, roadmap } = ReviseRequestSchema.parse(req.body);
+
+    const prompt = buildRevisePrompt(roadmap, instruction);
+
+    const revisedRoadmap = await bedrockService.invokeModelWithRetry(
+      prompt,
+      'reviseRoadmap',
+      (body) => ReviseResponseSchema.parse(body)
+    );
+
+    const tasks = revisedRoadmap.roadmap.map((task) => ({
+      id: task.id,
+      dependsOn: task.dependsOn,
+      priority: task.priority,
+    }));
+
+    validateDependencyIntegrity(tasks);
+    if (hasCycle(tasks)) {
+      throw new HttpError('Dependency graph contains a cycle', 400);
     }
+    topologicalSort(tasks);
+    validateTimelineConstraints(tasks);
 
-    for (const task of validatedResponse.revisedRoadmap) {
-      for (const dependencyId of task.dependsOn) {
-        adjacencyList.get(dependencyId)!.push(task.id);
-      }
-    }
-
-    // Re-order using topological sort
-    const sortedIds = topologicalSort(adjacencyList);
-    if (!sortedIds) {
-      res.status(400).json({ error: "Unable to resolve dependency order" });
-      return;
-    }
-
-    const taskMap = new Map(validatedResponse.revisedRoadmap.map(t => [t.id, t]));
-    const sortedRoadmap = sortedIds.map(id => taskMap.get(id)!);
-
-    res.json({
-      revisedRoadmap: sortedRoadmap,
-      changesSummary: validatedResponse.changesSummary
+    await saveProject(projectId, {
+      userId,
+      roadmap: revisedRoadmap.roadmap,
     });
+
+    res.json(revisedRoadmap);
   } catch (error) {
     logRouteError('POST /api/revise', error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Invalid request", details: error.issues });
+      res.status(400).json({ error: 'Invalid request or response', details: error.issues });
+    } else if (error instanceof HttpError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else if (error instanceof BedrockValidationExhaustedError) {
+      res.status(502).json({
+        error: 'Upstream model returned invalid format after retries',
+        attempts: error.attempts,
+        details: error.lastZodError.issues,
+      });
     } else {
       res.status(500).json({ error: 'Internal server error' });
     }

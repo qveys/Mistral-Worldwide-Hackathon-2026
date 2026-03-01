@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-import { WebSocket, WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 /**
  * Voxstral WebSocket Service for real-time voice transcription
  * This service handles WebSocket connections for voice input and provides transcription events
@@ -15,8 +15,26 @@ export class VoxstralService extends EventEmitter {
         this.server = server;
         this.activeConnections = new Map();
         this.transcriptionSessions = new Map();
-        // Initialize WebSocket server
-        this.wss = new WebSocketServer({ server });
+        this.initWebSocketServer();
+        this.log('info', 'Voxstral WebSocket service initialized');
+    }
+    log(level, message, extra = {}) {
+        const entry = {
+            timestamp: new Date().toISOString(),
+            level,
+            service: 'voxstral',
+            message,
+            ...extra,
+        };
+        if (level === 'error') {
+            console.error(JSON.stringify(entry));
+        }
+        else {
+            console.log(JSON.stringify(entry));
+        }
+    }
+    initWebSocketServer() {
+        this.wss = new WebSocketServer({ server: this.server });
         this.wss.on('connection', (ws) => {
             const connectionId = uuidv4();
             this.activeConnections.set(connectionId, ws);

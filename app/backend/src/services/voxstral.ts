@@ -1,14 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-import type { Server as HttpServer } from 'http';
-import { WebSocket, WebSocketServer } from 'ws';
+import type { Server as HttpServer } from 'node:http';
+import WebSocket, { WebSocketServer } from 'ws';
 
 /**
  * Voxstral WebSocket Service for real-time voice transcription
  * This service handles WebSocket connections for voice input and provides transcription events
  */
 export class VoxstralService extends EventEmitter {
-  private wss: WebSocketServer;
+  private wss!: WebSocketServer;
+  private server: HttpServer;
   private activeConnections: Map<string, WebSocket>;
   private transcriptionSessions: Map<string, {
     connectionId: string;
@@ -23,16 +24,36 @@ export class VoxstralService extends EventEmitter {
     this.server = server;
     this.activeConnections = new Map();
     this.transcriptionSessions = new Map();
-    
-    // Initialize WebSocket server
-    this.wss = new WebSocketServer({ server });
-    
+
+    this.initWebSocketServer();
+
+    this.log('info', 'Voxstral WebSocket service initialized');
+  }
+
+  private log(level: string, message: string, extra: Record<string, unknown> = {}) {
+    const entry = {
+      timestamp: new Date().toISOString(),
+      level,
+      service: 'voxstral',
+      message,
+      ...extra,
+    };
+    if (level === 'error') {
+      console.error(JSON.stringify(entry));
+    } else {
+      console.log(JSON.stringify(entry));
+    }
+  }
+
+  private initWebSocketServer() {
+    this.wss = new WebSocketServer({ server: this.server });
+
     this.wss.on('connection', (ws: WebSocket) => {
       const connectionId = uuidv4();
       this.activeConnections.set(connectionId, ws);
-      
-      console.log(`New Voxstral connection: ${connectionId}`);
-      
+
+      this.log('info', 'New Voxstral connection', { connectionId });
+
       ws.on('message', (message) => {
         this.handleMessage(connectionId, message.toString());
       });
@@ -40,10 +61,10 @@ export class VoxstralService extends EventEmitter {
       ws.on('close', () => {
         this.handleDisconnect(connectionId);
       });
-      
+
       ws.on('error', (error) => {
-        console.error(`Voxstral connection error: ${connectionId}`, error);
-        this.cleanupConnection(connectionId);
+        this.log('error', 'Voxstral connection error', { connectionId, error: String(error) });
+        this.handleDisconnect(connectionId);
       });
 
       // Send connection acknowledgment
@@ -211,10 +232,7 @@ export class VoxstralService extends EventEmitter {
     return this.activeConnections.size;
   }
 
-  /**
-   * Broadcast message to all connected clients
-   */
-  broadcast(message: unknown) {
+  broadcast(message: any) {
     const payload = JSON.stringify(message);
     this.activeConnections.forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {

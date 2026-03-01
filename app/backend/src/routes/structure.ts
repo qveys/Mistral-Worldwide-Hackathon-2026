@@ -58,8 +58,17 @@ router.post('/', async (req, res) => {
     res.json(validatedResponse);
   } catch (error) {
     console.error('Structure endpoint error:', error);
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Invalid request", details: error.issues });
+    if (error instanceof BedrockValidationExhaustedError) {
+      res.status(502).json({
+        error: 'Bad Gateway',
+        message: 'AI model returned invalid responses after multiple attempts',
+        attempts: error.attempts,
+        details: error.lastZodError.issues,
+      });
+    } else if (error instanceof z.ZodError) {
+      res.status(400).json({ error: 'Invalid request', details: error.issues });
+    } else if (error instanceof HttpError) {
+      res.status(error.statusCode).json({ error: error.message });
     } else {
       res.status(500).json({ error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' });
     }

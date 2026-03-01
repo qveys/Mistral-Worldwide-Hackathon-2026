@@ -1,7 +1,12 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
 import { buildStructurePrompt } from "../prompts/structure.js";
-import { buildRevisePrompt } from "../prompts/revise.js";
+
+const MAX_VALIDATION_RETRIES = 2;
+
+// Approximate pricing per token for Mistral Large on Bedrock (USD)
+const PRICE_PER_INPUT_TOKEN = 0.004 / 1000;
+const PRICE_PER_OUTPUT_TOKEN = 0.012 / 1000;
 
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
@@ -83,21 +88,10 @@ export class BedrockService {
     this.client = new BedrockRuntimeClient({ region: this.config.region });
   }
 
-  async generateRoadmap(transcript: string, userId: string): Promise<any> {
-    try {
-      const prompt = buildStructurePrompt(transcript);
-      
-      const input = {
-        modelId: this.config.modelId,
-        contentType: "application/json",
-        accept: "application/json",
-        body: JSON.stringify({
-          prompt,
-          max_tokens: this.config.maxTokens,
-          temperature: this.config.temperature,
-          top_p: 0.9
-        })
-      };
+  async generateRoadmap(transcript: string): Promise<any> {
+    const prompt = this.buildRoadmapPrompt(transcript);
+    return this.invokeWithRetry(prompt, 'generateRoadmap', (body) => this.validateRoadmapResponse(body));
+  }
 
   async invokeModel(prompt: string): Promise<any> {
     const input = {
@@ -216,7 +210,7 @@ export class BedrockService {
               maxRetries: MAX_VALIDATION_RETRIES,
               totalAttempts,
               latencyMs,
-              zodErrors: validationError.errors,
+              zodErrors: validationError.issues,
               ...cost,
             });
             if (attempt <= MAX_VALIDATION_RETRIES) {
@@ -238,7 +232,7 @@ export class BedrockService {
     log('error', 'Bedrock validation retries exhausted', {
       operation,
       maxRetries: MAX_VALIDATION_RETRIES,
-      zodErrors: lastZodError?.errors,
+      zodErrors: lastZodError?.issues,
     });
 
     throw new BedrockValidationExhaustedError(
@@ -248,7 +242,18 @@ export class BedrockService {
     );
   }
 
-  private validateRoadmapResponse(response: any): any {
+  private buildRoadmapPrompt(transcript: string): string {
+    return `${buildStructurePrompt(transcript)}
+
+Ajoute aussi l'objet "metadata" avec:
+{
+  "processingTimeMs": number,
+  "modelUsed": "string",
+  "confidenceScore": number (0-1)
+}`;
+  }
+
+  private validateRoadmapResponse(response: unknown): any {
     const RoadmapResponseSchema = z.object({
       roadmap: z.array(z.object({
         id: z.string(),
@@ -265,61 +270,5 @@ export class BedrockService {
     });
 
     return RoadmapResponseSchema.parse(response);
-  }
-
-  async generateRevision(roadmapId: string, instructions: string): Promise<any> {
-    try {
-      const prompt = this.buildRevisionPrompt(roadmapId, instructions);
-      
-      const input = {
-        modelId: this.config.modelId,
-        contentType: "application/json",
-        accept: "application/json",
-        body: JSON.stringify({
-          prompt,
-          max_tokens: this.config.maxTokens,
-          temperature: this.config.temperature,
-          top_p: 0.9
-        })
-      };
-
-      const command = new InvokeModelCommand(input);
-      const response = await this.client.send(command);
-      
-      if (response.body) {
-        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-        return this.validateRevisionResponse(responseBody);
-      }
-      
-      throw new Error("Empty response from Bedrock");
-    } catch (error) {
-      console.error("Bedrock revision error:", error);
-      throw error;
-    }
-  }
-
-  private buildRevisionPrompt(roadmapId: string, instructions: string): string {
-    return buildRevisePrompt(roadmapId, instructions);
-  }
-
-  private validateRevisionResponse(response: any): any {
-    const RevisionResponseSchema = z.object({
-      revisedRoadmap: z.array(z.object({
-        id: z.string(),
-        title: z.string(),
-        description: z.string(),
-        priority: z.number().min(1).max(5),
-        status: z.enum(["unchanged", "modified", "removed", "added"]),
-        dependsOn: z.array(z.string()).default([])
-      })),
-      changesSummary: z.object({
-        itemsModified: z.number(),
-        itemsAdded: z.number(),
-        itemsRemoved: z.number(),
-        confidenceScore: z.number().min(0).max(1)
-      })
-    });
-    
-    return RevisionResponseSchema.parse(response);
   }
 }
