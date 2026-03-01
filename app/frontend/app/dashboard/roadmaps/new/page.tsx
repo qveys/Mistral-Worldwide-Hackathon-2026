@@ -7,11 +7,13 @@ import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
 import { API_URL } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
+import { getErrorMessageKey } from '@/lib/errorMessages';
 
 export default function NewRoadmapPage() {
   const router = useRouter();
   const { isDarkMode } = useDashboardTheme();
   const t = useTranslations('dashboard');
+  const tErrors = useTranslations('errors');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,12 +28,19 @@ export default function NewRoadmapPage() {
       });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error: ${response.status}`);
+        const apiError = (body as { error?: string }).error;
+        const key = apiError ? getErrorMessageKey(apiError) : null;
+        throw new Error(key ? tErrors(key) : tErrors('failedGenerateRoadmap'));
       }
-      const data = (await response.json()) as { projectId: string };
-      router.push(`/project/${data.projectId}`);
+      const data = (await response.json()) as { projectId?: unknown };
+      if (typeof data.projectId !== 'string' || data.projectId.trim() === '') {
+        throw new Error(tErrors('failedGenerateRoadmap'));
+      }
+      router.push(`/project/${encodeURIComponent(data.projectId)}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate roadmap');
+      const message = err instanceof Error ? err.message : null;
+      const key = getErrorMessageKey(message);
+      setError(key ? tErrors(key) : message || tErrors('failedGenerateRoadmap'));
     } finally {
       setIsProcessing(false);
     }

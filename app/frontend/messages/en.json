@@ -302,5 +302,17 @@
     "backHome": "Back to Home",
     "themeDark": "Dark",
     "themeLight": "Light"
+  },
+  "exportMarkdown": {
+    "generatedOn": "Generated on",
+    "objectives": "Objectives",
+    "tasks": "Tasks",
+    "tableTask": "Task",
+    "tablePriority": "Priority",
+    "tableEstimate": "Estimate",
+    "tableStatus": "Status",
+    "tableDependencies": "Dependencies",
+    "planning": "Planning",
+    "fromTo": "From {start} to {end}"
   }
 }

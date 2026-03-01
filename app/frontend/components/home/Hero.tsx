@@ -8,17 +8,17 @@ export function Hero() {
   const t = useTranslations('home');
   return (
     <div className="space-y-6">
-      <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white border-2 border-slate-300 text-slate-500 text-sm font-bold uppercase tracking-widest shadow-sm">
-        <Zap size={16} className="text-blue-600 fill-blue-600" />
+      <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white dark:bg-zinc-800/80 border-2 border-slate-300 dark:border-zinc-600 text-slate-500 dark:text-zinc-400 text-sm font-bold uppercase tracking-widest shadow-sm">
+        <Zap size={16} className="text-blue-600 dark:text-violet-400 fill-blue-600 dark:fill-violet-400" />
         {t('poweredBy')}
       </div>
       
-      <h1 className="text-7xl md:text-9xl font-medium tracking-tight text-slate-900 leading-[0.85]">
+      <h1 className="text-7xl md:text-9xl font-medium tracking-tight text-slate-900 dark:text-white leading-[0.85]">
         {t('headlinePrefix')}{' '}
-        <span className="italic font-serif text-blue-600">{t('headlineEmphasis')}</span>
+        <span className="italic font-serif text-blue-600 dark:text-violet-400">{t('headlineEmphasis')}</span>
       </h1>
       
-      <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-light text-balance">
+      <p className="text-xl md:text-2xl text-slate-500 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed font-light text-balance">
         {t.rich('subtitle', {
           br: () => <br className="hidden md:block" />,
         })}
