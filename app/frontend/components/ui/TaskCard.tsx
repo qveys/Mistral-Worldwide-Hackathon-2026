@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, BarChart3, Clock, Lock, Zap } from 'lucide-react';
@@ -31,26 +32,26 @@ interface TaskCardProps {
 
 const statusConfig = {
     backlog: {
-        label: 'Backlog',
+        labelKey: 'backlog' as const,
         color: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
         next: 'doing' as TaskStatus,
     },
     doing: {
-        label: 'In Progress',
+        labelKey: 'inProgress' as const,
         color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
         next: 'done' as TaskStatus,
     },
     done: {
-        label: 'Completed',
+        labelKey: 'completed' as const,
         color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
         next: 'backlog' as TaskStatus,
     },
 };
 
 const priorityConfig = {
-    high: { label: 'High', icon: AlertCircle, color: 'text-red-500' },
-    medium: { label: 'Med', icon: Clock, color: 'text-amber-500' },
-    low: { label: 'Low', icon: Zap, color: 'text-blue-400' },
+    high: { labelKey: 'priorityHigh' as const, icon: AlertCircle, color: 'text-red-500' },
+    medium: { labelKey: 'priorityMedium' as const, icon: Clock, color: 'text-amber-500' },
+    low: { labelKey: 'priorityLow' as const, icon: Zap, color: 'text-blue-400' },
 };
 
 export function TaskCard({
@@ -60,6 +61,12 @@ export function TaskCard({
     blockedBy = [],
     className,
 }: TaskCardProps) {
+    const tActions = useTranslations('actions');
+    const tTask = useTranslations('taskCard');
+    const getStatusLabel = (status: TaskStatus) => {
+        const config = statusConfig[status];
+        return config.labelKey === 'backlog' ? tActions('backlog') : tTask(config.labelKey);
+    };
     const [showTooltip, setShowTooltip] = useState(false);
     const handleStatusClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -162,7 +169,7 @@ export function TaskCard({
                                   ),
                         )}
                     >
-                        {isBlocked ? 'Bloqué' : statusConfig[task.status].label}
+                        {isBlocked ? tTask('blocked') : getStatusLabel(task.status)}
                     </button>
 
                     {/* Priority Badge */}
@@ -171,7 +178,7 @@ export function TaskCard({
                             size: 12,
                             className: priorityConfig[task.priority].color,
                         })}
-                        {priorityConfig[task.priority].label}
+                        {tTask(priorityConfig[task.priority].labelKey)}
                     </div>
 
                     {/* Estimate Badge */}

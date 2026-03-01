@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "next-intl": "^4.8.3",
     "@echomaps/shared": "*",
     "@types/dagre": "^0.7.54",
     "clsx": "^2.1.1",

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Task, TaskCard, TaskStatus } from '../ui/TaskCard';
@@ -12,17 +13,18 @@ interface ActionItemsListProps {
   className?: string;
 }
 
+const FILTER_OPTIONS: { labelKey: 'all' | 'backlog' | 'doing' | 'done'; value: TaskStatus | 'all' }[] = [
+  { labelKey: 'all', value: 'all' },
+  { labelKey: 'backlog', value: 'backlog' },
+  { labelKey: 'doing', value: 'doing' },
+  { labelKey: 'done', value: 'done' },
+];
+
 export function ActionItemsList({ tasks, onStatusChange, className }: ActionItemsListProps) {
   const [filter, setFilter] = useState<TaskStatus | 'all'>('all');
+  const t = useTranslations('actions');
 
   const filteredTasks = tasks.filter(task => filter === 'all' || task.status === filter);
-
-  const filterOptions: { label: string, value: TaskStatus | 'all' }[] = [
-    { label: 'All', value: 'all' },
-    { label: 'Backlog', value: 'backlog' },
-    { label: 'Doing', value: 'doing' },
-    { label: 'Done', value: 'done' },
-  ];
 
   return (
     <div className={cn("space-y-6 w-full max-w-2xl mx-auto", className)}>
@@ -33,7 +35,7 @@ export function ActionItemsList({ tasks, onStatusChange, className }: ActionItem
             <ListTodo size={20} className="text-white" />
           </div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Action Items
+            {t('actionItems')}
           </h3>
           <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 text-[10px] font-black text-slate-500">
             {tasks.length}
@@ -42,7 +44,7 @@ export function ActionItemsList({ tasks, onStatusChange, className }: ActionItem
 
         {/* Filter Chips */}
         <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar">
-          {filterOptions.map((option) => (
+          {FILTER_OPTIONS.map((option) => (
             <button
               key={option.value}
               onClick={() => setFilter(option.value)}
@@ -53,7 +55,7 @@ export function ActionItemsList({ tasks, onStatusChange, className }: ActionItem
                   : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
               )}
             >
-              {option.label}
+              {t(option.labelKey)}
             </button>
           ))}
         </div>

@@ -1,38 +1,17 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Brain, Clock, Sparkles, XCircle } from 'lucide-react';
+import { Brain, Clock, Sparkles, Target, XCircle } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 const LOADING_STEPS = [
-    {
-        id: 'analysis',
-        label: 'Analyse de votre brain dump...',
-        icon: Brain,
-        duration: 8000, // 8s
-    },
-    {
-        id: 'objectives',
-        label: 'Identification des objectifs...',
-        icon: Target,
-        duration: 10000, // 10s
-    },
-    {
-        id: 'priorities',
-        label: 'Priorisation des tâches...',
-        icon: Clock,
-        duration: 7000, // 7s
-    },
-    {
-        id: 'timeline',
-        label: 'Génération de la timeline...',
-        icon: Sparkles,
-        duration: 5000, // 5s
-    },
+    { id: 'analyzing' as const, icon: Brain, duration: 8000 },
+    { id: 'objectives' as const, icon: Target, duration: 10000 },
+    { id: 'prioritizing' as const, icon: Clock, duration: 7000 },
+    { id: 'timeline' as const, icon: Sparkles, duration: 5000 },
 ];
-
-import { Target } from 'lucide-react';
 
 interface LoadingOrchestratorProps {
     onCancel?: () => void;
@@ -44,6 +23,7 @@ export function LoadingOrchestrator({ onCancel, className }: LoadingOrchestrator
     const [progress, setProgress] = useState(0);
     const [showCancel, setShowCancel] = useState(false);
     const startTimeRef = useRef(0);
+    const t = useTranslations('loading');
 
     useEffect(() => {
         startTimeRef.current = Date.now();
@@ -132,10 +112,10 @@ export function LoadingOrchestrator({ onCancel, className }: LoadingOrchestrator
                             className="space-y-1"
                         >
                             <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">
-                                {currentStep.label}
+                                {t(currentStep.id)}
                             </h3>
                             <p className="text-sm font-bold text-blue-500 uppercase tracking-[0.3em]">
-                                Phase {Math.min(currentStepIndex + 1, 4)} / 4
+                                {t('phase')} {Math.min(currentStepIndex + 1, 4)} / 4
                             </p>
                         </motion.div>
                     </AnimatePresence>
@@ -152,7 +132,7 @@ export function LoadingOrchestrator({ onCancel, className }: LoadingOrchestrator
                     </div>
                     <div className="flex justify-between items-center px-1">
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            Progression
+                            {t('progression')}
                         </span>
                         <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">
                             {Math.round(progress)}%
@@ -185,7 +165,7 @@ export function LoadingOrchestrator({ onCancel, className }: LoadingOrchestrator
                             className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-all font-black uppercase tracking-tighter italic text-xs mt-4"
                         >
                             <XCircle size={16} />
-                            C&apos;est trop long ? Annuler l&apos;opération
+                            {t('cancelHint')}
                         </motion.button>
                     )}
                 </AnimatePresence>

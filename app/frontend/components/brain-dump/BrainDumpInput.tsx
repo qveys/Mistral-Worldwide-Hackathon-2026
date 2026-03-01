@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useVoxtralSTT } from '@/lib/useVoxtralSTT';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -26,6 +27,7 @@ export function BrainDumpInput({
     const [includePlanning, setIncludePlanning] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const connectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const t = useTranslations('brainDump');
 
     const {
         transcript,
@@ -121,28 +123,28 @@ export function BrainDumpInput({
                                     )}
                                 />
                                 <span className="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">
-                                    {isFallback ? 'Saisie Manuelle' : 'Brain Dump Engine'}
+                                    {isFallback ? t('manualEntry') : t('engine')}
                                 </span>
                             </div>
                             <div className="flex items-center gap-4">
                                 {isFallback && (
                                     <button
                                         onClick={retryMic}
-                                        aria-label="Réessayer la connexion au micro"
+                                        aria-label={t('ariaRetryConnection')}
                                         className="text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 text-[10px] font-black uppercase tracking-tighter italic"
                                     >
                                         <RefreshCcw size={12} />
-                                        Réessayer le micro
+                                        {t('ariaRetryMic')}
                                     </button>
                                 )}
                                 {text && (
                                     <button
                                         onClick={clearText}
-                                        aria-label="Effacer le texte"
+                                        aria-label={t('ariaClearText')}
                                         className="text-slate-600 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 text-xs font-bold uppercase"
                                     >
                                         <Eraser size={14} />
-                                        Effacer
+                                        {t('ariaClear')}
                                     </button>
                                 )}
                             </div>
@@ -161,7 +163,7 @@ export function BrainDumpInput({
                                     >
                                         <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wide flex items-center gap-2">
                                             <AlertCircle size={14} />
-                                            Micro indisponible — saisie texte activée
+                                            {t('microUnavailable')}
                                         </div>
                                     </motion.div>
                                 )}
@@ -182,7 +184,7 @@ export function BrainDumpInput({
                                         onChange={(e) => setManualText(e.target.value)}
                                         onFocus={() => setIsEditing(true)}
                                         placeholder=""
-                                        aria-label={isFallback ? "Saisie manuelle de votre idée" : "Saisie de votre idée"}
+                                        aria-label={isFallback ? t('ariaManualInput') : t('ariaIdeaInput')}
                                         className="w-full min-h-[140px] bg-transparent border-none focus:ring-0 text-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none py-1"
                                     />
 
@@ -200,8 +202,8 @@ export function BrainDumpInput({
                                                     className="text-xl font-medium text-slate-400 dark:text-slate-600 text-balance px-10"
                                                 >
                                                     {isFallback
-                                                        ? 'Tapez votre idée ici...'
-                                                        : 'Parlez ou écrivez ici...'}
+                                                        ? t('placeholderType')
+                                                        : t('placeholderSpeak')}
                                                 </motion.p>
                                                 <Sparkles
                                                     className="text-blue-300 dark:text-blue-900/50 animate-bounce"
@@ -227,7 +229,7 @@ export function BrainDumpInput({
                                 )}
                             >
                                 <CalendarDays size={16} />
-                                Inclure un planning
+                                {t('includePlanningLabel')}
                                 <div
                                     className={cn(
                                         'h-5 w-9 rounded-full transition-colors relative',
@@ -246,7 +248,7 @@ export function BrainDumpInput({
                             </button>
                             {includePlanning && (
                                 <span className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">
-                                    L&apos;IA génèrera un planning jour par jour
+                                    {t('planningHint')}
                                 </span>
                             )}
                         </div>
@@ -264,7 +266,7 @@ export function BrainDumpInput({
                                         {wordCount}
                                     </span>
                                     <span className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase">
-                                        Mots
+                                        {t('words')}
                                     </span>
                                 </div>
                             </div>
@@ -272,7 +274,7 @@ export function BrainDumpInput({
                             <button
                                 onClick={handleGenerate}
                                 disabled={!text.trim() || micState === 'recording'}
-                                aria-label="Générer la roadmap"
+                                aria-label={t('ariaGenerate')}
                                 className={cn(
                                     'flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-base transition-all shadow-lg',
                                     text.trim() && micState !== 'recording'
@@ -281,7 +283,7 @@ export function BrainDumpInput({
                                 )}
                             >
                                 <Send size={18} />
-                                Générer Roadmap
+                                {t('generateRoadmapButton')}
                             </button>
                         </div>
                     </motion.div>

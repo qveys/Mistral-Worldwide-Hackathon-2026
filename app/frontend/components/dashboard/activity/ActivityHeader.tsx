@@ -1,8 +1,11 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { DashboardPageHeader } from '@/components/dashboard/DashboardPageHeader';
 
 export function ActivityHeader() {
-  return <DashboardPageHeader title="Activity" accent="Stream" />;
+  const t = useTranslations('nav');
+  const tDoc = useTranslations('doc');
+  return <DashboardPageHeader title={t('activity')} accent={tDoc('activityStream')} />;
 }

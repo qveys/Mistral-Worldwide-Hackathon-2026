@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { 
-  LayoutDashboard, 
+import { useTranslations } from 'next-intl';
+import {
+  LayoutDashboard,
   History,
   Calendar,
   Settings,
@@ -12,28 +13,29 @@ import {
   Target,
   Command,
   Sun,
-  Moon
+  Moon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
-export function DashboardSidebar({ 
-  isCollapsed, 
-  onToggle 
-}: { 
-  isCollapsed: boolean; 
-  onToggle: () => void 
+export function DashboardSidebar({
+  isCollapsed,
+  onToggle,
+}: {
+  isCollapsed: boolean;
+  onToggle: () => void;
 }) {
   const pathname = usePathname();
   const { isDarkMode, toggleTheme } = useDashboardTheme();
+  const t = useTranslations('nav');
 
   const navItems = [
-    { id: 'dash', label: 'Console', icon: LayoutDashboard, href: '/dashboard' },
-    { id: 'proj', label: 'Roadmaps', icon: Target, href: '/dashboard/roadmaps' },
-    { id: 'hist', label: 'Activity', icon: History, href: '/dashboard/activity' },
-    { id: 'cal', label: 'Timeline', icon: Calendar, href: '/dashboard/timeline' },
+    { id: 'dash', labelKey: 'console' as const, icon: LayoutDashboard, href: '/dashboard' },
+    { id: 'proj', labelKey: 'roadmaps' as const, icon: Target, href: '/dashboard/roadmaps' },
+    { id: 'hist', labelKey: 'activity' as const, icon: History, href: '/dashboard/activity' },
+    { id: 'cal', labelKey: 'timeline' as const, icon: Calendar, href: '/dashboard/timeline' },
   ];
 
   return (
@@ -69,7 +71,7 @@ export function DashboardSidebar({
               )}
             >
               <item.icon size={22} className={cn(isActive ? "text-violet-600 dark:text-violet-400" : "text-zinc-400")} />
-              {!isCollapsed && <span>{item.label}</span>}
+              {!isCollapsed && <span>{t(item.labelKey)}</span>}
             </Link>
           );
         })}
@@ -77,34 +79,41 @@ export function DashboardSidebar({
 
       <div className="space-y-1 pt-4 border-t border-zinc-200 dark:border-zinc-800/50">
         {/* Theme Toggle */}
-        <button 
+        <button
           onClick={toggleTheme}
+          aria-label={isDarkMode ? t('themeLight') : t('themeDark')}
           className={cn(
             "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
             isCollapsed && "justify-center px-0"
           )}
         >
           {isDarkMode ? <Sun size={22} className="text-amber-500" /> : <Moon size={22} className="text-indigo-600" />}
-          {!isCollapsed && <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>}
+          {!isCollapsed && <span>{isDarkMode ? t('themeLight') : t('themeDark')}</span>}
         </button>
 
-        <Link 
+        {!isCollapsed && (
+          <div className="px-3 py-2">
+            <LanguageSwitcher variant="compact" />
+          </div>
+        )}
+
+        <Link
           href="/dashboard/settings"
           className={cn(
             "w-full flex items-center gap-4 px-3 py-4 rounded-xl transition-all text-xs font-medium",
-            pathname === '/dashboard/settings' 
-              ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800" 
+            pathname === '/dashboard/settings'
+              ? "text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800"
               : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800/50",
             isCollapsed && "justify-center px-0"
           )}
         >
           <Settings size={22} />
-          {!isCollapsed && <span>Settings</span>}
+          {!isCollapsed && <span>{t('settings')}</span>}
         </Link>
-        
+
         <Link href="/" className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
           <LogOut size={22} />
-          {!isCollapsed && <span>Exit</span>}
+          {!isCollapsed && <span>{t('exit')}</span>}
         </Link>
       </div>
     </aside>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ArrowLeft, Layout, Network, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ExportButton } from '@/components/ui/ExportButton';

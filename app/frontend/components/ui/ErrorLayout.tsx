@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { MoveLeft, Home, Terminal, ShieldAlert, AlertTriangle, Ghost, Command } from 'lucide-react';
 import { Button } from './Button';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 
 interface ErrorLayoutProps {
@@ -21,6 +22,8 @@ const icons = {
 };
 
 export function ErrorLayout({ code, title, message, icon }: ErrorLayoutProps) {
+  const tCommon = useTranslations('common');
+  const tErrors = useTranslations('errors');
   const Icon = icon ? icons[icon] : AlertTriangle;
 
   return (
@@ -43,7 +46,7 @@ export function ErrorLayout({ code, title, message, icon }: ErrorLayoutProps) {
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-2 text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">
             <Command size={12} />
-            System Interrupt / Error {code}
+            {tErrors('systemInterrupt', { code })}
           </div>
           <h1 className="text-4xl font-medium tracking-tight text-white leading-tight">
             {title}
@@ -59,11 +62,11 @@ export function ErrorLayout({ code, title, message, icon }: ErrorLayoutProps) {
             variant="ghost" 
             className="w-full sm:w-auto h-12 border border-zinc-800 hover:bg-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-widest"
           >
-            <MoveLeft size={14} className="mr-2" /> Back
+            <MoveLeft size={14} className="mr-2" /> {tCommon('back')}
           </Button>
           <Link href="/" className="w-full sm:w-auto">
             <Button className="w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-xl px-8 text-[10px] font-bold uppercase tracking-widest shadow-xl">
-              <Home size={14} className="mr-2" /> Return Home
+              <Home size={14} className="mr-2" /> {tCommon('returnHome')}
             </Button>
           </Link>
         </div>

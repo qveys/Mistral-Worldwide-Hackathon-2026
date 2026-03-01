@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, Download, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
@@ -13,6 +14,7 @@ interface TimelineControlsProps {
 
 export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControlsProps) {
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('timeline');
 
   return (
     <div className={cn(
@@ -25,7 +27,7 @@ export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControl
             <ChevronLeft size={16} />
           </button>
           <button className={cn("px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest", isDarkMode ? "bg-zinc-800 text-white" : "bg-white text-slate-900 shadow-sm")}>
-            March 2026
+            {t('march2026')}
           </button>
           <button className={cn("p-2 rounded-lg transition-all", isDarkMode ? "hover:bg-zinc-800 text-zinc-500 hover:text-white" : "hover:bg-slate-300 text-slate-600 hover:text-slate-900")}>
             <ChevronRight size={16} />
@@ -35,7 +37,7 @@ export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControl
           "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
           isDarkMode ? "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white" : "bg-slate-100 border border-slate-300 text-slate-600 hover:text-slate-900"
         )}>
-          Today
+          {t('today')}
         </button>
       </div>
       
@@ -51,7 +53,7 @@ export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControl
                 zoomMode === mode ? (isDarkMode ? "bg-zinc-800 text-white" : "bg-white text-slate-900 shadow-sm") : (isDarkMode ? "text-zinc-600 hover:text-zinc-400" : "text-slate-600 hover:text-slate-900")
               )}
             >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              {t(mode)}
             </button>
           ))}
         </div>
@@ -63,7 +65,7 @@ export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControl
           <Filter size={16} />
         </button>
         <button className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white transition-all shadow-lg", isDarkMode ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/20" : "bg-blue-500 hover:bg-blue-600 shadow-blue-500/20")}>
-          <Download size={14} /> Export
+          <Download size={14} /> {t('export')}
         </button>
       </div>
     </div>

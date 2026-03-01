@@ -1,14 +1,16 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Activity, Mic, Command } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { cn } from '@/lib/utils';
 
 export function ConsoleHero() {
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('dashboard');
 
   return (
     <div className={cn(
@@ -18,14 +20,25 @@ export function ConsoleHero() {
       <div className="relative z-10 space-y-4">
         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-black uppercase tracking-widest w-fit">
           <Activity size={12} className="animate-pulse" />
-          Neural Sync: Optimal
+          {t('neuralSync')}
         </div>
         <h2 className={cn(
           "text-4xl lg:text-5xl font-medium tracking-tight leading-[1.1]",
           isDarkMode ? "text-white" : "text-slate-900"
         )}>
-          Design your next <br />
-          <span className={cn("italic font-serif", isDarkMode ? "text-zinc-500" : "text-slate-600")}>strategic roadmap.</span>
+          {t.rich('designRoadmap', {
+            br: () => <br />,
+            spanStyle: (chunks) => (
+              <span
+                className={cn(
+                  'italic font-serif',
+                  isDarkMode ? 'text-zinc-500' : 'text-slate-600'
+                )}
+              >
+                {chunks}
+              </span>
+            ),
+          })}
         </h2>
       </div>
       <div className="relative z-10 flex items-center gap-4">
@@ -35,7 +48,7 @@ export function ConsoleHero() {
             isDarkMode ? "bg-zinc-100 text-black hover:bg-white shadow-2xl shadow-white/5" : "bg-blue-500 text-white hover:bg-blue-600 shadow-lg"
           )}>
             <Mic size={18} className="mr-2 group-hover/btn:scale-110 transition-transform" />
-            New Brain Dump
+            {t('newBrainDump')}
           </Button>
         </Link>
       </div>

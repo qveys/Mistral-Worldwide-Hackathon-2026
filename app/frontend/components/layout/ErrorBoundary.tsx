@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertOctagon, Home, RefreshCcw } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {

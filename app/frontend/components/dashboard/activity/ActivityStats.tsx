@@ -1,22 +1,21 @@
 'use client';
 
 import React from 'react';
-import { 
-  Activity, 
-  BarChart3, 
-  Target, 
-  Zap 
-} from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Activity, BarChart3, Target, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
+const STAT_KEYS = ['weeklyEvents', 'avgInference', 'successRate', 'neuralFlux'] as const;
+
 export function ActivityStats() {
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('dashboard');
   const stats = [
-    { label: 'Weekly Events', value: '1,284', trend: '+12%', icon: Activity, color: 'text-violet-400' },
-    { label: 'Avg Inference', value: '42ms', trend: '-2ms', icon: Zap, color: 'text-amber-400' },
-    { label: 'Success Rate', value: '99.9%', trend: 'Stable', icon: Target, color: 'text-emerald-400' },
-    { label: 'Neural Flux', value: '48.2k', trend: '+15.8%', icon: BarChart3, color: 'text-blue-400' },
+    { labelKey: STAT_KEYS[0], value: '1,284', trend: '+12%', icon: Activity, color: 'text-violet-400' },
+    { labelKey: STAT_KEYS[1], value: '42ms', trend: '-2ms', icon: Zap, color: 'text-amber-400' },
+    { labelKey: STAT_KEYS[2], value: '99.9%', trend: t('statusStable'), icon: Target, color: 'text-emerald-400' },
+    { labelKey: STAT_KEYS[3], value: '48.2k', trend: '+15.8%', icon: BarChart3, color: 'text-blue-400' },
   ];
 
   return (
@@ -34,7 +33,7 @@ export function ActivityStats() {
           </div>
           <div className="mt-4 space-y-1">
             <p className={cn("text-xl font-bold tracking-tight", isDarkMode ? "text-white" : "text-slate-900")}>{stat.value}</p>
-            <p className={cn("text-[10px] font-bold uppercase tracking-widest", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{stat.label}</p>
+            <p className={cn("text-[10px] font-bold uppercase tracking-widest", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t(stat.labelKey)}</p>
           </div>
         </div>
       ))}

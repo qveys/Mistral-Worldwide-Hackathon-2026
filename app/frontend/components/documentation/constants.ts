@@ -5,36 +5,36 @@ export type DocCategory = 'foundation' | 'capture' | 'strategy' | 'system' | 'li
 
 export interface NavItem {
   id: DocCategory;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
-  desc: string;
+  descKey: string;
 }
 
 export const NAV_ITEMS_COMPONENTS: NavItem[] = [
-  { id: 'foundation', label: 'Design System', icon: Layers, desc: 'Atomes & Formulaires' },
-  { id: 'capture', label: 'Brain Dump', icon: Brain, desc: 'Voix & Saisie Hybride' },
-  { id: 'strategy', label: 'Intelligence', icon: Network, desc: 'Roadmap & Graphes' },
-  { id: 'system', label: 'Infrastructure', icon: Zap, desc: 'Feedback & Résilience' },
+  { id: 'foundation', labelKey: 'designSystem', icon: Layers, descKey: 'atomsForms' },
+  { id: 'capture', labelKey: 'brainDump', icon: Brain, descKey: 'voiceHybrid' },
+  { id: 'strategy', labelKey: 'intelligence', icon: Network, descKey: 'roadmapGraphs' },
+  { id: 'system', labelKey: 'infrastructure', icon: Zap, descKey: 'feedbackResilience' },
 ];
 
 export const NAV_ITEMS_DOCS: NavItem[] = [
-  { id: 'methodology', label: 'Méthodologie', icon: Microscope, desc: 'Processus & IA' },
-  { id: 'api', label: 'API Reference', icon: Terminal, desc: 'Endpoints & Webhooks' },
+  { id: 'methodology', labelKey: 'methodology', icon: Microscope, descKey: 'processAI' },
+  { id: 'api', labelKey: 'apiReference', icon: Terminal, descKey: 'endpointsWebhooks' },
 ];
 
 export const NAV_ITEMS_LIVE_PREVIEW: NavItem[] = [
-  { id: 'live-preview', label: 'Live Preview', icon: Eye, desc: 'Galerie interactive' },
+  { id: 'live-preview', labelKey: 'livePreview', icon: Eye, descKey: 'interactiveGallery' },
 ];
 
 export interface NavSection {
-  title: string;
+  titleKey: string;
   items: NavItem[];
 }
 
 export const NAV_SECTIONS: NavSection[] = [
-  { title: 'Composants', items: NAV_ITEMS_COMPONENTS },
-  { title: 'Documentation', items: NAV_ITEMS_DOCS },
-  { title: 'Lab', items: NAV_ITEMS_LIVE_PREVIEW },
+  { titleKey: 'components', items: NAV_ITEMS_COMPONENTS },
+  { titleKey: 'documentation', items: NAV_ITEMS_DOCS },
+  { titleKey: 'lab', items: NAV_ITEMS_LIVE_PREVIEW },
 ];
 
 export const MOCK_ROADMAP: RoadmapCanvasView = {

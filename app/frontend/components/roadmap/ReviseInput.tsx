@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Send, Sparkles, Wand2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+
+const REVISION_CHIP_KEYS = ['chip1', 'chip2', 'chip3', 'chip4'] as const;
 
 interface ReviseInputProps {
   onRevise: (instruction: string) => void;
@@ -11,15 +14,9 @@ interface ReviseInputProps {
   className?: string;
 }
 
-const REVISION_CHIPS = [
-  "Met en urgent",
-  "Fusionne avec...",
-  "Déplace en J2",
-  "Divise en sous-tâches"
-];
-
 export function ReviseInput({ onRevise, isProcessing = false, className }: ReviseInputProps) {
   const [inputValue, setInputValue] = useState("");
+  const t = useTranslations('revise');
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -40,18 +37,17 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
       <div className="flex items-center gap-2 px-2">
         <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-          Ajustement Intelligent
+          {t('intelligentAdjustment')}
         </span>
       </div>
 
-      {/* Chips Selection */}
       <div className="flex flex-wrap gap-2 px-1">
-        {REVISION_CHIPS.map((chip) => (
+        {REVISION_CHIP_KEYS.map((key) => (
           <motion.button
-            key={chip}
+            key={key}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => handleChipClick(chip)}
+            onClick={() => handleChipClick(t(key))}
             disabled={isProcessing}
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border shadow-sm",
@@ -61,7 +57,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
             )}
           >
             <Sparkles size={12} className="text-blue-500" />
-            {chip}
+            {t(key)}
           </motion.button>
         ))}
       </div>
@@ -86,7 +82,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             disabled={isProcessing}
-            placeholder="Instruction de révision... (ex: 'Groupe les tâches DevOps')"
+            placeholder={t('placeholder')}
             className="flex-1 bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white py-4 px-2 text-lg font-medium placeholder:text-slate-400 dark:placeholder:text-slate-600"
           />
 
@@ -100,7 +96,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
                 : "bg-slate-100 dark:bg-white/5 text-slate-400 cursor-not-allowed"
             )}
           >
-            <span>Réviser</span>
+            <span>{t('button')}</span>
             <ArrowRight size={18} />
           </button>
         </div>
@@ -108,7 +104,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
 
       {/* Helper Text */}
       <p className="text-[10px] text-center text-slate-400 font-medium uppercase tracking-widest opacity-60">
-        L&apos;IA reconstruira la roadmap selon vos directives.
+        {t('helperText')}
       </p>
     </div>
   );
