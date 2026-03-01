@@ -6,7 +6,6 @@ import React from 'react';
 import { SettingsHeader } from '@/components/dashboard/settings/SettingsHeader';
 import { ProfileSection } from '@/components/dashboard/settings/ProfileSection';
 import { IntegrationSection } from '@/components/dashboard/settings/IntegrationSection';
-import { PreferencesSection } from '@/components/dashboard/settings/PreferencesSection';
 
 export default function SettingsPage() {
   return (
@@ -24,8 +23,6 @@ export default function SettingsPage() {
 
         {/* Side Column */}
         <div className="col-span-12 lg:col-span-4 space-y-4">
-          <PreferencesSection />
-          
           <div className="bg-gradient-to-br from-red-500/10 to-transparent border border-red-500/20 rounded-[2rem] p-8 space-y-4">
             <h4 className="text-sm font-bold text-red-500 uppercase tracking-widest">Danger Zone</h4>
             <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">
