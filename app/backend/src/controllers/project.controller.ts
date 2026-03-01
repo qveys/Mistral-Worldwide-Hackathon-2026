@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
 import { logger } from '../lib/logger.js';
 import { RoadmapSchema } from '../lib/schema.js';
-import { getProject } from '../services/storage.service.js';
+import { getProject, getProjectOwner } from '../services/storage.service.js';
 
 /**
  * GET /project/:id
- * Retrieve a saved project roadmap by ID.
+ * Retrieve a saved project roadmap by ID. Requires auth; only the owner can access.
  */
 export async function projectController(req: Request, res: Response): Promise<void> {
     const id = typeof req.params.id === 'string' ? req.params.id : req.params.id?.[0];
@@ -15,9 +15,24 @@ export async function projectController(req: Request, res: Response): Promise<vo
         return;
     }
 
-    try {
-        const project = await getProject(id);
+    const userId = req.userId;
+    if (!userId) {
+        res.status(401).json({ error: 'Authentication required' });
+        return;
+    }
 
+    try {
+        const ownerId = await getProjectOwner(id);
+        if (ownerId === null) {
+            res.status(404).json({ error: 'Project not found' });
+            return;
+        }
+        if (ownerId !== userId) {
+            res.status(403).json({ error: 'Forbidden' });
+            return;
+        }
+
+        const project = await getProject(id, userId);
         if (!project) {
             res.status(404).json({ error: 'Project not found' });
             return;

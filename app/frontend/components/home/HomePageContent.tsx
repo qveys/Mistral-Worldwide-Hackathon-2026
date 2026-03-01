@@ -9,7 +9,7 @@ import type { LoginCredentials } from '@/components/ui/LoginForm';
 
 export function HomePageContent() {
   const router = useRouter();
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn, loginWithEmail } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -18,17 +18,14 @@ export function HomePageContent() {
     }
   }, [isLoggedIn, router]);
 
-  const handleLoginSubmit = (credentials: LoginCredentials) => {
-    if (isSubmitting) return;
+  const handleLoginSubmit = async (credentials: LoginCredentials) => {
+    if (isSubmitting || !credentials.email.trim()) return;
     setIsSubmitting(true);
-
-    const hasCredentials =
-      credentials.email.trim().length > 0 && credentials.password.length > 0;
-
-    if (hasCredentials) {
-      login();
-    }
+    const result = await loginWithEmail(credentials.email);
     setIsSubmitting(false);
+    if (result.ok) {
+      router.replace('/dashboard');
+    }
   };
 
   if (isLoggedIn) {
