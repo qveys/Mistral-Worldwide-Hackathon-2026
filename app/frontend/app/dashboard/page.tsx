@@ -48,7 +48,7 @@ export default function DashboardOverview() {
             <ActivityHeatmap data={STATIC_ACTIVITY_DATA} />
           </div>
 
-          {/* Box 3: Roadmaps List */}
+          {/* Roadmaps List */}
           <div className={cn(
             "col-span-12 lg:col-span-8 row-span-3 rounded-[2.5rem] p-8 flex flex-col gap-6 overflow-hidden",
             isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"

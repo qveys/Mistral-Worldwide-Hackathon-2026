@@ -1,0 +1,1 @@
+{"version":3,"file":"voxtral.service.d.ts","sourceRoot":"","sources":["../../src/services/voxtral.service.ts"],"names":[],"mappings":"AAQA,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,2BAA2B,CAAC;AA6BrE,qBAAa,cAAc;IACvB,OAAO,CAAC,SAAS;IAQX,gBAAgB,CAClB,WAAW,EAAE,aAAa,CAAC,UAAU,CAAC,EACtC,SAAS,EAAE,mBAAmB,GAC/B,OAAO,CAAC,IAAI,CAAC;CAyDnB"}

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { 
   Plus, 
-  Target,
   LayoutDashboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
 // Dashboard Shared Components
+import { DashboardPageHeader } from '@/components/dashboard/DashboardPageHeader';
 import { RoadmapCard } from '@/components/dashboard/RoadmapCard';
 
 // Page Specific Components
@@ -36,15 +36,7 @@ export default function RoadmapsPage() {
       
       {/* Header & Primary Actions */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-2">
-          <div className={cn("flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em]", isDarkMode ? "text-zinc-500" : "text-slate-600")}>
-            <Target size={12} />
-            Workspace / Roadmaps
-          </div>
-          <h2 className={cn("text-4xl lg:text-5xl font-medium tracking-tight leading-tight", isDarkMode ? "text-white" : "text-slate-900")}>
-            Roadmap <span className={cn("italic font-serif text-3xl lg:text-4xl", isDarkMode ? "text-zinc-600" : "text-slate-600")}>Explorer</span>
-          </h2>
-        </div>
+        <DashboardPageHeader title="Roadmap" accent="Explorer" />
         
         <div className="flex items-center gap-3">
           <Link 
@@ -57,7 +49,7 @@ export default function RoadmapsPage() {
             <LayoutDashboard size={16} />
             Console
           </Link>
-          <Link href="/">
+          <Link href="/dashboard/roadmaps/new">
             <Button className={cn(
               "!h-10 !px-5 !py-2 !rounded-xl font-bold transition-all group text-sm",
               isDarkMode ? "bg-white text-black hover:bg-zinc-200 shadow-2xl shadow-white/5" : "bg-blue-500 text-white hover:bg-blue-600 shadow-lg"

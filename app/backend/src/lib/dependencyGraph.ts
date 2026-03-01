@@ -14,13 +14,11 @@ export function hasCycle(tasks: TaskNode[]): boolean {
 
     const color = new Map<string, number>();
     const adj = new Map<string, string[]>();
+    const validIds = new Set(tasks.map((task) => task.id));
 
     for (const task of tasks) {
         color.set(task.id, WHITE);
-        adj.set(
-            task.id,
-            task.dependsOn.filter((dep) => tasks.some((t) => t.id === dep)),
-        );
+        adj.set(task.id, task.dependsOn.filter((dep) => validIds.has(dep)));
     }
 
     function dfs(nodeId: string): boolean {
