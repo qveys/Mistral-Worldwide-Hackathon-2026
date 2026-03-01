@@ -156,7 +156,7 @@ export default function ProjectPage() {
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-100 font-sans selection:bg-blue-200 dark:selection:bg-violet-500/30 transition-colors duration-300">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-100 font-sans selection:bg-blue-200 dark:selection:bg-blue-500/30 transition-colors duration-300">
             <ProjectHeader
                 projectId={projectId}
                 roadmapTitle={roadmap.title}
@@ -175,7 +175,7 @@ export default function ProjectPage() {
                             value={localTasks.length.toString()}
                             detail={t('tasks')}
                             icon={Zap}
-                            color="text-violet-400"
+                            color="text-blue-400"
                         />
                         <StatBox
                             label={t('integrity')}
@@ -275,7 +275,7 @@ export default function ProjectPage() {
                     viewport={{ once: true }}
                     className="max-w-2xl mx-auto pt-12 border-t border-slate-200 dark:border-slate-700/50 text-center space-y-8"
                 >
-                    <div className="h-10 w-10 bg-violet-500/10 rounded-xl flex items-center justify-center text-violet-500 mx-auto">
+                    <div className="h-10 w-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 mx-auto">
                         <Sparkles size={20} />
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight italic leading-none">

@@ -18,7 +18,7 @@ export function SystemHealthSection() {
   const systems = [
     { labelKey: 'neuralEngine' as const, statusKey: 'stable' as const, icon: Server, color: 'text-emerald-500' },
     { labelKey: 'primaryDb' as const, statusKey: 'optimal' as const, icon: Database, color: 'text-blue-500' },
-    { labelKey: 'securityUnit' as const, statusKey: 'active' as const, icon: ShieldCheck, color: 'text-violet-500' },
+    { labelKey: 'securityUnit' as const, statusKey: 'active' as const, icon: ShieldCheck, color: 'text-blue-500' },
   ];
 
   return (
