@@ -27,7 +27,7 @@ export function Navbar() {
           {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
         <LanguageSwitcher className="shrink-0" />
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label={t('github')} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all duration-300">
+        <a href="https://github.com/qveys/Mistral-Worldwide-Hackathon-2026" target="_blank" rel="noopener noreferrer" aria-label={t('github')} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all duration-300">
           <Github size={20} />
         </a>
       </div>
