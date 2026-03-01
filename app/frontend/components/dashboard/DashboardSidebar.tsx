@@ -119,7 +119,7 @@ export function DashboardSidebar({
           {!isCollapsed && <span>{t('settings')}</span>}
         </Link>
 
-        <button type="button" onClick={handleExit} className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
+        <button type="button" onClick={handleExit} aria-label={t('exit')} className={cn("w-full flex items-center gap-4 px-3 py-4 rounded-xl text-red-500/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all", isCollapsed && "justify-center px-0")}>
           <LogOut size={22} />
           {!isCollapsed && <span>{t('exit')}</span>}
         </button>

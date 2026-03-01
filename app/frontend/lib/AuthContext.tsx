@@ -45,14 +45,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: email.trim() }),
         });
-        const data = (await res.json().catch(() => ({}))) as { success?: boolean };
+        const data = (await res.json().catch(() => ({}))) as {
+          success?: boolean;
+          error?: string;
+          code?: string;
+        };
         if (res.ok && data.success) {
           login();
           return { ok: true };
         }
-        return { ok: false, error: 'Invalid email' };
+
+        if (data.error || data.code) {
+          return { ok: false, error: data.error ?? data.code ?? 'unknown_error' };
+        }
+
+        if (res.status === 400) {
+          return { ok: false, error: 'invalid_email' };
+        }
+        if (res.status === 401) {
+          return { ok: false, error: 'unauthorized' };
+        }
+        if (res.status >= 500) {
+          return { ok: false, error: 'server_error' };
+        }
+
+        return { ok: false, error: 'unknown_error' };
       } catch {
-        return { ok: false, error: 'Network error' };
+        return { ok: false, error: 'network_error' };
       }
     },
     [login]
