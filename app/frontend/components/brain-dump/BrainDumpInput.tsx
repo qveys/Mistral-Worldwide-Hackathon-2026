@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CalendarDays, Eraser, RefreshCcw, Send, Sparkles } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { LoadingOrchestrator } from '../ui/LoadingOrchestrator';
 import { MicButton, MicButtonState } from '../ui/MicButton';
 import { TranscriptionLiveView } from './TranscriptionLiveView';
 
@@ -288,21 +289,7 @@ export function BrainDumpInput({
                         </div>
                     </motion.div>
                 ) : (
-                    <motion.div
-                        key="loader"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="flex flex-col items-center justify-center p-8 text-center"
-                    >
-                        <div className="h-1.5 w-48 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                            <motion.div
-                                initial={{ x: '-100%' }}
-                                animate={{ x: '100%' }}
-                                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-                                className="h-full w-full bg-blue-600"
-                            />
-                        </div>
-                    </motion.div>
+                    <LoadingOrchestrator />
                 )}
             </AnimatePresence>
         </div>
