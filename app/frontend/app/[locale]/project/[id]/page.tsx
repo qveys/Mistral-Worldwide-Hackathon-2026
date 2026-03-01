@@ -9,56 +9,51 @@ import { PlanningTimeline } from '@/components/roadmap/PlanningTimeline';
 import { ProjectHeader } from '@/components/roadmap/ProjectHeader';
 import { RoadmapRevisionInput } from '@/components/roadmap/RoadmapRevisionInput';
 import { LoadingOrchestrator } from '@/components/ui/LoadingOrchestrator';
-import { SectionHeader } from '@/components/documentation/SectionHeader';
-import { StatBox } from '@/components/dashboard/StatBox';
-import { ProjectHeader } from '@/components/roadmap/ProjectHeader';
-import { ObjectiveGrid } from '@/components/roadmap/ObjectiveGrid';
 import { RegistrationForm } from '@/components/ui/RegistrationForm';
 
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
+import { useAuth } from '@/lib/AuthContext';
 import { getErrorMessageKey } from '@/lib/errorMessages';
-import type { Task as RoadmapTask, TaskStatus } from '@/lib/types';
+import type { Planning, Task as RoadmapTask, TaskStatus } from '@/lib/types';
 import { roadmapToMarkdown } from '@/lib/types';
 import { useStructure } from '@/lib/useStructure';
-import { useAuth } from '@/lib/AuthContext';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Activity, AlertCircle, History, Lock, Network, Sparkles, Zap } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { getErrorMessageKey } from '@/lib/errorMessages';
-import { cn } from '@/lib/utils';
 
 export default function ProjectPage() {
-  const locale = useLocale();
-  const t = useTranslations('projectPage');
-  const tExport = useTranslations('exportMarkdown');
-  const tErrors = useTranslations('errors');
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const projectId = params.id as string;
-  const { isLoggedIn, login } = useAuth();
-  const showRegisterOverlay = !isLoggedIn && searchParams.get('register') === '1';
-  const [registerOverlayDismissed, setRegisterOverlayDismissed] = useState(false);
+    const locale = useLocale();
+    const t = useTranslations('projectPage');
+    const tExport = useTranslations('exportMarkdown');
+    const tErrors = useTranslations('errors');
+    const params = useParams();
+    const searchParams = useSearchParams();
+    const projectId = params.id as string;
+    const { isLoggedIn } = useAuth();
+    const showRegisterOverlay = !isLoggedIn && searchParams.get('register') === '1';
+    const [registerOverlayDismissed, setRegisterOverlayDismissed] = useState(false);
 
     const { roadmap, isLoading, error, fetchProject } = useStructure();
 
-  const handleRegisterSuccess = useCallback(() => {
-    login();
-    setRegisterOverlayDismissed(true);
-  }, [login]);
+    const handleRegisterSuccess = useCallback(() => {
+        setRegisterOverlayDismissed(true);
+    }, []);
 
-  const lastFetchedProjectId = useRef<string | null>(null);
-  const [localTasks, setLocalTasks] = useState<RoadmapTask[]>([]);
-  const [viewMode, setViewMode] = useState<'grid' | 'graph' | 'timeline'>('grid');
-  const errorKey = error ? getErrorMessageKey(error) : null;
-  const localizedError = error
-    ? errorKey
-      ? tErrors(errorKey)
-      : tErrors('failedRetrieveProject')
-    : null;
+    const lastFetchedProjectId = useRef<string | null>(null);
+    const [localTasks, setLocalTasks] = useState<RoadmapTask[]>([]);
+    const [localPlanning, setLocalPlanning] = useState<Planning | undefined>(undefined);
+    const [syncedProjectId, setSyncedProjectId] = useState<string | null>(null);
+    const [viewMode, setViewMode] = useState<'grid' | 'graph' | 'timeline'>('grid');
+    const errorKey = error ? getErrorMessageKey(error) : null;
+    const localizedError = error
+        ? errorKey
+            ? tErrors(errorKey)
+            : tErrors('failedRetrieveProject')
+        : null;
 
     useEffect(() => {
         if (lastFetchedProjectId.current === projectId) return;
@@ -235,7 +230,7 @@ export default function ProjectPage() {
                         >
                             <DependencyGraph
                                 tasks={localTasks}
-                                className="h-[700px] border-slate-200 dark:border-slate-700/50 shadow-2xl rounded-[2.5rem]"
+                                className="h-175 border-slate-200 dark:border-slate-700/50 shadow-2xl rounded-[2.5rem]"
                             />
                         </motion.div>
                     )}
@@ -290,35 +285,35 @@ export default function ProjectPage() {
                 </motion.section>
             </main>
 
-      <AnimatePresence>
-        {showRegisterOverlay && !registerOverlayDismissed && roadmap && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ minHeight: '100vh', minWidth: '100vw' }}
-          >
-            <div
-              className="absolute inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-md"
-              aria-hidden
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              className={cn(
-                'relative w-full max-w-sm rounded-[2.5rem] p-8 shadow-xl',
-                'bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600'
-              )}
-            >
-              <RegistrationForm onSuccess={handleRegisterSuccess} />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <AnimatePresence>
+                {showRegisterOverlay && !registerOverlayDismissed && roadmap && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                        style={{ minHeight: '100vh', minWidth: '100vw' }}
+                    >
+                        <div
+                            className="absolute inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-md"
+                            aria-hidden
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            className={cn(
+                                'relative w-full max-w-sm rounded-[2.5rem] p-8 shadow-xl',
+                                'bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600',
+                            )}
+                        >
+                            <RegistrationForm onSuccess={handleRegisterSuccess} />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-      <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-    </div>
-  );
+            <div className="fixed inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        </div>
+    );
 }

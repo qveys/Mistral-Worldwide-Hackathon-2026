@@ -42,7 +42,11 @@
         "logout": "Déconnexion",
         "appName": "EchoMaps",
         "newRoadmap": "Nouvelle Roadmap",
-        "createRoadmap": "Créer une Roadmap"
+        "createRoadmap": "Créer une Roadmap",
+        "roadmapUnit": "Unité {id}",
+        "viewStructured": "Vue structurée",
+        "viewGraph": "Vue graphe",
+        "viewTimeline": "Vue chronologie"
     },
     "errors": {
         "systemInterrupt": "System Interrupt / Error {code}",
@@ -164,7 +168,11 @@
         "inferenceSpeedValue": "84,2 t/s",
         "inferenceSpeedDetail": "42 ms LATENCE",
         "topologicalSortValue": "Sain",
-        "topologicalSortDetail": "VÉRIFIÉ"
+        "topologicalSortDetail": "VÉRIFIÉ",
+        "timelinePageTitle": "Chronologie",
+        "timelinePageAccent": "Vue d'ensemble",
+        "settingsPageTitle": "Paramètres",
+        "settingsPageAccent": "Préférences"
     },
     "projectPage": {
         "systemInterrupt": "Interruption Système",
@@ -345,5 +353,16 @@
     "language": {
         "localeFr": "Passer en français",
         "localeEn": "Passer en anglais"
+    },
+    "profile": {
+        "identityProfile": "Profil d'identité",
+        "clickToChange": "Cliquer pour changer",
+        "displayName": "Nom d'affichage",
+        "defaultDisplayName": "Opérateur Neural",
+        "emailAddress": "Adresse email",
+        "defaultEmail": "operator@echomaps.ai",
+        "professionalBio": "Bio professionnelle",
+        "bioPlaceholder": "Décrivez votre rôle et votre expertise...",
+        "updateProfile": "Mettre à jour le profil"
     }
 }

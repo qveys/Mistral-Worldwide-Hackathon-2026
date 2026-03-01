@@ -42,7 +42,11 @@
         "logout": "Log out",
         "appName": "EchoMaps",
         "newRoadmap": "New Roadmap",
-        "createRoadmap": "Create Roadmap"
+        "createRoadmap": "Create Roadmap",
+        "roadmapUnit": "Unit {id}",
+        "viewStructured": "Structured view",
+        "viewGraph": "Graph view",
+        "viewTimeline": "Timeline view"
     },
     "errors": {
         "systemInterrupt": "System Interrupt / Error {code}",
@@ -164,7 +168,11 @@
         "inferenceSpeedValue": "84.2 t/s",
         "inferenceSpeedDetail": "42ms LATENCY",
         "topologicalSortValue": "Healthy",
-        "topologicalSortDetail": "VERIFIED"
+        "topologicalSortDetail": "VERIFIED",
+        "timelinePageTitle": "Timeline",
+        "timelinePageAccent": "Overview",
+        "settingsPageTitle": "Settings",
+        "settingsPageAccent": "Preferences"
     },
     "projectPage": {
         "systemInterrupt": "System Interrupt",
@@ -345,5 +353,16 @@
     "language": {
         "localeFr": "Switch to French",
         "localeEn": "Switch to English"
+    },
+    "profile": {
+        "identityProfile": "Identity Profile",
+        "clickToChange": "Click to change",
+        "displayName": "Display Name",
+        "defaultDisplayName": "Neural Operator",
+        "emailAddress": "Email Address",
+        "defaultEmail": "operator@echomaps.ai",
+        "professionalBio": "Professional Bio",
+        "bioPlaceholder": "Describe your role and expertise...",
+        "updateProfile": "Update Profile"
     }
 }

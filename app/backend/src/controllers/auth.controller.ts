@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
 import { getRequiredEnv } from '../lib/env.js';
 import { logger } from '../lib/logger.js';
 
@@ -19,12 +20,17 @@ export interface UserEntry {
     password?: string;
 }
 
-let cachedEmails: string[] | null = null;
+let cachedUsers: UserEntry[] | null = null;
 let cacheLoadedAt = 0;
 
 function normalizeEntry(entry: unknown): string | null {
     if (typeof entry === 'string' && entry.trim()) return entry.trim().toLowerCase();
-    if (entry && typeof entry === 'object' && 'email' in entry && typeof (entry as UserEntry).email === 'string') {
+    if (
+        entry &&
+        typeof entry === 'object' &&
+        'email' in entry &&
+        typeof (entry as UserEntry).email === 'string'
+    ) {
         return (entry as UserEntry).email.trim().toLowerCase();
     }
     return null;
@@ -48,8 +54,11 @@ function readRawUsers(): UserEntry[] {
         .map((entry: unknown): UserEntry => {
             const email = normalizeEntry(entry)!;
             const existingId =
-                entry && typeof entry === 'object' && 'id' in entry && typeof (entry as Record<string, unknown>).id === 'string'
-                    ? (entry as Record<string, unknown>).id as string
+                entry &&
+                typeof entry === 'object' &&
+                'id' in entry &&
+                typeof (entry as Record<string, unknown>).id === 'string'
+                    ? ((entry as Record<string, unknown>).id as string)
                     : crypto.randomUUID();
             if (entry && typeof entry === 'object' && 'email' in entry) {
                 const o = entry as Record<string, unknown>;
@@ -65,16 +74,16 @@ function readRawUsers(): UserEntry[] {
         });
 }
 
-function readUsersFromDisk(): string[] | null {
+function readUsersFromDisk(): UserEntry[] | null {
     try {
         const entries = readRawUsers();
-        return entries.length > 0 ? entries.map((e) => e.email) : null;
+        return entries.length > 0 ? entries : null;
     } catch {
         return null;
     }
 }
 
-function getCachedUsers(): User[] | null {
+function getCachedUsers(): UserEntry[] | null {
     const now = Date.now();
     if (cachedUsers && now - cacheLoadedAt < USERS_CACHE_TTL_MS) {
         return cachedUsers;
@@ -87,7 +96,7 @@ function getCachedUsers(): User[] | null {
 }
 
 function invalidateCache(): void {
-    cachedEmails = null;
+    cachedUsers = null;
     cacheLoadedAt = 0;
 }
 
@@ -125,7 +134,7 @@ export async function loginController(req: Request, res: Response): Promise<void
             const token = jwt.sign(
                 { userId: user.id, email: user.email },
                 JWT_SECRET as jwt.Secret,
-                { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions
+                { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions,
             );
             res.status(200).json({
                 success: true,
@@ -149,7 +158,12 @@ export async function loginController(req: Request, res: Response): Promise<void
  * Appends a new user (nom, prénom, email, password) to data/users.json.
  */
 export async function registerController(req: Request, res: Response): Promise<void> {
-    const body = req.body as { email?: string; firstName?: string; lastName?: string; password?: string };
+    const body = req.body as {
+        email?: string;
+        firstName?: string;
+        lastName?: string;
+        password?: string;
+    };
     const email = typeof body.email === 'string' ? body.email.trim() : '';
     const firstName = typeof body.firstName === 'string' ? body.firstName.trim() : '';
     const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
