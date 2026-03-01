@@ -37,8 +37,10 @@ export function requireAuth(req, res, next) {
         req.user = { id: decoded.userId, email: decoded.email };
         next();
     }
-    catch {
-        logger.warn('AuthMiddleware', 'Invalid or expired token');
+    catch (error) {
+        logger.warn('AuthMiddleware', 'Invalid or expired token', {
+            error: error instanceof Error ? error.message : String(error),
+        });
         res.status(401).json({ error: 'Invalid or expired token' });
     }
 }

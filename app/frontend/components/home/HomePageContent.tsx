@@ -21,11 +21,8 @@ export function HomePageContent() {
   const handleLoginSubmit = async (credentials: LoginCredentials) => {
     if (isSubmitting || !credentials.email.trim()) return;
     setIsSubmitting(true);
-    const result = await loginWithEmail(credentials.email);
+    await loginWithEmail(credentials.email);
     setIsSubmitting(false);
-    if (result.ok) {
-      router.replace('/dashboard');
-    }
   };
 
   if (isLoggedIn) {
