@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { SectionHeader } from './SectionHeader';
 import { Button } from '@/components/ui/Button';
@@ -11,6 +14,10 @@ import { Card } from '@/components/ui/Card';
 import { Sparkles, Play, Search, Settings, User, Bell, Mail, Trash2, Save } from 'lucide-react';
 
 export const LivePreviewSection = () => {
+  const t = useTranslations('doc');
+  const tTask = useTranslations('taskCard');
+  const tActions = useTranslations('actions');
+  const tTimeline = useTranslations('timeline');
   const [btnLoading, setBtnLoading] = useState(false);
   const [micState, setMicState] = useState<MicButtonState>('idle');
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,8 +36,8 @@ export const LivePreviewSection = () => {
       className="space-y-12"
     >
       <SectionHeader 
-        title="Live Preview" 
-        description="Exploration interactive de la bibliothèque de composants EchoMaps." 
+        title={t('livePreview')} 
+        description={t('sectionLivePreviewDescription')} 
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -39,17 +46,17 @@ export const LivePreviewSection = () => {
         <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl">
           <div className="flex items-center gap-2 text-blue-500 mb-2">
             <Play size={16} />
-            <span className="text-[10px] font-black uppercase tracking-widest italic">Interactions</span>
+            <span className="text-[10px] font-black uppercase tracking-widest italic">{t('interactions')}</span>
           </div>
           
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <Button variant="primary" onClick={simulateLoading} isLoading={btnLoading}>
-                Action Principale
+                {t('actionPrimary')}
               </Button>
-              <Button variant="secondary">Action Secondaire</Button>
-              <Button variant="danger">Zone Critique</Button>
-              <Button variant="primary" className="bg-blue-600 hover:bg-blue-700">Custom Brand</Button>
+              <Button variant="secondary">{t('actionSecondary')}</Button>
+              <Button variant="danger">{t('zoneCritique')}</Button>
+              <Button variant="primary" className="bg-blue-600 hover:bg-blue-700">{t('customBrand')}</Button>
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -72,17 +79,17 @@ export const LivePreviewSection = () => {
         <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl">
           <div className="flex items-center gap-2 text-blue-500 mb-2">
             <Sparkles size={16} />
-            <span className="text-[10px] font-black uppercase tracking-widest italic">États & Statuts</span>
+            <span className="text-[10px] font-black uppercase tracking-widest italic">{t('statesAndStatuses')}</span>
           </div>
 
           <div className="space-y-8">
             <div className="flex flex-wrap gap-3">
-              <Badge variant="priority" type="high">Urgent</Badge>
-              <Badge variant="priority" type="medium">Normal</Badge>
-              <Badge variant="priority" type="low">Faible</Badge>
-              <Badge variant="status" type="done">Terminé</Badge>
-              <Badge variant="status" type="doing">En cours</Badge>
-              <Badge variant="status" type="backlog">Backlog</Badge>
+              <Badge variant="priority" type="high">{tTask('priorityHigh')}</Badge>
+              <Badge variant="priority" type="medium">{t('normal')}</Badge>
+              <Badge variant="priority" type="low">{tTask('priorityLow')}</Badge>
+              <Badge variant="status" type="done">{tTask('completed')}</Badge>
+              <Badge variant="status" type="doing">{tTask('inProgress')}</Badge>
+              <Badge variant="status" type="backlog">{tActions('backlog')}</Badge>
               <Badge variant="estimate">Size: XL</Badge>
             </div>
 
@@ -90,7 +97,7 @@ export const LivePreviewSection = () => {
               <TaskCard 
                 task={{ 
                   id: "demo-1", 
-                  title: "Finaliser l'interface de documentation", 
+                  title: t('demoTask1Title'), 
                   status: "doing", 
                   priority: "high", 
                   estimate: "M" 
@@ -100,13 +107,13 @@ export const LivePreviewSection = () => {
               <TaskCard 
                 task={{ 
                   id: "demo-2", 
-                  title: "Optimiser les performances STT", 
+                  title: t('demoTask2Title'), 
                   status: "backlog", 
                   priority: "medium", 
                   estimate: "L" 
                 }} 
                 isBlocked
-                blockedBy={["API Mistral Cloud"]}
+                blockedBy={[t('demoBlockedBy')]}
                 onStatusChange={() => {}} 
               />
             </div>
@@ -117,37 +124,37 @@ export const LivePreviewSection = () => {
         <Card className="p-8 space-y-8 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shadow-lg dark:shadow-xl lg:col-span-2">
           <div className="flex items-center gap-2 text-blue-500 mb-2">
             <Search size={16} />
-            <span className="text-[10px] font-black uppercase tracking-widest italic">Saisie de données</span>
+            <span className="text-[10px] font-black uppercase tracking-widest italic">{t('dataInput')}</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-4">
               <Input 
-                label="Nom du Projet" 
-                placeholder="EchoMaps v2" 
+                label={t('projectName')} 
+                placeholder={t('projectNamePlaceholder')} 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Input 
-                label="Tags" 
-                placeholder="AI, Product, Launch" 
-                description="Séparez les tags par des virgules."
+                label={t('tags')} 
+                placeholder={t('tagsPlaceholder')} 
+                description={t('tagsSeparateHint')}
               />
             </div>
             
             <div className="space-y-4">
               <Input 
-                label="Email de contact" 
-                placeholder="dev@echo.maps" 
+                label={t('contactEmail')} 
+                placeholder={t('contactEmailPlaceholder')} 
                 type="email"
-                error={searchQuery.length > 0 && !searchQuery.includes('@') ? "Email invalide" : undefined}
+                error={searchQuery.length > 0 && !searchQuery.includes('@') ? t('emailInvalid') : undefined}
               />
               <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl border-2 border-slate-200 dark:border-slate-600">
-                <span className="text-[9px] font-black uppercase text-slate-400 block mb-3">Sélection Rapide</span>
+                <span className="text-[9px] font-black uppercase text-slate-400 block mb-3">{t('quickSelect')}</span>
                 <div className="flex gap-2">
-                  {['Web', 'Mobile', 'API'].map(t => (
-                    <button key={t} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-blue-500 transition-colors">
-                      {t}
+                  {[t('web'), t('mobile'), t('api')].map((label) => (
+                    <button key={label} className="px-3 py-1.5 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 text-[10px] font-bold dark:text-white border-2 border-slate-200 dark:border-slate-600 hover:border-blue-500 transition-colors">
+                      {label}
                     </button>
                   ))}
                 </div>
@@ -158,14 +165,14 @@ export const LivePreviewSection = () => {
               <div className="flex items-center justify-between p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                 <div className="flex items-center gap-3">
                   <Spinner size="sm" className="text-blue-500" />
-                  <span className="text-[10px] font-black uppercase italic dark:text-white">Traitement...</span>
+                  <span className="text-[10px] font-black uppercase italic dark:text-white">{t('processing')}</span>
                 </div>
-                <Badge variant="status" type="doing">Active</Badge>
+                <Badge variant="status" type="doing">{tTimeline('statusActive')}</Badge>
               </div>
 
               <div className="flex gap-2">
                 <Button variant="secondary" className="flex-1 gap-2">
-                  <Mail size={14} /> Inbox
+                  <Mail size={14} /> {t('inbox')}
                 </Button>
                 <Button variant="danger" className="p-3">
                   <Trash2 size={16} />

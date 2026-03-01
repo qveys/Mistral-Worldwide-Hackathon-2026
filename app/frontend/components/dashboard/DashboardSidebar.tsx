@@ -56,7 +56,7 @@ export function DashboardSidebar({
           <div className="h-8 w-8 bg-zinc-900 dark:bg-zinc-100 rounded-lg flex items-center justify-center text-white dark:text-black flex-shrink-0">
             <Command size={18} />
           </div>
-          {!isCollapsed && <span className="font-bold tracking-tight text-zinc-900 dark:text-white text-base uppercase">EchoMaps</span>}
+          {!isCollapsed && <span className="font-bold tracking-tight text-zinc-900 dark:text-white text-base uppercase">{t('appName')}</span>}
         </Link>
         <button onClick={onToggle} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-500 transition-colors">
           {isCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}

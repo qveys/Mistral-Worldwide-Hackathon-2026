@@ -1,30 +1,33 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { usePathname } from '@/i18n/navigation';
 import { ChevronRight, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
-const SEGMENT_LABELS: Record<string, string> = {
-  dashboard: 'Console',
-  roadmaps: 'Roadmaps',
-  activity: 'Activity',
-  timeline: 'Timeline',
-  settings: 'Settings',
-  new: 'New Roadmap',
+const SEGMENT_KEYS: Record<string, 'console' | 'roadmaps' | 'activity' | 'timeline' | 'settings' | 'newRoadmap'> = {
+  dashboard: 'console',
+  roadmaps: 'roadmaps',
+  activity: 'activity',
+  timeline: 'timeline',
+  settings: 'settings',
+  new: 'newRoadmap',
 };
 
 export function DashboardBreadcrumb() {
   const pathname = usePathname();
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
 
   const segments = pathname
     .split('/')
     .filter(Boolean)
     .map((segment, i, arr) => ({
-      label: SEGMENT_LABELS[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1),
+      label: SEGMENT_KEYS[segment] ? t(SEGMENT_KEYS[segment]) : segment.charAt(0).toUpperCase() + segment.slice(1),
       href: '/' + arr.slice(0, i + 1).join('/'),
       isLast: i === arr.length - 1,
     }));
@@ -37,7 +40,7 @@ export function DashboardBreadcrumb() {
         "flex items-center gap-1 py-4 px-6 lg:px-8",
         isDarkMode ? "text-zinc-500" : "text-slate-500"
       )}
-      aria-label="Fil d'Ariane"
+      aria-label={tCommon('breadcrumbAria')}
     >
       {segments.map((seg, i) => (
         <React.Fragment key={seg.href}>
@@ -57,7 +60,7 @@ export function DashboardBreadcrumb() {
                   : "bg-slate-200/80 text-slate-900 border border-slate-300/80"
               )}
             >
-              {i === 0 && seg.label === 'Console' ? <Home size={12} className="opacity-80" /> : null}
+              {i === 0 && seg.href === '/dashboard' ? <Home size={12} className="opacity-80" /> : null}
               {seg.label}
             </span>
           ) : (
@@ -70,7 +73,7 @@ export function DashboardBreadcrumb() {
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-300"
               )}
             >
-              {i === 0 && seg.label === 'Console' ? <Home size={12} className="opacity-70" /> : null}
+              {i === 0 && seg.href === '/dashboard' ? <Home size={12} className="opacity-70" /> : null}
               {seg.label}
             </Link>
           )}

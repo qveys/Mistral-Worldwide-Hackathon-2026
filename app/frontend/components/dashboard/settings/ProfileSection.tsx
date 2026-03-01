@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { User, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 
 export function ProfileSection() {
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('profile');
 
   return (
     <div className={cn(
@@ -17,7 +19,7 @@ export function ProfileSection() {
     )}>
       <div className={cn("flex items-center gap-3 border-b pb-6", isDarkMode ? "border-zinc-800/50" : "border-slate-200")}>
         <User size={18} className="text-violet-500" />
-        <h3 className={cn("text-sm font-bold uppercase tracking-widest", isDarkMode ? "text-white" : "text-slate-900")}>Identity Profile</h3>
+        <h3 className={cn("text-sm font-bold uppercase tracking-widest", isDarkMode ? "text-white" : "text-slate-900")}>{t('identityProfile')}</h3>
       </div>
 
       <div className="flex flex-col md:flex-row gap-10">
@@ -31,26 +33,26 @@ export function ProfileSection() {
               <Camera size={20} className="text-white" />
             </div>
           </div>
-          <p className={cn("text-[10px] font-bold uppercase tracking-tighter", isDarkMode ? "text-zinc-600" : "text-slate-600")}>Click to change</p>
+          <p className={cn("text-[10px] font-bold uppercase tracking-tighter", isDarkMode ? "text-zinc-600" : "text-slate-600")}>{t('clickToChange')}</p>
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Display Name</label>
-            <Input defaultValue="Product Lead" className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
+            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('displayName')}</label>
+            <Input defaultValue={t('defaultDisplayName')} className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
           </div>
           <div className="space-y-2">
-            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Email Address</label>
-            <Input defaultValue="lead@echomaps.ai" className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
+            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('emailAddress')}</label>
+            <Input defaultValue={t('defaultEmail')} className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
           </div>
           <div className="md:col-span-2 space-y-2">
-            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Professional Bio</label>
+            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('professionalBio')}</label>
             <textarea 
               className={cn(
                 "w-full rounded-xl p-4 text-sm outline-none focus:border-violet-500/50 transition-all h-24",
                 isDarkMode ? "bg-zinc-900/50 border border-zinc-800 text-zinc-300" : "bg-slate-50 border border-slate-300 text-slate-700"
               )}
-              placeholder="Architecting the future of neural roadmaps..."
+              placeholder={t('bioPlaceholder')}
             />
           </div>
         </div>
@@ -61,7 +63,7 @@ export function ProfileSection() {
           "rounded-xl px-8 h-11 font-bold uppercase tracking-widest text-[10px]",
           isDarkMode ? "bg-white text-black hover:bg-zinc-200" : "bg-slate-900 text-white hover:bg-slate-800"
         )}>
-          Update Profile
+          {t('updateProfile')}
         </Button>
       </div>
     </div>
