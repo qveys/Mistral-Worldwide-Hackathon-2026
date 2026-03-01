@@ -18,13 +18,15 @@ Transform a chaotic voice/text **brain dump** into a structured, actionable road
 
 ## 📜 Coding Rules (Non-Negotiable)
 
-1. **Atomic Design** — UI components must be small & reusable in `src/components/ui/`
+1. **Atomic Design** — UI components must be small & reusable in `src/components/ui/` (see path note below).
 2. **TypeScript Strict** — zero `any`. Zod validates every LLM JSON output.
 3. **Error Handling** — every Bedrock/Voxtral call: `try/catch` + CloudWatch structured log
 4. **JSON-First** — Mistral always responds in pure JSON. No prose in AI responses.
 5. **Optimistic UI** — show transcription state immediately; reconcile after Bedrock reply
 6. **DRY + KISS** — extract shared logic to `src/lib/`. Avoid over-engineering.
 7. **Separation of Concerns** — UI (`src/components/`) ↔ Logic (`src/hooks/`, `src/lib/`)
+
+**Path note:** UI paths like `src/components/ui`, `src/lib/` refer to the frontend app: `app/frontend/` (e.g. `app/frontend/components/`, `app/frontend/lib/`).
 
 ## � Agent Roles
 
@@ -36,7 +38,7 @@ Transform a chaotic voice/text **brain dump** into a structured, actionable road
 
 ### ⚗️ The Prompt Engineer
 
-- Owns all Bedrock prompt files in `backend/prompts/`
+- Owns all Bedrock prompt files in `app/backend/prompts/`
 - Technique: Chain-of-Thought + JSON-only output enforcement
 - Always validates prompt output against Zod schema before shipping
 

@@ -97,7 +97,7 @@ Description des services backend et de leurs responsabilités.
 ## 📂 Organisation Backend
 
 ```text
-backend/
+app/backend/
 ├── routes/
 │   ├── transcribe.ts    # POST /transcribe
 │   ├── structure.ts     # POST /structure

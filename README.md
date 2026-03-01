@@ -33,12 +33,14 @@ Built for the **Mistral Worldwide Hackathon 2026**.
 
 ### Setup
 
+From the **repo root**:
+
 ```bash
 git clone <repo-url>
 cd Mistral-Worldwide-Hackathon-2026
 npm install
-cp .env.example .env.local  # fill in your keys
-npm run dev                  # http://localhost:3000
+cp .env.example .env.local   # fill in your keys
+npm run dev                  # or: docker compose up — http://localhost:3000
 ```
 
 ### Environment Variables
@@ -80,14 +82,15 @@ AWS_SECRET_ACCESS_KEY=...
 │   ├── speech-to-text/
 │   ├── aws-solution-architect/
 │   └── ui-ux-pro-max/
-├── src/
-│   ├── app/             # Next.js App Router pages
-│   ├── components/      # Atomic UI components
-│   ├── hooks/           # useVoxtral, useBedrock, ...
-│   └── lib/             # bedrock.ts, schema.ts, ...
-└── backend/             # Express API (TypeScript)
-    ├── routes/
-    └── prompts/
+└── app/
+    ├── frontend/        # Next.js (App Router, components, hooks, lib)
+    │   ├── app/         # Next.js App Router pages
+    │   ├── components/  # Atomic UI components
+    │   ├── hooks/       # useVoxtral, useBedrock, ...
+    │   └── lib/         # bedrock.ts, schema.ts, ...
+    └── backend/         # Express API (TypeScript)
+        ├── routes/
+        └── prompts/
 ```
 
 ## 🧠 JSON Schema
