@@ -12,5 +12,7 @@ RUN npm ci
 COPY . .
 ARG APP=frontend
 ARG PORT=3000
+ENV APP=${APP}
+ENV PORT=${PORT}
 EXPOSE $PORT
 CMD npm run dev -w $APP
