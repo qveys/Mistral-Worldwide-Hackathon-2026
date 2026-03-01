@@ -1,52 +1,17 @@
-export type TaskStatus = 'backlog' | 'doing' | 'done';
-export type TaskPriority = 'high' | 'medium' | 'low';
-export type TaskEstimate = 'S' | 'M' | 'L';
-export type SlotTime = 'AM' | 'PM';
+import type { Roadmap } from '@echomaps/shared';
 
-export interface Objective {
-    id: string;
-    text: string;
-    priority: TaskPriority;
-}
-
-export interface Task {
-    id: string;
-    title: string;
-    objectiveId: string;
-    status: TaskStatus;
-    estimate: TaskEstimate;
-    priority: TaskPriority;
-    dependsOn: string[];
-}
-
-export interface PlanningSlot {
-    taskId: string;
-    day: string; // ISO date "YYYY-MM-DD"
-    slot: SlotTime;
-    done: boolean;
-}
-
-export interface Planning {
-    startDate: string;
-    endDate: string;
-    slots: PlanningSlot[];
-}
-
-export interface RevisionEntry {
-    timestamp: string;
-    patch: string;
-}
-
-export interface Roadmap {
-    projectId: string;
-    title: string;
-    createdAt: string;
-    brainDump: string;
-    objectives: Objective[];
-    tasks: Task[];
-    planning?: Planning;
-    revisionHistory: RevisionEntry[];
-}
+export type {
+    Objective,
+    Task,
+    PlanningSlot,
+    Planning,
+    RevisionEntry,
+    Roadmap,
+    TaskStatus,
+    TaskPriority,
+    TaskEstimate,
+    SlotTime,
+} from '@echomaps/shared';
 
 /**
  * Convert a Roadmap to a Markdown string for export.

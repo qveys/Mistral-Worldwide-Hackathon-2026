@@ -3,13 +3,14 @@ interface TaskNode {
     dependsOn: string[];
 }
 /**
- * Detects whether the task dependency graph contains a cycle using DFS.
+ * Detect if the task dependency graph contains a cycle using DFS.
+ * Returns true if a cycle is found.
  */
 export declare function hasCycle(tasks: TaskNode[]): boolean;
 /**
- * Returns tasks in topological order (dependencies first) using Kahn's algorithm.
- * Throws an Error if the graph contains a cycle.
+ * Topological sort of tasks based on dependsOn.
+ * Returns task IDs in execution order. Throws if cycle detected.
  */
-export declare function topologicalSort(tasks: TaskNode[]): TaskNode[];
+export declare function topologicalSort(tasks: TaskNode[]): string[];
 export {};
 //# sourceMappingURL=dependencyGraph.d.ts.map
