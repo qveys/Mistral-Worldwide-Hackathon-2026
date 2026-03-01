@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
+import { DashboardBreadcrumb } from '@/components/dashboard/DashboardBreadcrumb';
 import { DashboardThemeProvider, useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +32,7 @@ function DashboardLayoutInner({
       />
 
       <main className="flex-1 overflow-y-auto">
+        <DashboardBreadcrumb />
         {children}
       </main>
     </div>
