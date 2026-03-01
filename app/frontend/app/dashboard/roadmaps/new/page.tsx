@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
@@ -9,6 +10,7 @@ import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 export default function NewRoadmapPage() {
   const router = useRouter();
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('dashboard');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleGenerate = (text: string, includePlanning: boolean) => {
@@ -33,13 +35,13 @@ export default function NewRoadmapPage() {
             "text-2xl font-bold tracking-tight mb-2 text-center",
             isDarkMode ? "text-white" : "text-slate-900"
           )}>
-            New Roadmap
+            {t('newBrainDump')}
           </h1>
           <p className={cn(
             "text-sm text-center mb-8",
             isDarkMode ? "text-zinc-500" : "text-slate-600"
           )}>
-            Parlez ou écrivez votre idée. Mistral structurera votre roadmap.
+            {t('newRoadmapDescription')}
           </p>
           <BrainDumpInput
             onGenerate={handleGenerate}
