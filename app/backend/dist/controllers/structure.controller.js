@@ -76,8 +76,13 @@ export async function structureController(req, res) {
         roadmap.projectId = projectId;
         roadmap.brainDump = input.text;
         roadmap.createdAt = new Date().toISOString();
-        // 8. Save to storage
-        await saveProject(projectId, roadmap);
+        // 8. Save to storage (requireAuth ensures req.userId is set)
+        const userId = req.userId;
+        if (!userId) {
+            res.status(401).json({ error: 'Authentication required' });
+            return;
+        }
+        await saveProject(userId, projectId, roadmap);
         const latencyMs = Date.now() - startTime;
         logger.info('StructureController', 'Roadmap generated successfully', {
             projectId,
