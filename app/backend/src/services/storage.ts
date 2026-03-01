@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from 'fs/promises';
-import path from 'path';
+import * as path from 'node:path';
 import type { Roadmap } from '../lib/schema.js';
 import { HttpError } from '../lib/httpError.js';
 import { assertValidProjectId } from '../lib/projectId.js';
