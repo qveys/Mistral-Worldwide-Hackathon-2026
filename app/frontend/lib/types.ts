@@ -13,19 +13,53 @@ export type {
     SlotTime,
 } from '@echomaps/shared';
 
+/** Labels for locale-aware markdown export (from exportMarkdown namespace). */
+export interface ExportMarkdownLabels {
+    generatedOn: string;
+    objectives: string;
+    tasks: string;
+    tableTask: string;
+    tablePriority: string;
+    tableEstimate: string;
+    tableStatus: string;
+    tableDependencies: string;
+    planning: string;
+    fromTo: string;
+}
+
+const DEFAULT_LABELS_FR: ExportMarkdownLabels = {
+    generatedOn: 'Généré le',
+    objectives: 'Objectifs',
+    tasks: 'Tâches',
+    tableTask: 'Tâche',
+    tablePriority: 'Priorité',
+    tableEstimate: 'Estimation',
+    tableStatus: 'Statut',
+    tableDependencies: 'Dépendances',
+    planning: 'Planning',
+    fromTo: 'Du {start} au {end}',
+};
+
 /**
  * Convert a Roadmap to a Markdown string for export.
+ * When options is provided, uses the given locale for dates and labels for all section headers (i18n).
  */
-export function roadmapToMarkdown(roadmap: Roadmap): string {
+export function roadmapToMarkdown(
+    roadmap: Roadmap,
+    options?: { locale: string; labels: ExportMarkdownLabels }
+): string {
+    const locale = options?.locale ?? 'fr-FR';
+    const L = options?.labels ?? DEFAULT_LABELS_FR;
+    const dateStr = new Date(roadmap.createdAt).toLocaleDateString(locale);
+
     const lines: string[] = [];
 
     lines.push(`# ${roadmap.title}`);
     lines.push('');
-    lines.push(`> Généré le ${new Date(roadmap.createdAt).toLocaleDateString('fr-FR')}`);
+    lines.push(`> ${L.generatedOn} ${dateStr}`);
     lines.push('');
 
-    // Objectives
-    lines.push('## Objectifs');
+    lines.push(`## ${L.objectives}`);
     lines.push('');
     for (const obj of roadmap.objectives) {
         const badge = obj.priority === 'high' ? '🔴' : obj.priority === 'medium' ? '🟡' : '🔵';
@@ -33,10 +67,9 @@ export function roadmapToMarkdown(roadmap: Roadmap): string {
     }
     lines.push('');
 
-    // Tasks
-    lines.push('## Tâches');
+    lines.push(`## ${L.tasks}`);
     lines.push('');
-    lines.push('| Tâche | Priorité | Estimation | Statut | Dépendances |');
+    lines.push(`| ${L.tableTask} | ${L.tablePriority} | ${L.tableEstimate} | ${L.tableStatus} | ${L.tableDependencies} |`);
     lines.push('|-------|----------|------------|--------|-------------|');
     for (const task of roadmap.tasks) {
         const deps = task.dependsOn.length > 0 ? task.dependsOn.join(', ') : '—';
@@ -45,11 +78,13 @@ export function roadmapToMarkdown(roadmap: Roadmap): string {
     }
     lines.push('');
 
-    // Planning
     if (roadmap.planning) {
-        lines.push('## Planning');
+        lines.push(`## ${L.planning}`);
         lines.push('');
-        lines.push(`Du ${roadmap.planning.startDate} au ${roadmap.planning.endDate}`);
+        const fromToStr = L.fromTo
+            .replace('{start}', roadmap.planning.startDate)
+            .replace('{end}', roadmap.planning.endDate);
+        lines.push(fromToStr);
         lines.push('');
 
         const slotsByDay = new Map<string, typeof roadmap.planning.slots>();

@@ -3,8 +3,6 @@
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
-
 import { ClarificationBubble } from '@/components/brain-dump/ClarificationBubble';
 import { MicButtonState } from '@/components/ui/MicButton';
 import { Toast, ToastType } from '@/components/ui/Toast';
@@ -17,10 +15,11 @@ import { LivePreviewSection } from '@/components/documentation/LivePreviewSectio
 import { MethodologySection } from '@/components/documentation/MethodologySection';
 import { ApiSection } from '@/components/documentation/ApiSection';
 import { DocCategory, MOCK_ROADMAP } from '@/components/documentation/constants';
+import { useTheme } from '@/lib/ThemeContext';
 
 function DocumentationContent() {
   const searchParams = useSearchParams();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
   const [activeCategory, setActiveCategory] = useState<DocCategory>('foundation');
   const [roadmapViewMode, setRoadmapViewMode] = useState<'timeline' | 'graph'>('timeline');
   const [micState, setMicState] = useState<MicButtonState>('idle');
@@ -42,24 +41,13 @@ function DocumentationContent() {
     if (category) setActiveCategory(category);
   }, [searchParams]);
 
-  useEffect(() => {
-    if (isDarkMode) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-    return () => document.documentElement.classList.remove('dark');
-  }, [isDarkMode]);
-
   const tasks = useMemo(
     () => MOCK_ROADMAP.timeSlots.flatMap((slot) => slot.tasks),
     []
   );
 
   return (
-    <div
-      className={cn(
-        'min-h-screen flex transition-colors duration-500',
-        isDarkMode ? 'dark bg-slate-950' : 'bg-slate-100'
-      )}
-    >
+    <div className="min-h-screen flex transition-colors duration-500 bg-slate-100 dark:bg-slate-950">
       <Toast
         isVisible={toast.isVisible}
         message={toast.message}
@@ -81,7 +69,7 @@ function DocumentationContent() {
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
         isDarkMode={isDarkMode}
-        onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+        onToggleTheme={toggleTheme}
       />
 
       <main className="flex-1 p-12 overflow-y-auto bg-slate-100 dark:bg-slate-950">

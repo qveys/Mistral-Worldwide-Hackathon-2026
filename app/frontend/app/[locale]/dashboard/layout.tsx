@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { DashboardBreadcrumb } from '@/components/dashboard/DashboardBreadcrumb';
-import { DashboardThemeProvider, useDashboardTheme } from '@/lib/DashboardThemeContext';
+import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { cn } from '@/lib/utils';
 
 function DashboardLayoutInner({
@@ -46,13 +46,11 @@ export default function DashboardLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <DashboardThemeProvider>
-      <DashboardLayoutInner
-        isCollapsed={isCollapsed}
-        onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-      >
-        {children}
-      </DashboardLayoutInner>
-    </DashboardThemeProvider>
+    <DashboardLayoutInner
+      isCollapsed={isCollapsed}
+      onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+    >
+      {children}
+    </DashboardLayoutInner>
   );
 }

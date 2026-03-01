@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
+import { ThemeProvider } from "@/lib/ThemeContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,11 +35,11 @@ export default async function RootLayout({
     headersList.get("x-next-intl-locale") ?? routing.defaultLocale;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

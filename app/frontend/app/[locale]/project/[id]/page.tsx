@@ -24,13 +24,15 @@ import {
   Lock,
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 export default function ProjectPage() {
+  const locale = useLocale();
   const t = useTranslations('projectPage');
+  const tExport = useTranslations('exportMarkdown');
   const params = useParams();
   const projectId = params.id as string;
 
@@ -80,22 +82,22 @@ export default function ProjectPage() {
 
   if (isLoading)
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-6 text-zinc-400">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#09090b] flex items-center justify-center p-6 text-slate-700 dark:text-zinc-400 transition-colors duration-300">
         <LoadingOrchestrator />
       </div>
     );
 
   if (error)
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-6 text-zinc-400">
-        <div className="w-full max-w-lg bg-[#161618] border border-zinc-800 rounded-[2.5rem] p-10 shadow-2xl text-center space-y-6">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#09090b] flex items-center justify-center p-6 text-slate-700 dark:text-zinc-400 transition-colors duration-300">
+        <div className="w-full max-w-lg bg-white dark:bg-[#161618] border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-10 shadow-2xl text-center space-y-6">
           <AlertCircle size={40} className="text-red-500 mx-auto" />
-          <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">
             {t('systemInterrupt')}
           </h2>
-          <p className="text-zinc-500 italic">&quot;{error}&quot;</p>
+          <p className="text-slate-600 dark:text-zinc-500 italic">&quot;{error}&quot;</p>
           <Link href="/dashboard" className="block">
-            <Button className="w-full bg-white text-black font-bold uppercase text-xs h-12 rounded-xl">
+            <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold uppercase text-xs h-12 rounded-xl">
               {t('returnToConsole')}
             </Button>
           </Link>
@@ -105,19 +107,36 @@ export default function ProjectPage() {
 
   if (!roadmap)
     return (
-      <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-6 font-mono text-xs text-zinc-600 animate-pulse">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#09090b] flex items-center justify-center p-6 font-mono text-xs text-slate-500 dark:text-zinc-600 animate-pulse transition-colors duration-300">
         {`> ${t('initializingNeuralContext')}`}
       </div>
     );
 
-  const markdown = roadmapToMarkdown({
-    ...roadmap,
-    tasks: localTasks,
-    planning: localPlanning,
-  });
+  const markdown = roadmapToMarkdown(
+    {
+      ...roadmap,
+      tasks: localTasks,
+      planning: localPlanning,
+    },
+    {
+      locale: locale === 'fr' ? 'fr-FR' : 'en-US',
+      labels: {
+        generatedOn: tExport('generatedOn'),
+        objectives: tExport('objectives'),
+        tasks: tExport('tasks'),
+        tableTask: tExport('tableTask'),
+        tablePriority: tExport('tablePriority'),
+        tableEstimate: tExport('tableEstimate'),
+        tableStatus: tExport('tableStatus'),
+        tableDependencies: tExport('tableDependencies'),
+        planning: tExport('planning'),
+        fromTo: tExport('fromTo'),
+      },
+    }
+  );
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-400 font-sans selection:bg-violet-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-700 dark:text-zinc-400 font-sans selection:bg-blue-200 dark:selection:bg-violet-500/30 transition-colors duration-300">
       <ProjectHeader
         projectId={projectId}
         roadmapTitle={roadmap.title}
@@ -175,7 +194,7 @@ export default function ProjectPage() {
               className="space-y-12"
             >
               <ObjectiveGrid objectives={roadmap.objectives} tasks={localTasks} />
-              <div className="bg-[#161618] border border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl">
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl">
                 <ActionItemsList
                   tasks={localTasks}
                   onStatusChange={handleStatusChange}
@@ -194,7 +213,7 @@ export default function ProjectPage() {
             >
               <DependencyGraph
                 tasks={localTasks}
-                className="h-[700px] border-zinc-800/50 shadow-2xl rounded-[2.5rem]"
+                className="h-[700px] border-slate-200 dark:border-zinc-800/50 shadow-2xl rounded-[2.5rem]"
               />
             </motion.div>
           )}
@@ -208,7 +227,7 @@ export default function ProjectPage() {
               className="space-y-8"
             >
               {localPlanning ? (
-                <div className="bg-[#161618] border border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl relative overflow-hidden">
+                <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl relative overflow-hidden">
                   <PlanningTimeline
                     planning={localPlanning}
                     tasks={localTasks}
@@ -216,9 +235,9 @@ export default function ProjectPage() {
                   />
                 </div>
               ) : (
-                <div className="bg-[#161618] border border-zinc-800/50 border-dashed rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center space-y-6">
+                <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-zinc-800/50 border-dashed rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center space-y-6">
                   <Lock size={32} className="text-amber-500" />
-                  <h3 className="text-xl font-bold text-white uppercase tracking-tight">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">
                     {t('timelineNotInitialized')}
                   </h3>
                   <Button
@@ -237,12 +256,12 @@ export default function ProjectPage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="max-w-2xl mx-auto pt-12 border-t border-zinc-800/50 text-center space-y-8"
+          className="max-w-2xl mx-auto pt-12 border-t border-slate-200 dark:border-zinc-800/50 text-center space-y-8"
         >
           <div className="h-10 w-10 bg-violet-500/10 rounded-xl flex items-center justify-center text-violet-500 mx-auto">
             <Sparkles size={20} />
           </div>
-          <h3 className="text-xl font-bold text-white uppercase tracking-tight italic leading-none">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight italic leading-none">
             {t('neuralRefinement')}
           </h3>
           <RoadmapRevisionInput onUpdate={handleRevision} />

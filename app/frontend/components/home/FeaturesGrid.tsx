@@ -19,15 +19,15 @@ export function FeaturesGrid() {
         return (
           <div key={f.number} className="text-left space-y-3">
             <div className="flex items-center gap-3">
-              <Icon size={20} className="text-blue-600" />
-              <span className="text-xs font-black uppercase tracking-widest text-blue-600">
+              <Icon size={20} className="text-blue-600 dark:text-violet-400" />
+              <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-violet-400">
                 {f.number}
               </span>
             </div>
-            <h3 className="text-lg font-bold text-slate-900 tracking-tight underline decoration-blue-600 decoration-2 underline-offset-4">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight underline decoration-blue-600 dark:decoration-violet-400 decoration-2 underline-offset-4">
               {t(`${f.key}`)}
             </h3>
-            <p className="text-base text-slate-600 leading-relaxed">{t(`${f.key}Desc`)}</p>
+            <p className="text-base text-slate-600 dark:text-zinc-400 leading-relaxed">{t(`${f.key}Desc`)}</p>
           </div>
         );
       })}
