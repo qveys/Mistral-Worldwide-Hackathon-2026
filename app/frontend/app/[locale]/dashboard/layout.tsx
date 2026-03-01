@@ -31,7 +31,7 @@ function DashboardLayoutInner({
         >
             <DashboardSidebar isCollapsed={isCollapsed} onToggle={onToggleCollapse} />
 
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden">
                 <DashboardBreadcrumb />
                 {children}
             </main>

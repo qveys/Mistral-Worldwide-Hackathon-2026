@@ -18,20 +18,20 @@ export function DashboardPageHeader({ title, accent }: DashboardPageHeaderProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={cn(
-        "relative pl-6 border-l-2",
+        "relative pl-4 sm:pl-6 border-l-2",
         isDarkMode ? "border-[#536dfe]/40" : "border-[#536dfe]/50"
       )}
     >
       <h1
         className={cn(
-          "text-4xl lg:text-5xl xl:text-6xl font-semibold tracking-tight leading-[1.1]",
+          "text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-semibold tracking-tight leading-[1.1]",
           isDarkMode ? "text-white" : "text-slate-900"
         )}
       >
         {title}{' '}
         <span
           className={cn(
-            "text-3xl lg:text-4xl xl:text-5xl",
+            "text-xl sm:text-3xl lg:text-4xl xl:text-5xl",
             "bg-gradient-to-r from-[#00b0ff] to-[#536dfe] bg-clip-text text-transparent"
           )}
         >

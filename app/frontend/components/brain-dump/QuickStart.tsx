@@ -52,7 +52,7 @@ export function QuickStart() {
             <BrainDumpInput
                 onGenerate={handleGenerate}
                 isProcessing={isProcessing}
-                className="shadow-2xl shadow-blue-500/5 border-2 border-slate-300 dark:border-zinc-600 rounded-[2rem] bg-white dark:bg-zinc-900/50"
+                className="shadow-2xl shadow-blue-500/5 border-2 border-slate-300 dark:border-zinc-600 rounded-xl sm:rounded-[2rem] bg-white dark:bg-zinc-900/50"
             />
         </div>
     );

@@ -13,21 +13,21 @@ const featureKeys = [
 export function FeaturesGrid() {
   const t = useTranslations('features');
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full pt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10 md:gap-12 w-full pt-4">
       {featureKeys.map((f) => {
         const Icon = f.icon;
         return (
-          <div key={f.number} className="text-left space-y-3">
+          <div key={f.number} className="text-left space-y-2 sm:space-y-3">
             <div className="flex items-center gap-3">
-              <Icon size={20} className="text-blue-600 dark:text-blue-400" />
-              <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">
+              <Icon size={18} className="sm:w-5 sm:h-5 shrink-0 text-blue-600 dark:text-blue-400" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">
                 {f.number}
               </span>
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight underline decoration-blue-600 dark:decoration-blue-400 decoration-2 underline-offset-4">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight underline decoration-blue-600 dark:decoration-blue-400 decoration-2 underline-offset-4">
               {t(`${f.key}`)}
             </h3>
-            <p className="text-base text-slate-600 dark:text-zinc-400 leading-relaxed">{t(`${f.key}Desc`)}</p>
+            <p className="text-sm sm:text-base text-slate-600 dark:text-zinc-400 leading-relaxed">{t(`${f.key}Desc`)}</p>
           </div>
         );
       })}

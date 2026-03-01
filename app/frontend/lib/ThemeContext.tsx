@@ -38,11 +38,14 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>(() => {
-        if (typeof window === 'undefined') return 'light';
-        return getStoredTheme();
-    });
+    // Always start with 'light' to match server render and avoid hydration mismatch.
+    // Sync from localStorage in useEffect after mount.
+    const [theme, setThemeState] = useState<Theme>('light');
     const isInitialized = useRef(false);
+
+    useEffect(() => {
+        setThemeState(getStoredTheme());
+    }, []);
 
     useLayoutEffect(() => {
         if (!isInitialized.current) {
