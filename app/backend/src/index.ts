@@ -19,13 +19,13 @@ app.use(express.json());
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    res.json({ status: 'healthy', timestamp: new Date().toISOString(), demoMode: process.env.DEMO_MODE === 'true' });
 });
 
 // API routes
 app.use('/api/structure', structureRouter);
 app.use('/api/revise', reviseRouter);
-app.use('/api', projectRouter);
+app.use('/api/project', projectRouter);
 app.use('/api/templates', templatesRouter);
 app.use('/api/clarify', clarifyRouter);
 

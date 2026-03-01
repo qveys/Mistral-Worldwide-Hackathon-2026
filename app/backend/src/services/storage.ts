@@ -1,18 +1,12 @@
 import { mkdir, readFile, writeFile } from 'fs/promises';
 import * as path from 'node:path';
+import { sanitizeProjectId } from '../lib/projectId.js';
 
-const PROJECTS_DIR = '/tmp/projects';
-const PROJECT_ID_REGEX = /^[A-Za-z0-9_-]+$/;
+const DEFAULT_PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
+const PROJECTS_DIR = path.resolve(process.env.PROJECTS_DIR ?? DEFAULT_PROJECTS_DIR);
 
 async function ensureDir(): Promise<void> {
   await mkdir(PROJECTS_DIR, { recursive: true });
-}
-
-export function sanitizeProjectId(projectId: string): string {
-  if (!PROJECT_ID_REGEX.test(projectId)) {
-    throw new Error('Invalid projectId format');
-  }
-  return projectId;
 }
 
 export async function saveProject(projectId: string, roadmap: unknown): Promise<void> {
@@ -29,10 +23,14 @@ export async function getProject(projectId: string): Promise<unknown | null> {
     const data = await readFile(filePath, 'utf-8');
     return JSON.parse(data);
   } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException;
-    if (error.code === 'ENOENT') {
+    if (
+      typeof err === 'object' &&
+      err !== null &&
+      'code' in err &&
+      err.code === 'ENOENT'
+    ) {
       return null;
     }
-    throw error;
+    throw err;
   }
 }
