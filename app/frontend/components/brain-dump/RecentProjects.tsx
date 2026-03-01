@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ArrowRight, History } from 'lucide-react';
 import { useState } from 'react';
 
@@ -10,13 +11,14 @@ interface Project {
 }
 
 export function RecentProjects() {
+    const t = useTranslations('recentProjects');
     const [projects] = useState<Project[]>(() => {
         if (typeof window === 'undefined') return [];
         const saved = localStorage.getItem('echomaps-recent');
         if (saved) return JSON.parse(saved);
         return [
-            { id: 'demo-1', title: 'Architecture Microservices', date: 'Il y a 2h' },
-            { id: 'demo-2', title: 'Lancement Produit Q3', date: 'Hier' },
+            { id: 'demo-1', title: t('demo1'), date: t('ago2h') },
+            { id: 'demo-2', title: t('demo2'), date: t('yesterday') },
         ];
     });
 
@@ -27,7 +29,7 @@ export function RecentProjects() {
             <div className="flex items-center justify-between px-2">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
                     <History size={12} />
-                    Projets Récents
+                    {t('title')}
                 </h3>
             </div>
 

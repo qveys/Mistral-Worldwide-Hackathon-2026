@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Send, Sparkles, RefreshCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -10,16 +11,12 @@ interface RoadmapRevisionInputProps {
   isProcessing?: boolean;
 }
 
-const PREDEFINED_CHIPS = [
-  "Rendre plus technique",
-  "Simplifier pour les décideurs",
-  "Ajouter une phase MVP",
-  "Focus sur la sécurité",
-  "Étaler sur 6 mois"
-];
+const REFINE_CHIP_KEYS = ['chip1', 'chip2', 'chip3', 'chip4', 'chip5'] as const;
 
 export function RoadmapRevisionInput({ onUpdate, className, isProcessing = false }: RoadmapRevisionInputProps) {
   const [inputValue, setInputValue] = useState("");
+  const t = useTranslations('roadmapRevision');
+  const tRevise = useTranslations('revise');
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -39,15 +36,15 @@ export function RoadmapRevisionInput({ onUpdate, className, isProcessing = false
     <div className={cn("w-full space-y-4", className)}>
       {/* Chips */}
       <div className="flex flex-wrap gap-2">
-        {PREDEFINED_CHIPS.map((chip) => (
+        {REFINE_CHIP_KEYS.map((key) => (
           <button
-            key={chip}
-            onClick={() => handleChipClick(chip)}
+            key={key}
+            onClick={() => handleChipClick(t(key))}
             disabled={isProcessing}
             className="px-4 py-2 bg-white/40 backdrop-blur-sm border border-white/40 rounded-full text-sm font-medium text-slate-700 hover:bg-white/60 hover:border-blue-300 hover:text-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 group shadow-sm"
           >
             <Sparkles size={14} className="text-blue-400 group-hover:text-blue-600" />
-            {chip}
+            {t(key)}
           </button>
         ))}
       </div>
@@ -65,7 +62,7 @@ export function RoadmapRevisionInput({ onUpdate, className, isProcessing = false
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Affiner la roadmap (ex: 'Ajoute une partie sur les tests unitaires')"
+          placeholder={tRevise('refinePlaceholder')}
           disabled={isProcessing}
           className="flex-1 bg-transparent border-none focus:ring-0 text-slate-900 py-3 text-lg placeholder:text-slate-400"
         />

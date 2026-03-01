@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Home, Moon, Sun, Box, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DocCategory, NavItem } from './constants';
@@ -21,11 +22,15 @@ const navButtonInactive =
 
 function NavItemButton({
   item,
+  label,
+  desc,
   isActive,
   onClick,
   isCollapsed,
 }: {
   item: NavItem;
+  label: string;
+  desc: string;
   isActive: boolean;
   onClick: () => void;
   isCollapsed: boolean;
@@ -39,7 +44,7 @@ function NavItemButton({
         isActive ? navButtonActive : navButtonInactive,
         isCollapsed && "justify-center px-0"
       )}
-      title={isCollapsed ? item.label : undefined}
+      title={isCollapsed ? label : undefined}
     >
       <Icon
         size={18}
@@ -51,7 +56,7 @@ function NavItemButton({
       {!isCollapsed && (
         <div className="flex flex-col whitespace-nowrap">
           <span className="font-black uppercase tracking-tighter italic text-[11px]">
-            {item.label}
+            {label}
           </span>
           <span
             className={cn(
@@ -59,7 +64,7 @@ function NavItemButton({
               isActive ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'
             )}
           >
-            {item.desc}
+            {desc}
           </span>
         </div>
       )}
@@ -75,6 +80,7 @@ export const Sidebar = ({
   onToggleTheme,
 }: SidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const t = useTranslations('doc');
 
   return (
     <aside className={cn(
@@ -89,17 +95,17 @@ export const Sidebar = ({
           {!isCollapsed && (
             <div className="whitespace-nowrap">
               <h1 className="text-sm font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">
-                EchoMaps
+                {t('echoMaps')}
               </h1>
               <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase tracking-widest">
-                Documentation
+                {t('documentation')}
               </p>
             </div>
           )}
         </div>
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-label={isCollapsed ? "Déplier la barre latérale" : "Replier la barre latérale"}
+          aria-label={isCollapsed ? t('sidebarExpand') : t('sidebarCollapse')}
           className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 transition-colors"
         >
           {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
@@ -108,16 +114,18 @@ export const Sidebar = ({
 
       <div className="flex-1 space-y-8 overflow-y-auto overflow-x-hidden no-scrollbar">
         {NAV_SECTIONS.map((section) => (
-          <nav key={section.title} className="space-y-1">
+          <nav key={section.titleKey} className="space-y-1">
             {!isCollapsed && (
               <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400 mb-2 whitespace-nowrap">
-                {section.title}
+                {t(section.titleKey)}
               </p>
             )}
             {section.items.map((item) => (
               <NavItemButton
                 key={item.id}
                 item={item}
+                label={t(item.labelKey)}
+                desc={t(item.descKey)}
                 isActive={activeCategory === item.id}
                 onClick={() => onCategoryChange(item.id)}
                 isCollapsed={isCollapsed}
@@ -138,7 +146,7 @@ export const Sidebar = ({
           <Home size={18} className="flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
           {!isCollapsed && (
             <span className="text-xs font-bold uppercase tracking-widest whitespace-nowrap">
-              Retour Accueil
+              {t('backHome')}
             </span>
           )}
         </Link>
@@ -151,7 +159,7 @@ export const Sidebar = ({
         >
           {!isCollapsed && (
             <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
-              {isDarkMode ? 'Sombre' : 'Clair'}
+              {isDarkMode ? t('themeDark') : t('themeLight')}
             </span>
           )}
           {isDarkMode ? <Sun size={16} className="flex-shrink-0" /> : <Moon size={16} className="flex-shrink-0" />}

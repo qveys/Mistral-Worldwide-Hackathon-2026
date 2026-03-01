@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Download, FileText, Clipboard, Check, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -15,6 +16,7 @@ interface ExportButtonProps {
 export function ExportButton({ markdown, data, filename = "roadmap", className }: ExportButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const t = useTranslations('common');
 
   const handleCopyMarkdown = async () => {
     try {
@@ -60,7 +62,7 @@ export function ExportButton({ markdown, data, filename = "roadmap", className }
         className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
       >
         <Download size={18} />
-        Exporter
+        {t('export')}
         <ChevronDown size={16} className={cn("transition-transform duration-300", isOpen && "rotate-180")} />
       </button>
 
@@ -84,7 +86,7 @@ export function ExportButton({ markdown, data, filename = "roadmap", className }
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
               >
                 {copied ? <Check size={18} className="text-green-500" /> : <Clipboard size={18} className="text-slate-400" />}
-                Copier Markdown
+                {t('copyMarkdown')}
               </button>
               
               <button
@@ -92,7 +94,7 @@ export function ExportButton({ markdown, data, filename = "roadmap", className }
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
               >
                 <FileText size={18} className="text-slate-400" />
-                Télécharger .md
+                {t('downloadMd')}
               </button>
               
               <button
@@ -100,7 +102,7 @@ export function ExportButton({ markdown, data, filename = "roadmap", className }
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
               >
                 <Download size={18} className="text-slate-400" />
-                Télécharger .json
+                {t('downloadJson')}
               </button>
             </motion.div>
           </>

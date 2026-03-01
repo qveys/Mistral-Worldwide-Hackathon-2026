@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Brain, Send, X } from 'lucide-react';
@@ -22,6 +23,7 @@ export function ClarificationBubble({
 }: ClarificationBubbleProps) {
     const [answer, setAnswer] = useState('');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const t = useTranslations('clarification');
 
     // Auto-close after 30s of inactivity
     const resetTimer = () => {
@@ -83,7 +85,7 @@ export function ClarificationBubble({
                             <div className="flex-1 space-y-4">
                                 <div className="space-y-1">
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">
-                                        Précision requise
+                                        {t('precisionRequired')}
                                     </span>
                                     <p className="text-white text-lg font-medium leading-snug">
                                         {question}
@@ -98,14 +100,14 @@ export function ClarificationBubble({
                                             setAnswer(e.target.value);
                                             resetTimer();
                                         }}
-                                        placeholder="Répondez ici pour affiner..."
-                                        aria-label="Votre réponse à la question de clarification"
+                                        placeholder={t('placeholder')}
+                                        aria-label={t('ariaReply')}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-4 pr-14 text-white focus:border-blue-500 focus:outline-none transition-all placeholder:text-slate-500 font-medium"
                                     />
                                     <button
                                         type="submit"
                                         disabled={!answer.trim()}
-                                        aria-label="Envoyer la réponse"
+                                        aria-label={t('sendReply')}
                                         className={cn(
                                             'absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl transition-all',
                                             answer.trim()
@@ -119,14 +121,14 @@ export function ClarificationBubble({
 
                                 <div className="flex items-center justify-between">
                                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                                        L&apos;IA attend votre retour...
+                                        {t('aiWaiting')}
                                     </p>
                                     <button
                                         onClick={onIgnore}
-                                        aria-label="Ignorer la question de clarification"
+                                        aria-label={t('ariaIgnore')}
                                         className="text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-1 group"
                                     >
-                                        Ignorer
+                                        {t('ignore')}
                                         <X
                                             size={14}
                                             className="group-hover:rotate-90 transition-transform"

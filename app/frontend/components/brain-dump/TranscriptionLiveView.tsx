@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -16,9 +17,12 @@ export function TranscriptionLiveView({
   text,
   isRecording,
   onTextChange,
-  placeholder = "Votre brain dump apparaîtra ici...",
+  placeholder,
   className
 }: TranscriptionLiveViewProps) {
+  const t = useTranslations('brainDump');
+  const tTranscription = useTranslations('transcription');
+  const resolvedPlaceholder = placeholder ?? t('transcriptionPlaceholder');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const words = text.split(' ').filter(w => w.length > 0);
 
@@ -47,7 +51,7 @@ export function TranscriptionLiveView({
           >
             {words.length === 0 && (
               <p className="text-sm text-slate-400 dark:text-slate-500 italic animate-pulse">
-                Écoute en cours...
+                {tTranscription('listening')}
               </p>
             )}
             
@@ -82,7 +86,7 @@ export function TranscriptionLiveView({
               ref={textareaRef}
               value={text}
               onChange={(e) => onTextChange(e.target.value)}
-              placeholder={placeholder}
+              placeholder={resolvedPlaceholder}
               className="w-full min-h-[120px] p-4 rounded-2xl bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-inner focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none text-base md:text-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none transition-all"
             />
           </motion.div>

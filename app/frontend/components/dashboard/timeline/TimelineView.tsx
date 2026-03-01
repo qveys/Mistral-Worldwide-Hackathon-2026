@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
@@ -8,7 +9,7 @@ import type { TimelineZoomMode } from '@/components/dashboard/timeline/timeline.
 
 interface TimelineTask {
   id: string;
-  title: string;
+  titleKey: string;
   start: string;
   end: string;
   status: string;
@@ -23,6 +24,7 @@ interface TimelineViewProps {
 
 export function TimelineView({ tasks, zoomMode = 'week' }: TimelineViewProps) {
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('timeline');
   const dayCount = zoomMode === 'day' ? 1 : zoomMode === 'week' ? 7 : 31;
   const days = Array.from({ length: dayCount }, (_, i) => i + 1);
 
@@ -32,11 +34,13 @@ export function TimelineView({ tasks, zoomMode = 'week' }: TimelineViewProps) {
       isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"
     )}>
       <div className={cn("flex items-center justify-between border-b pb-6", isDarkMode ? "border-zinc-800/50" : "border-slate-200")}>
-        <h3 className={cn("text-[11px] font-bold uppercase tracking-[0.3em] px-2", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Deployment Schedule</h3>
+        <h3 className={cn("text-[11px] font-bold uppercase tracking-[0.3em] px-2", isDarkMode ? "text-zinc-500" : "text-slate-600")}>
+          {t('deploymentSchedule')}
+        </h3>
         <div className={cn("flex gap-4 text-[9px] font-mono", isDarkMode ? "text-zinc-600" : "text-slate-600")}>
-          <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Done</span>
-          <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500" /> Active</span>
-          <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-zinc-700" /> Pending</span>
+          <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> {t('statusDone')}</span>
+          <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500" /> {t('statusActive')}</span>
+          <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-zinc-700" /> {t('statusPending')}</span>
         </div>
       </div>
 
@@ -45,7 +49,7 @@ export function TimelineView({ tasks, zoomMode = 'week' }: TimelineViewProps) {
         <div className={cn("flex border-b mb-4", zoomMode === 'day' ? "min-w-[200px]" : zoomMode === 'week' ? "min-w-[600px]" : "min-w-[1200px]", isDarkMode ? "border-zinc-800/30" : "border-slate-200")}>
           {days.map(day => (
             <div key={day} className={cn("flex-1 text-center py-2 text-[10px] font-mono border-r", isDarkMode ? "text-zinc-700 border-zinc-800/10" : "text-slate-600 border-slate-200")}>
-              {zoomMode === 'day' ? 'Day' : day.toString().padStart(2, '0')}
+              {zoomMode === 'day' ? t('day') : day.toString().padStart(2, '0')}
             </div>
           ))}
         </div>
@@ -60,27 +64,25 @@ export function TimelineView({ tasks, zoomMode = 'week' }: TimelineViewProps) {
           </div>
 
           {tasks.map((task, idx) => {
-            // Simple mock positioning
             const startPos = (idx * 3) + 2;
             const width = 6 + (idx * 2);
-            
+
             return (
               <div key={task.id} className="relative h-10 group">
-                <div 
+                <div
                   className={cn(
                     "absolute h-full rounded-xl border border-white/5 flex items-center px-4 transition-all group-hover:scale-[1.02] cursor-pointer shadow-lg",
                     task.color
                   )}
-                    style={{ 
-                    left: `${Math.min(startPos / dayCount, 1) * 100}%`, 
-                    width: `${Math.min(width / dayCount, 1) * 100}%` 
+                  style={{
+                    left: `${Math.min(startPos / dayCount, 1) * 100}%`,
+                    width: `${Math.min(width / dayCount, 1) * 100}%`
                   }}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="text-xs font-bold truncate">{task.title}</span>
+                    <span className="text-xs font-bold truncate">{t(task.titleKey)}</span>
                     <span className="text-[9px] font-black opacity-50 ml-2">{task.progress}%</span>
                   </div>
-                  {/* Progress Bar inside */}
                   <div className="absolute bottom-0 left-0 h-0.5 bg-white/20 rounded-full" style={{ width: `${task.progress}%` }} />
                 </div>
               </div>
