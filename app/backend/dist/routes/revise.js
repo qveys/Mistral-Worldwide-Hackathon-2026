@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { BedrockService } from '../services/bedrock.js';
+import { BedrockService, BedrockValidationExhaustedError } from '../services/bedrock.js';
 import { buildRevisePrompt } from '../prompts/revise.js';
 import { saveProject } from '../services/storage.js';
 import { DEMO_REVISED_ROADMAP } from '../mocks/demoRoadmap.js';
@@ -43,8 +43,15 @@ router.post('/revise', async (req, res) => {
         if (error instanceof z.ZodError) {
             res.status(400).json({ error: 'Invalid request or response', details: error.errors });
         }
+        else if (error instanceof BedrockValidationExhaustedError) {
+            res.status(502).json({
+                error: 'Upstream model returned invalid format after retries',
+                attempts: error.attempts,
+                details: error.lastZodError.errors,
+            });
+        }
         else {
-            res.status(500).json({ error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' });
+            res.status(500).json({ error: 'Internal server error' });
         }
     }
 });

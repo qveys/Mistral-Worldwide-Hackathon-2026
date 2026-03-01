@@ -51,6 +51,28 @@ function estimateCost(promptTokens: number, completionTokens: number) {
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function extractMistralOutputText(responseEnvelope: unknown): string | null {
+  if (!isRecord(responseEnvelope)) {
+    return null;
+  }
+
+  const outputs = responseEnvelope.outputs;
+  if (!Array.isArray(outputs) || outputs.length === 0) {
+    return null;
+  }
+
+  const firstOutput = outputs[0];
+  if (!isRecord(firstOutput)) {
+    return null;
+  }
+
+  return typeof firstOutput.text === 'string' ? firstOutput.text : null;
+}
+
 export class BedrockService {
   private client: BedrockRuntimeClient;
   private config: z.infer<typeof BedrockConfigSchema>;
@@ -87,7 +109,12 @@ export class BedrockService {
     const response = await this.client.send(command);
 
     if (response.body) {
-      return JSON.parse(new TextDecoder().decode(response.body));
+      const responseEnvelope = JSON.parse(new TextDecoder().decode(response.body));
+      const outputText = extractMistralOutputText(responseEnvelope);
+      if (outputText !== null) {
+        return JSON.parse(outputText);
+      }
+      return responseEnvelope;
     }
 
     throw new Error("Empty response from Bedrock");
@@ -131,12 +158,30 @@ export class BedrockService {
           throw new Error("Empty response from Bedrock");
         }
 
-        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+        const responseEnvelope = JSON.parse(new TextDecoder().decode(response.body));
+        const outputText = extractMistralOutputText(responseEnvelope);
+        let responseBody: unknown = responseEnvelope;
+        if (outputText !== null) {
+          try {
+            responseBody = JSON.parse(outputText);
+          } catch (parseError) {
+            log('warn', 'Model output is not valid JSON, retrying', {
+              operation,
+              attempt,
+              latencyMs,
+              error: String(parseError),
+            });
+            if (attempt <= MAX_VALIDATION_RETRIES) {
+              continue;
+            }
+            throw parseError;
+          }
+        }
 
         // Estimate tokens from character lengths (rough: 1 token ≈ 4 chars)
         const promptTokens = Math.ceil(prompt.length / 4);
-        const outputText = JSON.stringify(responseBody);
-        const completionTokens = Math.ceil(outputText.length / 4);
+        const outputForCost = outputText ?? JSON.stringify(responseBody);
+        const completionTokens = Math.ceil(outputForCost.length / 4);
         const cost = estimateCost(promptTokens, completionTokens);
 
         try {
