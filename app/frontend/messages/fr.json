@@ -356,10 +356,27 @@
     "passwordPlaceholder": "••••••••",
     "submit": "Se connecter"
   },
+  "register": {
+    "title": "Inscription",
+    "firstNameLabel": "Prénom",
+    "firstNamePlaceholder": "Jean",
+    "lastNameLabel": "Nom",
+    "lastNamePlaceholder": "Dupont",
+    "emailLabel": "Email",
+    "emailPlaceholder": "vous@exemple.com",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "••••••••",
+    "passwordConfirmLabel": "Confirmer le mot de passe",
+    "passwordConfirmPlaceholder": "••••••••",
+    "submit": "Créer mon compte",
+    "errorEmailRequired": "Email requis",
+    "errorPasswordsMismatch": "Les mots de passe ne correspondent pas"
+  },
   "nav": {
     "appName": "EchoMaps",
     "github": "GitHub",
     "console": "Console",
+    "createRoadmap": "Créer une roadmap",
     "roadmaps": "Roadmaps",
     "activity": "Activity",
     "timeline": "Timeline",

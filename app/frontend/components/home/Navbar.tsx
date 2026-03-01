@@ -30,6 +30,7 @@ export function Navbar() {
       </Link>
       <div className="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-zinc-400">
         <Link href="/dashboard" className="px-4 py-2 rounded-full hover:bg-slate-200 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all duration-300">{t('console')}</Link>
+        <Link href="/dashboard/roadmaps/new" className="px-4 py-2 rounded-full hover:bg-slate-200 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white transition-all duration-300">{t('createRoadmap')}</Link>
         <Link href="/documentation" className="px-4 py-2 rounded-full bg-blue-50 dark:bg-violet-500/10 text-blue-600 dark:text-violet-400 font-bold border-2 border-slate-300 dark:border-zinc-600 hover:bg-blue-100 dark:hover:bg-violet-500/20 hover:border-blue-200 dark:hover:border-violet-500/50 transition-all duration-300">{tDoc('documentation')}</Link>
         <div className="h-4 w-px bg-slate-300 dark:bg-zinc-600 mx-2" />
         <button type="button" onClick={toggleTheme} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-zinc-800 transition-all duration-300" aria-label={isDarkMode ? t('themeLight') : t('themeDark')}>

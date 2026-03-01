@@ -2,8 +2,6 @@ import type { Request, Response } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import jwt from 'jsonwebtoken';
-import { getRequiredEnv } from '../lib/env.js';
 import { logger } from '../lib/logger.js';
 
 const LOCAL_DATA_DIR = path.resolve(process.cwd(), 'data');
@@ -12,29 +10,29 @@ const USERS_CACHE_TTL_MS = 30_000;
 const JWT_SECRET = getRequiredEnv('JWT_SECRET', 'AuthController');
 const JWT_EXPIRES_IN = process.env['JWT_EXPIRES_IN'] || '7d';
 
-export interface User {
+export interface UserEntry {
     id: string;
     email: string;
+    firstName?: string;
+    lastName?: string;
+    password?: string;
 }
 
-let cachedUsers: User[] | null = null;
+let cachedEmails: string[] | null = null;
 let cacheLoadedAt = 0;
 
-function isUserEntry(entry: unknown): entry is User {
-    return (
-        typeof entry === 'object' &&
-        entry !== null &&
-        'id' in entry &&
-        'email' in entry &&
-        typeof (entry as User).id === 'string' &&
-        typeof (entry as User).email === 'string'
-    );
+function normalizeEntry(entry: unknown): string | null {
+    if (typeof entry === 'string' && entry.trim()) return entry.trim().toLowerCase();
+    if (entry && typeof entry === 'object' && 'email' in entry && typeof (entry as UserEntry).email === 'string') {
+        return (entry as UserEntry).email.trim().toLowerCase();
+    }
+    return null;
 }
 
-function readUsersFromDisk(): User[] | null {
+function readRawUsers(): UserEntry[] {
     if (!fs.existsSync(USERS_FILE)) {
         logger.warn('AuthController', 'users.json not found', { path: USERS_FILE });
-        return null;
+        return [];
     }
 
     const raw = fs.readFileSync(USERS_FILE, 'utf-8');
@@ -44,43 +42,35 @@ function readUsersFromDisk(): User[] | null {
         throw new Error('users.json has invalid format');
     }
 
-    const users: User[] = [];
-    let needsMigration = false;
-
-    for (const entry of parsed) {
-        if (isUserEntry(entry)) {
-            users.push({
-                id: entry.id,
-                email: entry.email.toLowerCase(),
-            });
-        } else if (typeof entry === 'string') {
-            needsMigration = true;
-            users.push({
-                id: crypto.randomUUID(),
-                email: entry.trim().toLowerCase(),
-            });
-        }
-    }
-
-    if (needsMigration && users.length > 0) {
-        try {
-            if (!fs.existsSync(LOCAL_DATA_DIR)) {
-                fs.mkdirSync(LOCAL_DATA_DIR, { recursive: true });
+    return parsed
+        .filter((entry: unknown) => normalizeEntry(entry) != null)
+        .map((entry: unknown): UserEntry => {
+            const email = normalizeEntry(entry)!;
+            const existingId =
+                entry && typeof entry === 'object' && 'id' in entry && typeof (entry as Record<string, unknown>).id === 'string'
+                    ? (entry as Record<string, unknown>).id as string
+                    : crypto.randomUUID();
+            if (entry && typeof entry === 'object' && 'email' in entry) {
+                const o = entry as Record<string, unknown>;
+                return {
+                    id: existingId,
+                    email,
+                    firstName: typeof o.firstName === 'string' ? o.firstName : '',
+                    lastName: typeof o.lastName === 'string' ? o.lastName : '',
+                    password: typeof o.password === 'string' ? o.password : '',
+                };
             }
-            fs.writeFileSync(
-                USERS_FILE,
-                JSON.stringify(users.map((u) => ({ id: u.id, email: u.email })), null, 2),
-                'utf-8'
-            );
-            logger.info('AuthController', 'Migrated users.json to id/email format');
-        } catch (err) {
-            logger.error('AuthController', 'Failed to write migrated users.json', {
-                error: err instanceof Error ? err.message : String(err),
-            });
-        }
-    }
+            return { id: existingId, email, firstName: '', lastName: '', password: '' };
+        });
+}
 
-    return users.length > 0 ? users : null;
+function readUsersFromDisk(): string[] | null {
+    try {
+        const entries = readRawUsers();
+        return entries.length > 0 ? entries.map((e) => e.email) : null;
+    } catch {
+        return null;
+    }
 }
 
 function getCachedUsers(): User[] | null {
@@ -93,6 +83,20 @@ function getCachedUsers(): User[] | null {
     cachedUsers = users;
     cacheLoadedAt = now;
     return users;
+}
+
+function invalidateCache(): void {
+    cachedEmails = null;
+    cacheLoadedAt = 0;
+}
+
+function writeUsers(entries: UserEntry[]): void {
+    const dir = path.dirname(USERS_FILE);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(USERS_FILE, JSON.stringify(entries, null, 2), 'utf-8');
+    invalidateCache();
 }
 
 /**
@@ -136,5 +140,40 @@ export async function loginController(req: Request, res: Response): Promise<void
             path: USERS_FILE,
         });
         res.status(500).json({ success: false, error: 'users configuration invalid' });
+    }
+}
+
+/**
+ * POST /auth/register
+ * Appends a new user (nom, prénom, email, password) to data/users.json.
+ */
+export async function registerController(req: Request, res: Response): Promise<void> {
+    const body = req.body as { email?: string; firstName?: string; lastName?: string; password?: string };
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const firstName = typeof body.firstName === 'string' ? body.firstName.trim() : '';
+    const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+
+    if (!email) {
+        res.status(400).json({ success: false, error: 'email required' });
+        return;
+    }
+
+    const normalized = email.toLowerCase();
+    try {
+        const entries = readRawUsers();
+        if (entries.some((e) => e.email.toLowerCase() === normalized)) {
+            res.status(409).json({ success: false, error: 'email already registered' });
+            return;
+        }
+        entries.push({ id: crypto.randomUUID(), email: normalized, firstName, lastName, password });
+        writeUsers(entries);
+        res.status(201).json({ success: true });
+    } catch (error) {
+        logger.error('AuthController', 'Failed to register user', {
+            error: error instanceof Error ? error.message : String(error),
+            path: USERS_FILE,
+        });
+        res.status(500).json({ success: false, error: 'registration failed' });
     }
 }
