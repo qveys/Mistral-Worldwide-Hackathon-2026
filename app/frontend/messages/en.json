@@ -465,6 +465,7 @@
     "chip5": "Spread over 6 months"
   },
   "dashboard": {
+    "roadmaps": "Roadmaps",
     "neuralSync": "Neural Sync: Optimal",
     "designRoadmap": "Design your next<br></br><spanStyle>strategic roadmap.</spanStyle>",
     "newBrainDump": "New Brain Dump",

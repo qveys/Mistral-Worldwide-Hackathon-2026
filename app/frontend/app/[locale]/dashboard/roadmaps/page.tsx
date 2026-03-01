@@ -43,7 +43,7 @@ export default function RoadmapsPage() {
           <Link
             href="/dashboard"
             className={cn(
-              'inline-flex items-center gap-2 h-10 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all',
+              'inline-flex items-center gap-2 h-10 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all',
               isDarkMode
                 ? 'text-zinc-400 hover:text-white border border-zinc-700 hover:border-zinc-600'
                 : 'text-slate-600 hover:text-slate-900 border-2 border-slate-300 hover:border-slate-400'
@@ -55,7 +55,7 @@ export default function RoadmapsPage() {
           <Link href="/dashboard/roadmaps/new">
             <Button
               className={cn(
-                '!h-10 !px-5 !py-2 !rounded-xl font-bold transition-all group text-sm',
+                '!h-10 !px-5 !py-2 !rounded-full font-bold transition-all group text-sm',
                 isDarkMode
                   ? 'bg-white text-black hover:bg-zinc-200 shadow-2xl shadow-white/5'
                   : 'bg-blue-500 text-white hover:bg-blue-600 shadow-lg'
@@ -93,7 +93,7 @@ export default function RoadmapsPage() {
           <Link
             href="/dashboard/roadmaps/new"
             className={cn(
-              'group flex flex-col items-center justify-center p-8 border border-dashed rounded-[2rem] hover:border-violet-500/50 hover:bg-violet-500/5 transition-all hover:text-violet-400',
+              'group flex flex-col items-center justify-center p-8 border border-dashed rounded-[2rem] hover:border-[#536dfe]/50 hover:bg-[#536dfe]/5 transition-all hover:text-[#536dfe]',
               isDarkMode ? 'bg-zinc-900/20 border-zinc-800 text-zinc-600' : 'bg-slate-50 border-slate-300 text-slate-600'
             )}
           >

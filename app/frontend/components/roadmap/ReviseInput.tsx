@@ -90,7 +90,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
             type="submit"
             disabled={!inputValue.trim() || isProcessing}
             className={cn(
-              "flex items-center gap-2 px-6 py-4 rounded-2xl font-black uppercase tracking-tighter italic transition-all",
+              "flex items-center gap-2 px-6 py-4 rounded-full font-black uppercase tracking-tighter italic transition-all",
               inputValue.trim() && !isProcessing
                 ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xl hover:scale-105 active:scale-95"
                 : "bg-slate-100 dark:bg-zinc-700 dark:text-zinc-400 cursor-not-allowed"

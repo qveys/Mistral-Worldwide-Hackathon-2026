@@ -6,6 +6,7 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -13,7 +14,7 @@ const STORAGE_KEY = 'echomaps-theme';
 
 type Theme = 'light' | 'dark';
 
-function getInitialTheme(): Theme {
+function getStoredTheme(): Theme {
   if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
   if (stored === 'dark' || stored === 'light') return stored;
@@ -39,10 +40,20 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
+  // Always use 'light' for initial render (SSR + first client render) to avoid hydration mismatch.
+  // Actual theme is applied in useLayoutEffect after mount.
+  const [theme, setThemeState] = useState<Theme>('light');
+  const isInitialized = useRef(false);
 
   useLayoutEffect(() => {
-    applyTheme(theme);
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      const stored = getStoredTheme();
+      setThemeState(stored);
+      applyTheme(stored);
+    } else {
+      applyTheme(theme);
+    }
   }, [theme]);
 
   useEffect(() => {

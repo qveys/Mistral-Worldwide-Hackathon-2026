@@ -276,7 +276,7 @@ export function BrainDumpInput({
                                 disabled={!text.trim() || micState === 'recording'}
                                 aria-label={t('ariaGenerate')}
                                 className={cn(
-                                    'flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-base transition-all shadow-lg',
+                                    'flex items-center gap-2 px-6 py-3 rounded-full font-bold text-base transition-all shadow-lg',
                                     text.trim() && micState !== 'recording'
                                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200 dark:shadow-blue-900/20 scale-100 hover:scale-105'
                                         : 'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-700 cursor-not-allowed scale-95',

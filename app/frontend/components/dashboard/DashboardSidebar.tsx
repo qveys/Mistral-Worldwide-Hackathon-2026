@@ -78,7 +78,7 @@ export function DashboardSidebar({
                 isCollapsed && "justify-center px-0"
               )}
             >
-              <item.icon size={22} className={cn(isActive ? "text-violet-600 dark:text-violet-400" : "text-zinc-400")} />
+              <item.icon size={22} className={cn(isActive ? "text-[#536dfe] dark:text-[#00b0ff]" : "text-zinc-400")} />
               {!isCollapsed && <span>{t(item.labelKey)}</span>}
             </Link>
           );

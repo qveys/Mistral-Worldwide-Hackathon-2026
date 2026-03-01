@@ -26,7 +26,7 @@ export function ProfileSection() {
         <div className="flex flex-col items-center gap-4">
           <div className={cn(
             "h-24 w-24 rounded-[2rem] flex items-center justify-center relative group cursor-pointer transition-all",
-            isDarkMode ? "bg-zinc-800 text-zinc-500 border border-zinc-700/50 hover:border-violet-500/50" : "bg-slate-100 text-slate-500 border border-slate-300 hover:border-violet-500/50"
+            isDarkMode ? "bg-zinc-800 text-zinc-500 border border-zinc-700/50 hover:border-[#536dfe]/50" : "bg-slate-100 text-slate-500 border border-slate-300 hover:border-[#536dfe]/50"
           )}>
             <User size={40} />
             <div className="absolute inset-0 bg-black/40 rounded-[2rem] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -50,7 +50,7 @@ export function ProfileSection() {
             <textarea
               id="bioTextarea"
               className={cn(
-                "w-full rounded-xl p-4 text-sm outline-none focus:border-violet-500/50 transition-all h-24",
+                "w-full rounded-xl p-4 text-sm outline-none focus:border-[#536dfe]/50 transition-all h-24",
                 isDarkMode ? "bg-zinc-900/50 border border-zinc-800 text-zinc-300" : "bg-slate-50 border border-slate-300 text-slate-700"
               )}
               placeholder={t('bioPlaceholder')}
@@ -61,7 +61,7 @@ export function ProfileSection() {
 
       <div className="flex justify-end pt-4">
         <Button className={cn(
-          "rounded-xl px-8 h-11 font-bold uppercase tracking-widest text-[10px]",
+          "rounded-full px-8 h-11 font-bold uppercase tracking-widest text-[10px]",
           isDarkMode ? "bg-white text-black hover:bg-zinc-200" : "bg-slate-900 text-white hover:bg-slate-800"
         )}>
           {t('updateProfile')}

@@ -71,7 +71,7 @@ export function RoadmapRevisionInput({ onUpdate, className, isProcessing = false
           type="submit"
           disabled={!inputValue.trim() || isProcessing}
           className={cn(
-            "p-3 rounded-xl transition-all flex items-center justify-center",
+            "p-3 rounded-full transition-all flex items-center justify-center",
             inputValue.trim() && !isProcessing 
               ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-200" 
               : "bg-slate-100 text-slate-400 cursor-not-allowed"

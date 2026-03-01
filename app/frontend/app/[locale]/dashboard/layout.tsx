@@ -26,7 +26,7 @@ function DashboardLayoutInner({
       className={cn(
         'min-h-screen flex font-sans transition-colors duration-500',
         isDarkMode ? 'dark bg-[#09090b] text-zinc-400' : 'bg-slate-50 text-slate-700',
-        isDarkMode ? 'selection:bg-violet-500/30' : 'selection:bg-blue-200'
+        isDarkMode ? 'selection:bg-[#536dfe]/30' : 'selection:bg-[#00b0ff]/30'
       )}
     >
       <DashboardSidebar
