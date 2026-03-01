@@ -18,7 +18,7 @@ const StoredProjectSchema = z.object({
   })),
 });
 
-router.get('/project/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const projectId = assertValidProjectId(req.params.id);
     const requesterUserId = z.string().uuid().safeParse(req.header('x-user-id'));
@@ -51,7 +51,13 @@ router.get('/project/:id', async (req, res) => {
       res.status(error.statusCode).json({ error: error.message });
       return;
     }
-    res.status(500).json({ error: 'Internal server error' });
+    const responseBody: { error: string; message?: string } = {
+      error: 'Internal server error',
+    };
+    if (error instanceof Error) {
+      responseBody.message = error.message;
+    }
+    res.status(500).json(responseBody);
   }
 });
 

@@ -25,7 +25,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes
 app.use('/api/structure', structureRouter);
 app.use('/api/revise', reviseRouter);
-app.use('/api', projectRouter);
+app.use('/api/project', projectRouter);
 app.use('/api/templates', templatesRouter);
 app.use('/api/clarify', clarifyRouter);
 
