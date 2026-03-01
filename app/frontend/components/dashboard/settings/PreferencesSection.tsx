@@ -1,30 +1,34 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Layout, Bell, Globe, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function PreferencesSection() {
+  const t = useTranslations('settings');
+  const preferences = [
+    { labelKey: 'neuralHighlighting' as const, descKey: 'neuralHighlightingDesc' as const, icon: Moon, active: true },
+    { labelKey: 'realtimeActivityLog' as const, descKey: 'realtimeActivityLogDesc' as const, icon: Globe, active: true },
+    { labelKey: 'audioFeedback' as const, descKey: 'audioFeedbackDesc' as const, icon: Bell, active: false },
+  ];
+
   return (
     <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 space-y-8">
       <div className="flex items-center gap-3 border-b border-slate-200 dark:border-zinc-800/50 pb-6">
         <Layout size={18} className="text-blue-500" />
-        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-white">Console Interface</h3>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-white">{t('consoleInterface')}</h3>
       </div>
 
       <div className="space-y-6">
-        {[
-          { label: "Neural Highlighting", desc: "Met en évidence les dépendances critiques dans le graphe.", icon: Moon, active: true },
-          { label: "Real-time Activity Log", desc: "Affiche les flux de tokens et les logs d'inférence.", icon: Globe, active: true },
-          { label: "Audio Feedback", desc: "Indicateurs sonores lors de la capture vocale.", icon: Bell, active: false },
-        ].map((pref, i) => (
+        {preferences.map((pref, i) => (
           <div key={i} className="flex items-center justify-between group">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <pref.icon size={14} className="text-slate-500 dark:text-zinc-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
-                <h4 className="text-sm font-bold text-slate-700 dark:text-zinc-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{pref.label}</h4>
+                <h4 className="text-sm font-bold text-slate-700 dark:text-zinc-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{t(pref.labelKey)}</h4>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-zinc-600 ml-6">{pref.desc}</p>
+              <p className="text-[11px] text-slate-500 dark:text-zinc-600 ml-6">{t(pref.descKey)}</p>
             </div>
             <button className={cn(
               "w-10 h-5 rounded-full transition-all relative",
