@@ -44,8 +44,17 @@ export default function ProjectPage() {
 
   useEffect(() => {
     if (lastFetchedProjectId.current === projectId) return;
-    lastFetchedProjectId.current = projectId;
-    fetchProject(projectId);
+    let isActive = true;
+
+    void fetchProject(projectId).then((result) => {
+      if (isActive && result) {
+        lastFetchedProjectId.current = projectId;
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
   }, [projectId, fetchProject]);
 
   const [localPlanning, setLocalPlanning] = useState(roadmap?.planning);
