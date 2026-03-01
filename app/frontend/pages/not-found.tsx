@@ -6,7 +6,7 @@ export default function RootNotFound() {
       code="404"
       icon="404"
       title="Lost in the Neural Void."
-      message="Le cluster que vous recherchez n'existe pas ou a été déplacé."
+      message="The cluster you're looking for doesn't exist or has been moved."
     />
   );
 }

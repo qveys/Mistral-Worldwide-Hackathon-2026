@@ -14,7 +14,8 @@ export function Hero() {
       </div>
       
       <h1 className="text-7xl md:text-9xl font-medium tracking-tight text-slate-900 leading-[0.85]">
-        Chaos to <span className="italic font-serif text-blue-600">Clarity.</span>
+        {t('headlinePrefix')}{' '}
+        <span className="italic font-serif text-blue-600">{t('headlineEmphasis')}</span>
       </h1>
       
       <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-light text-balance">
