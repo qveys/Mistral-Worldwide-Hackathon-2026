@@ -5,6 +5,10 @@ export const ObjectiveSchema = z.object({
     text: z.string(),
     priority: z.enum(['high', 'medium', 'low']),
 });
+export const ResourceSchema = z.object({
+    title: z.string(),
+    url: z.string().url(),
+});
 export const TaskSchema = z.object({
     id: z.string(),
     title: z.string(),
@@ -13,6 +17,7 @@ export const TaskSchema = z.object({
     estimate: z.enum(['S', 'M', 'L']),
     priority: z.enum(['high', 'medium', 'low']),
     dependsOn: z.array(z.string()).default([]),
+    resources: z.array(ResourceSchema).max(2).default([]),
 });
 export const PlanningSlotSchema = z.object({
     taskId: z.string(),

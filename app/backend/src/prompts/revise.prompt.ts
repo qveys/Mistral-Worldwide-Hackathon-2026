@@ -17,6 +17,7 @@ RULES:
 5. Maintain valid dependsOn references — do not create cycles.
 6. Keep projectId, createdAt, and brainDump unchanged.
 7. Add an entry to revisionHistory with the current timestamp and instruction as patch.
+8. For new or modified tasks estimated M or L, include up to 2 relevant reference resources (official docs, tutorials, tools). Each resource must have a "title" and a valid "url". For S tasks, leave resources as an empty array. Preserve existing resources on unchanged tasks.
 
 OUTPUT FORMAT:
 Return ONLY valid JSON. No markdown fences. No explanation. No text before or after the JSON.`;

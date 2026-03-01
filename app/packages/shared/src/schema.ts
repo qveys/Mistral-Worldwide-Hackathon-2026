@@ -8,6 +8,11 @@ export const ObjectiveSchema = z.object({
     priority: z.enum(['high', 'medium', 'low']),
 });
 
+export const ResourceSchema = z.object({
+    title: z.string(),
+    url: z.string().url(),
+});
+
 export const TaskSchema = z.object({
     id: z.string(),
     title: z.string(),
@@ -16,6 +21,7 @@ export const TaskSchema = z.object({
     estimate: z.enum(['S', 'M', 'L']),
     priority: z.enum(['high', 'medium', 'low']),
     dependsOn: z.array(z.string()).default([]),
+    resources: z.array(ResourceSchema).max(2).default([]),
 });
 
 export const PlanningSlotSchema = z.object({
@@ -50,6 +56,7 @@ export const RoadmapSchema = z.object({
 // --- Inferred TypeScript types ---
 
 export type Objective = z.infer<typeof ObjectiveSchema>;
+export type Resource = z.infer<typeof ResourceSchema>;
 export type Task = z.infer<typeof TaskSchema>;
 export type PlanningSlot = z.infer<typeof PlanningSlotSchema>;
 export type Planning = z.infer<typeof PlanningSchema>;

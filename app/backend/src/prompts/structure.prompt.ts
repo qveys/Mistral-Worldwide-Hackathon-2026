@@ -24,7 +24,10 @@ const ROADMAP_SCHEMA_DESCRIPTION = `
       "status": "backlog",
       "estimate": "S | M | L",
       "priority": "high | medium | low",
-      "dependsOn": []
+      "dependsOn": [],
+      "resources": [
+        { "title": "Resource name", "url": "https://..." }
+      ]
     }
   ],
   "revisionHistory": []
@@ -57,6 +60,7 @@ RULES:
 8. Generate unique IDs: "obj-1", "obj-2" for objectives; "task-1", "task-2" for tasks.
 9. Leave projectId as an empty string (it will be assigned server-side).
 10. Set createdAt to the current ISO timestamp.
+11. For tasks estimated M or L, add up to 2 relevant reference resources (official docs, tutorials, training sites, tools). Each resource MUST have a "title" (short descriptive name) and a "url" (real, valid, publicly accessible URL). For S tasks, leave resources as an empty array.
 
 OUTPUT FORMAT:
 Return ONLY valid JSON. No markdown fences. No explanation. No text before or after the JSON.`;
@@ -109,7 +113,7 @@ ${ROADMAP_SCHEMA_DESCRIPTION}
 
 CRITICAL RULES:
 - Each objective MUST have: "id" (string), "text" (string), "priority" ("high"|"medium"|"low")
-- Each task MUST have: "id" (string), "title" (string), "objectiveId" (string), "status" ("backlog"|"doing"|"done"), "estimate" ("S"|"M"|"L"), "priority" ("high"|"medium"|"low"), "dependsOn" (string[])
+- Each task MUST have: "id" (string), "title" (string), "objectiveId" (string), "status" ("backlog"|"doing"|"done"), "estimate" ("S"|"M"|"L"), "priority" ("high"|"medium"|"low"), "dependsOn" (string[]), "resources" (array of {"title": string, "url": string}, max 2 items, can be empty)
 - objectives array MUST have at least 1 item
 - tasks array MUST have at least 1 item
 - If the brain dump is too vague, invent a reasonable objective and task based on the input.`;

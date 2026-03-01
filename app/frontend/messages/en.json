@@ -272,7 +272,8 @@
         "priorityHigh": "High",
         "priorityMedium": "Med",
         "priorityLow": "Low",
-        "estimateSizeM": "M"
+        "estimateSizeM": "M",
+        "resources": "Resources"
     },
     "loading": {
         "analyzing": "Analyzing your brain dump...",
