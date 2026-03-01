@@ -17,7 +17,7 @@
     "tagline": "Chaos to Clarity.",
     "headlinePrefix": "Du chaos à",
     "headlineEmphasis": "la clarté.",
-    "subtitle": "Capturez vos flux de pensée désordonnés.<br/>Notre IA les transforme en roadmaps d'ingénierie impeccables.",
+    "subtitle": "Capturez vos flux de pensée désordonnés.<br></br>Notre IA les transforme en roadmaps d'ingénierie impeccables.",
     "poweredBy": "Powered by Mistral Large 2",
     "heroDescription": "Transformez vos idées en roadmaps structurées..."
   },
@@ -106,7 +106,7 @@
   },
   "dashboard": {
     "neuralSync": "Synchronisation neurale : optimale",
-    "designRoadmap": "Concevez votre prochaine<br/><spanStyle>roadmap stratégique.</spanStyle>",
+    "designRoadmap": "Concevez votre prochaine<br></br><spanStyle>roadmap stratégique.</spanStyle>",
     "newBrainDump": "Nouveau Brain Dump",
     "collaborationHub": "Hub de collaboration",
     "collaborationDescription": "Invitez votre équipe d'ingénierie à synchroniser les contextes neuronaux en temps réel.",

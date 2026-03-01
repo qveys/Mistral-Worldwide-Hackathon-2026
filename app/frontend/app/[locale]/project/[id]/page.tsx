@@ -25,20 +25,16 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 export default function ProjectPage() {
   const t = useTranslations('projectPage');
   const params = useParams();
-  const searchParams = useSearchParams();
   const projectId = params.id as string;
-  const textParam = searchParams.get('text');
-  const planningParam = searchParams.get('planning') === '1';
 
-  const { roadmap, isLoading, error, structureBrainDump, fetchProject } =
-    useStructure();
+  const { roadmap, isLoading, error, fetchProject } = useStructure();
 
   const hasStarted = useRef(false);
   const [localTasks, setLocalTasks] = useState<RoadmapTask[]>([]);
@@ -47,12 +43,8 @@ export default function ProjectPage() {
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
-    if (textParam) {
-      structureBrainDump(textParam, planningParam);
-    } else {
-      fetchProject(projectId);
-    }
-  }, [textParam, planningParam, projectId, structureBrainDump, fetchProject]);
+    fetchProject(projectId);
+  }, [projectId, fetchProject]);
 
   const [localPlanning, setLocalPlanning] = useState(roadmap?.planning);
   useEffect(() => {

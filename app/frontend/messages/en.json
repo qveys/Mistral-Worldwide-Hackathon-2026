@@ -17,7 +17,7 @@
     "tagline": "Chaos to Clarity.",
     "headlinePrefix": "Chaos to",
     "headlineEmphasis": "Clarity.",
-    "subtitle": "Capture your messy streams of thought.<br/>Our AI turns them into flawless engineering roadmaps.",
+    "subtitle": "Capture your messy streams of thought.<br></br>Our AI turns them into flawless engineering roadmaps.",
     "poweredBy": "Powered by Mistral Large 2",
     "heroDescription": "Turn your ideas into structured roadmaps..."
   },
@@ -106,7 +106,7 @@
   },
   "dashboard": {
     "neuralSync": "Neural Sync: Optimal",
-    "designRoadmap": "Design your next<br/><spanStyle>strategic roadmap.</spanStyle>",
+    "designRoadmap": "Design your next<br></br><spanStyle>strategic roadmap.</spanStyle>",
     "newBrainDump": "New Brain Dump",
     "collaborationHub": "Collaboration Hub",
     "collaborationDescription": "Invite your engineering team to sync neural contexts in real-time.",
