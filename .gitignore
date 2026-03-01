@@ -45,7 +45,6 @@ target/
 node_modules/
 app/backend/node_modules
 app/frontend/node_modules
-app/backend/data/
 
 #############################################
 # Git worktrees (isolated branches)
@@ -83,7 +82,8 @@ vendor/
 #############################################
 # Backend runtime data
 #############################################
-app/backend/data/
+app/backend/data/*
+!app/backend/data/users.example.json
 
 #############################################
 # OS generated files

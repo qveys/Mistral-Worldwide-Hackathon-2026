@@ -5,7 +5,7 @@ import { Activity, ShieldCheck, Database, Server } from 'lucide-react';
 
 export function SystemHealthSection() {
   return (
-    <div className="bg-[#161618] border border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 space-y-8 h-full flex flex-col">
+    <div className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700/50 rounded-[2.5rem] p-8 lg:p-10 space-y-8 h-full flex flex-col">
       <div className="flex items-center gap-3 border-b border-zinc-800/50 pb-6">
         <Activity size={18} className="text-emerald-500" />
         <h3 className="text-sm font-bold uppercase tracking-widest text-white">System Integrity</h3>
