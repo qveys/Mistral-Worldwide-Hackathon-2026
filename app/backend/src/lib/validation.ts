@@ -1,3 +1,5 @@
+import { HttpError } from "./httpError.js";
+
 interface TaskNode {
   id: string;
   dependsOn: string[];
@@ -23,11 +25,7 @@ export function validateDependencyIntegrity(tasks: TaskNode[]): void {
   }
 
   if (errors.length > 0) {
-    const err = new Error(
-      `Invalid dependency references:\n- ${errors.join("\n- ")}`
-    );
-    (err as any).statusCode = 400;
-    throw err;
+    throw new HttpError(`Invalid dependency references:\n- ${errors.join("\n- ")}`, 400);
   }
 }
 
@@ -62,10 +60,6 @@ export function validateTimelineConstraints(tasks: TaskNode[]): void {
   }
 
   if (errors.length > 0) {
-    const err = new Error(
-      `Timeline constraint violations:\n- ${errors.join("\n- ")}`
-    );
-    (err as any).statusCode = 400;
-    throw err;
+    throw new HttpError(`Timeline constraint violations:\n- ${errors.join("\n- ")}`, 400);
   }
 }

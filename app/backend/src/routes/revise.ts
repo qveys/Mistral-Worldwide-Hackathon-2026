@@ -4,34 +4,28 @@ import { BedrockService } from '../services/bedrock.js';
 import { buildRevisePrompt } from '../prompts/revise.js';
 import { saveProject } from '../services/storage.js';
 import { DEMO_REVISED_ROADMAP } from '../mocks/demoRoadmap.js';
+import { roadmapSchema } from '../lib/schema.js';
+import { hasCycle, topologicalSort } from '../lib/dependencyGraph.js';
+import { validateDependencyIntegrity, validateTimelineConstraints } from '../lib/validation.js';
+import { HttpError } from '../lib/httpError.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
 const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 const ReviseRequestSchema = z.object({
-  projectId: z.string(),
+  projectId: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/, "Invalid projectId format"),
   instruction: z.string().min(1, "Instruction is required"),
-  roadmap: z.any()
+  roadmap: roadmapSchema
 });
 
-const RoadmapItemSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
-  priority: z.number().min(1).max(5),
-  dependencies: z.array(z.string()).optional()
-});
-
-const ReviseResponseSchema = z.object({
-  roadmap: z.array(RoadmapItemSchema)
-});
+const ReviseResponseSchema = roadmapSchema;
 
 router.post('/revise', async (req, res) => {
   try {
     if (DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      res.json(DEMO_REVISED_ROADMAP);
+      res.json(ReviseResponseSchema.parse(DEMO_REVISED_ROADMAP));
       return;
     }
 
@@ -42,6 +36,18 @@ router.post('/revise', async (req, res) => {
     const rawResponse = await bedrockService.invokeModel(prompt);
 
     const revisedRoadmap = ReviseResponseSchema.parse(rawResponse);
+    const tasks = revisedRoadmap.roadmap.map((task) => ({
+      id: task.id,
+      dependsOn: task.dependsOn,
+      priority: task.priority,
+    }));
+
+    validateDependencyIntegrity(tasks);
+    if (hasCycle(tasks)) {
+      throw new HttpError('Dependency graph contains a cycle', 400);
+    }
+    topologicalSort(tasks);
+    validateTimelineConstraints(tasks);
 
     await saveProject(projectId, revisedRoadmap);
 
@@ -50,6 +56,8 @@ router.post('/revise', async (req, res) => {
     console.error('Revise endpoint error:', error);
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: "Invalid request or response", details: error.errors });
+    } else if (error instanceof HttpError) {
+      res.status(error.statusCode).json({ error: error.message });
     } else {
       res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
     }

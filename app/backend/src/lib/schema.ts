@@ -5,7 +5,6 @@ export const taskSchema = z.object({
   title: z.string(),
   description: z.string(),
   priority: z.number().min(1).max(5),
-  dependencies: z.array(z.string()).optional(),
   dependsOn: z.array(z.string()).default([]),
 });
 

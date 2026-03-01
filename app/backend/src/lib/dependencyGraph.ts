@@ -56,7 +56,11 @@ export function topologicalSort(tasks: TaskNode[]): TaskNode[] {
   for (const task of tasks) {
     for (const dep of task.dependsOn) {
       // dep → task (task depends on dep, so dep must come first)
-      adj.get(dep)?.push(task.id);
+      const neighbors = adj.get(dep);
+      if (!neighbors) {
+        throw new Error(`Unknown dependency "${dep}" referenced by task "${task.id}"`);
+      }
+      neighbors.push(task.id);
       inDegree.set(task.id, (inDegree.get(task.id) ?? 0) + 1);
     }
   }

@@ -1,5 +1,6 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
+import { buildStructurePrompt } from "../prompts/structure.js";
 
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
@@ -55,26 +56,13 @@ export class BedrockService {
   }
 
   private buildRoadmapPrompt(transcript: string): string {
-    return `You are an AI strategic planning assistant. Convert this brain dump into a structured roadmap:
+    return `${buildStructurePrompt(transcript)}
 
-${transcript}
-
-Return ONLY valid JSON in this exact schema:
+Ajoute aussi l'objet "metadata" avec:
 {
-  "roadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "dependencies": ["string"]
-    }
-  ],
-  "metadata": {
-    "processingTimeMs": number,
-    "modelUsed": "string",
-    "confidenceScore": number (0-1)
-  }
+  "processingTimeMs": number,
+  "modelUsed": "string",
+  "confidenceScore": number (0-1)
 }`;
   }
 
@@ -85,7 +73,7 @@ Return ONLY valid JSON in this exact schema:
         title: z.string(),
         description: z.string(),
         priority: z.number().min(1).max(5),
-        dependencies: z.array(z.string()).optional()
+        dependsOn: z.array(z.string()).default([])
       })),
       metadata: z.object({
         processingTimeMs: z.number(),
