@@ -2,7 +2,7 @@
 
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
 import { useRouter } from '@/i18n/navigation';
-import { API_URL } from '@/lib/api';
+import { API_URL, getAuthHeaders } from '@/lib/api';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { getErrorMessageKey } from '@/lib/errorMessages';
 import { cn } from '@/lib/utils';
@@ -23,7 +23,7 @@ export default function NewRoadmapPage() {
         try {
             const response = await fetch(`${API_URL}/structure`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text, includePlanning }),
             });
             if (!response.ok) {

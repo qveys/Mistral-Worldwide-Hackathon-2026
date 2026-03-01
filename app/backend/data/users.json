@@ -1,1 +1,16 @@
-["dev@echo.maps"]
+[
+  {
+    "id": "e994d006-e65b-4880-96dc-ae4cfafca11b",
+    "email": "dev@echo.maps",
+    "firstName": "",
+    "lastName": "",
+    "password": ""
+  },
+  {
+    "id": "d5b56cdc-bbd1-4c45-83a9-88b93e65dfd2",
+    "email": "matlav@gmail.com",
+    "firstName": "",
+    "lastName": "",
+    "password": ""
+  }
+]
