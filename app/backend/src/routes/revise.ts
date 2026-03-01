@@ -16,13 +16,14 @@ const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 const ReviseRequestSchema = z.object({
   projectId: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/, 'Invalid projectId format'),
+  userId: z.string().uuid(),
   instruction: z.string().min(1, 'Instruction is required'),
   roadmap: roadmapSchema,
 });
 
 const ReviseResponseSchema = roadmapSchema;
 
-router.post('/revise', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     if (DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -30,7 +31,7 @@ router.post('/revise', async (req, res) => {
       return;
     }
 
-    const { projectId, instruction, roadmap } = ReviseRequestSchema.parse(req.body);
+    const { projectId, userId, instruction, roadmap } = ReviseRequestSchema.parse(req.body);
 
     const prompt = buildRevisePrompt(roadmap, instruction);
 
@@ -53,7 +54,10 @@ router.post('/revise', async (req, res) => {
     topologicalSort(tasks);
     validateTimelineConstraints(tasks);
 
-    await saveProject(projectId, revisedRoadmap);
+    await saveProject(projectId, {
+      userId,
+      roadmap: revisedRoadmap.roadmap,
+    });
 
     res.json(revisedRoadmap);
   } catch (error) {

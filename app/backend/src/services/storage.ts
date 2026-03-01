@@ -1,10 +1,10 @@
-import { mkdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import * as os from 'node:os';
 import * as path from 'node:path';
-import type { Roadmap } from '../lib/schema.js';
-import { HttpError } from '../lib/httpError.js';
 import { assertValidProjectId } from '../lib/projectId.js';
+import { HttpError } from '../lib/httpError.js';
 
-const PROJECTS_DIR = process.env.PROJECTS_DIR || '/tmp/projects';
+const PROJECTS_DIR = process.env.STORAGE_DIR || process.env.PROJECTS_DIR || path.join(os.tmpdir(), 'projects');
 const PROJECTS_DIR_RESOLVED = path.resolve(PROJECTS_DIR);
 
 async function ensureDir(): Promise<void> {
@@ -23,17 +23,17 @@ function getProjectFilePath(projectId: string): string {
   return resolvedPath;
 }
 
-export async function saveProject(projectId: string, roadmap: Roadmap): Promise<void> {
+export async function saveProject(projectId: string, payload: unknown): Promise<void> {
   await ensureDir();
   const filePath = getProjectFilePath(projectId);
-  await writeFile(filePath, JSON.stringify(roadmap, null, 2), 'utf-8');
+  await writeFile(filePath, JSON.stringify(payload, null, 2), 'utf-8');
 }
 
-export async function getProject(projectId: string): Promise<Roadmap | null> {
+export async function getProject(projectId: string): Promise<unknown | null> {
   const filePath = getProjectFilePath(projectId);
   try {
     const data = await readFile(filePath, 'utf-8');
-    return JSON.parse(data) as Roadmap;
+    return JSON.parse(data) as unknown;
   } catch (err: unknown) {
     const fsError = err as NodeJS.ErrnoException;
     if (fsError.code === 'ENOENT') {
