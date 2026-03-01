@@ -8,11 +8,10 @@ import { cn } from '@/lib/utils';
 
 export interface LoginCredentials {
   email: string;
-  password: string;
 }
 
 interface LoginFormProps {
-  onSubmit: (credentials: LoginCredentials) => void;
+  onSubmit: (credentials: LoginCredentials) => void | Promise<void>;
   initialEmail?: string;
   className?: string;
   isLoading?: boolean;
@@ -26,11 +25,10 @@ export function LoginForm({
 }: LoginFormProps) {
   const t = useTranslations('login');
   const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ email, password });
+    onSubmit({ email });
   };
 
   return (
@@ -46,16 +44,6 @@ export function LoginForm({
         placeholder={t('emailPlaceholder')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        required
-        aria-required
-      />
-      <Input
-        label={t('passwordLabel')}
-        type="password"
-        autoComplete="current-password"
-        placeholder={t('passwordPlaceholder')}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
         required
         aria-required
       />
