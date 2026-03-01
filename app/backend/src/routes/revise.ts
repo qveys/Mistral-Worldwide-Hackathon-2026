@@ -4,16 +4,11 @@ import { BedrockService } from '../services/bedrock.js';
 import { buildRevisePrompt } from '../prompts/revise.js';
 import { saveProject } from '../services/storage.js';
 import { DEMO_REVISED_ROADMAP } from '../mocks/demoRoadmap.js';
+import { logRouteError } from '../lib/logger.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
 const DEMO_MODE = process.env.DEMO_MODE === 'true';
-
-const ReviseRequestSchema = z.object({
-  projectId: z.string(),
-  instruction: z.string().min(1, "Instruction is required"),
-  roadmap: z.any()
-});
 
 const RoadmapItemSchema = z.object({
   id: z.string(),
@@ -21,6 +16,14 @@ const RoadmapItemSchema = z.object({
   description: z.string(),
   priority: z.number().min(1).max(5),
   dependencies: z.array(z.string()).optional()
+});
+
+const ReviseRequestSchema = z.object({
+  projectId: z.string().regex(/^[A-Za-z0-9_-]+$/, 'Invalid projectId format'),
+  instruction: z.string().min(1, 'Instruction is required'),
+  roadmap: z.object({
+    roadmap: z.array(RoadmapItemSchema)
+  })
 });
 
 const ReviseResponseSchema = z.object({
@@ -39,19 +42,21 @@ router.post('/revise', async (req, res) => {
 
     const prompt = buildRevisePrompt(roadmap, instruction);
 
-    const rawResponse = await bedrockService.invokeModel(prompt);
-
-    const revisedRoadmap = ReviseResponseSchema.parse(rawResponse);
+    const revisedRoadmap = await bedrockService.invokeModelWithRetry(
+      prompt,
+      'reviseRoadmap',
+      (body) => ReviseResponseSchema.parse(body)
+    );
 
     await saveProject(projectId, revisedRoadmap);
 
     res.json(revisedRoadmap);
   } catch (error) {
-    console.error('Revise endpoint error:', error);
+    logRouteError('POST /api/revise', error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Invalid request or response", details: error.errors });
+      res.status(400).json({ error: 'Invalid request or response', details: error.errors });
     } else {
-      res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
+      res.status(500).json({ error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' });
     }
   }
 });

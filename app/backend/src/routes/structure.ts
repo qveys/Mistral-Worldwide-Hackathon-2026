@@ -35,10 +35,7 @@ router.post('/structure', async (req, res) => {
     
     // Call Bedrock service to generate roadmap
     const startTime = Date.now();
-    const roadmapData = await bedrockService.generateRoadmap(
-      validatedRequest.transcript,
-      validatedRequest.userId
-    );
+    const roadmapData = await bedrockService.generateRoadmap(validatedRequest.transcript);
     const processingTimeMs = Date.now() - startTime;
     
     // Enhance response with processing metadata

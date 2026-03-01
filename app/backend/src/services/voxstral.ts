@@ -1,20 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-const WS = require('ws');
-
-const MAX_RECONNECT_ATTEMPTS = 3;
-const BASE_RECONNECT_DELAY_MS = 1000;
+import type { Server as HttpServer } from 'node:http';
+import WebSocket, { WebSocketServer } from 'ws';
 
 /**
  * Voxstral WebSocket Service for real-time voice transcription
  * This service handles WebSocket connections for voice input and provides transcription events
  */
 export class VoxstralService extends EventEmitter {
-  private wss: any;
-  private server: any;
-  private activeConnections: Map<string, any>;
-  private reconnectAttempts: Map<string, number>;
-  private reconnectTimers: Map<string, ReturnType<typeof setTimeout>>;
+  private wss!: WebSocketServer;
+  private server: HttpServer;
+  private activeConnections: Map<string, WebSocket>;
   private transcriptionSessions: Map<string, {
     connectionId: string;
     userId: string;
@@ -23,12 +19,10 @@ export class VoxstralService extends EventEmitter {
     startTime: number;
   }>;
 
-  constructor(server: any) {
+  constructor(server: HttpServer) {
     super();
     this.server = server;
     this.activeConnections = new Map();
-    this.reconnectAttempts = new Map();
-    this.reconnectTimers = new Map();
     this.transcriptionSessions = new Map();
 
     this.initWebSocketServer();
@@ -52,24 +46,23 @@ export class VoxstralService extends EventEmitter {
   }
 
   private initWebSocketServer() {
-    this.wss = new WS.Server({ server: this.server });
+    this.wss = new WebSocketServer({ server: this.server });
 
     this.wss.on('connection', (ws: WebSocket) => {
       const connectionId = uuidv4();
       this.activeConnections.set(connectionId, ws);
-      this.reconnectAttempts.set(connectionId, 0);
 
       this.log('info', 'New Voxstral connection', { connectionId });
 
-      ws.on('message', (message: string) => {
-        this.handleMessage(connectionId, message);
+      ws.on('message', (message) => {
+        this.handleMessage(connectionId, message.toString());
       });
 
       ws.on('close', () => {
         this.handleDisconnect(connectionId);
       });
 
-      ws.on('error', (error: any) => {
+      ws.on('error', (error) => {
         this.log('error', 'Voxstral connection error', { connectionId, error: String(error) });
         this.handleDisconnect(connectionId);
       });
@@ -84,60 +77,9 @@ export class VoxstralService extends EventEmitter {
   }
 
   private handleDisconnect(connectionId: string) {
-    const attempt = (this.reconnectAttempts.get(connectionId) ?? 0) + 1;
-    this.reconnectAttempts.set(connectionId, attempt);
-
-    if (attempt > MAX_RECONNECT_ATTEMPTS) {
-      this.log('error', 'Reconnection failed after max attempts', { connectionId, attempts: MAX_RECONNECT_ATTEMPTS });
-      this.emit('reconnection_failed', { connectionId });
-      this.cleanupConnection(connectionId);
-      return;
-    }
-
-    const delayMs = BASE_RECONNECT_DELAY_MS * Math.pow(2, attempt - 1); // 1s → 2s → 4s
-    this.log('info', 'Attempting WebSocket reconnection', { connectionId, attempt, delayMs });
-    this.emit('reconnecting', { connectionId, attempt });
-
-    const timer = setTimeout(() => {
-      this.reconnectTimers.delete(connectionId);
-      try {
-        const addr = this.server.address();
-        if (!addr) {
-          throw new Error('Server address unavailable');
-        }
-        const host = typeof addr === 'string' ? addr : `ws://localhost:${addr.port}`;
-        const newWs = new WS(host);
-
-        newWs.on('open', () => {
-          this.log('info', 'WebSocket reconnected successfully', { connectionId, attempt });
-          this.activeConnections.set(connectionId, newWs);
-          this.reconnectAttempts.set(connectionId, 0);
-
-          newWs.on('message', (message: string) => {
-            this.handleMessage(connectionId, message);
-          });
-
-          newWs.on('close', () => {
-            this.handleDisconnect(connectionId);
-          });
-
-          newWs.on('error', (error: any) => {
-            this.log('error', 'Voxstral reconnected socket error', { connectionId, error: String(error) });
-            this.handleDisconnect(connectionId);
-          });
-        });
-
-        newWs.on('error', () => {
-          this.log('error', 'Reconnection attempt failed', { connectionId, attempt });
-          this.handleDisconnect(connectionId);
-        });
-      } catch (err) {
-        this.log('error', 'Reconnection attempt threw', { connectionId, attempt, error: String(err) });
-        this.handleDisconnect(connectionId);
-      }
-    }, delayMs);
-
-    this.reconnectTimers.set(connectionId, timer);
+    this.log('info', 'WebSocket disconnected, cleaning up server state', { connectionId });
+    this.cleanupConnection(connectionId);
+    this.emit('disconnected', { connectionId });
   }
 
   private handleMessage(connectionId: string, message: string) {
@@ -271,12 +213,6 @@ export class VoxstralService extends EventEmitter {
   private cleanupConnection(connectionId: string) {
     this.log('info', 'Cleaning up connection', { connectionId });
 
-    const timer = this.reconnectTimers.get(connectionId);
-    if (timer) {
-      clearTimeout(timer);
-      this.reconnectTimers.delete(connectionId);
-    }
-
     const sessionsToClean = Array.from(this.transcriptionSessions.entries())
       .filter(([_, session]) => session.connectionId === connectionId)
       .map(([sessionId]) => sessionId);
@@ -286,7 +222,6 @@ export class VoxstralService extends EventEmitter {
     });
 
     this.activeConnections.delete(connectionId);
-    this.reconnectAttempts.delete(connectionId);
   }
 
   getActiveSessionCount(): number {
@@ -299,8 +234,8 @@ export class VoxstralService extends EventEmitter {
 
   broadcast(message: any) {
     const payload = JSON.stringify(message);
-    this.activeConnections.forEach((ws: any) => {
-      if (ws.readyState === WS.OPEN) {
+    this.activeConnections.forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
         ws.send(payload);
       }
     });

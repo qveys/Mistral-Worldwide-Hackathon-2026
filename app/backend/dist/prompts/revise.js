@@ -5,8 +5,8 @@
  * @param instruction  User instruction in clear text (e.g. "Met X en urgent")
  * @returns  The formatted prompt string
  */
-export function buildRevisePrompt(roadmap: unknown, instruction: string): string {
-  return `Tu es un assistant de planification stratégique. Tu reçois un roadmap existant au format JSON et une instruction de modification de l'utilisateur. Tu dois appliquer la modification demandée et retourner le roadmap COMPLET mis à jour.
+export function buildRevisePrompt(roadmap, instruction) {
+    return `Tu es un assistant de planification stratégique. Tu reçois un roadmap existant au format JSON et une instruction de modification de l'utilisateur. Tu dois appliquer la modification demandée et retourner le roadmap COMPLET mis à jour.
 
 ## RÈGLES STRICTES
 
@@ -51,3 +51,4 @@ Retourne le JSON complet du roadmap mis à jour, en respectant exactement ce sch
   ]
 }`;
 }
+//# sourceMappingURL=revise.js.map

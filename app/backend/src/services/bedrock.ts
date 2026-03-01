@@ -65,14 +65,9 @@ export class BedrockService {
     this.client = new BedrockRuntimeClient({ region: this.config.region });
   }
 
-  async generateRoadmap(transcript: string, userId: string): Promise<any> {
+  async generateRoadmap(transcript: string): Promise<any> {
     const prompt = this.buildRoadmapPrompt(transcript);
     return this.invokeWithRetry(prompt, 'generateRoadmap', (body) => this.validateRoadmapResponse(body));
-  }
-
-  async generateRevision(roadmapId: string, instructions: string): Promise<any> {
-    const prompt = this.buildRevisionPrompt(roadmapId, instructions);
-    return this.invokeWithRetry(prompt, 'generateRevision', (body) => this.validateRevisionResponse(body));
   }
 
   async invokeModel(prompt: string): Promise<any> {
@@ -98,10 +93,18 @@ export class BedrockService {
     throw new Error("Empty response from Bedrock");
   }
 
+  async invokeModelWithRetry<T>(
+    prompt: string,
+    operation: string,
+    validate: (body: unknown) => T
+  ): Promise<T> {
+    return this.invokeWithRetry(prompt, operation, validate);
+  }
+
   private async invokeWithRetry<T>(
     prompt: string,
     operation: string,
-    validate: (body: any) => T
+    validate: (body: unknown) => T
   ): Promise<T> {
     let lastZodError: z.ZodError | undefined;
 
@@ -159,21 +162,8 @@ export class BedrockService {
         }
       } catch (error) {
         const latencyMs = Date.now() - startTime;
-        if (error instanceof z.ZodError) {
-          lastZodError = error;
-          log('warn', 'Zod validation failed, retrying', {
-            operation,
-            attempt,
-            latencyMs,
-            zodErrors: error.errors,
-          });
-          if (attempt <= MAX_VALIDATION_RETRIES) {
-            continue;
-          }
-        } else {
-          log('error', 'Bedrock service error', { operation, attempt, latencyMs, error: String(error) });
-          throw error;
-        }
+        log('error', 'Bedrock service error', { operation, attempt, latencyMs, error: String(error) });
+        throw error;
       }
     }
 
@@ -214,7 +204,7 @@ Return ONLY valid JSON in this exact schema:
 }`;
   }
 
-  private validateRoadmapResponse(response: any): any {
+  private validateRoadmapResponse(response: unknown): any {
     const RoadmapResponseSchema = z.object({
       roadmap: z.array(z.object({
         id: z.string(),
@@ -233,50 +223,4 @@ Return ONLY valid JSON in this exact schema:
     return RoadmapResponseSchema.parse(response);
   }
 
-  private buildRevisionPrompt(roadmapId: string, instructions: string): string {
-    return `Revise the existing roadmap ${roadmapId} based on these instructions:
-
-${instructions}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "revisedRoadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "status": "unchanged" | "modified" | "removed" | "added",
-      "dependencies": ["string"]
-    }
-  ],
-  "changesSummary": {
-    "itemsModified": number,
-    "itemsAdded": number,
-    "itemsRemoved": number,
-    "confidenceScore": number (0-1)
-  }
-}`;
-  }
-
-  private validateRevisionResponse(response: any): any {
-    const RevisionResponseSchema = z.object({
-      revisedRoadmap: z.array(z.object({
-        id: z.string(),
-        title: z.string(),
-        description: z.string(),
-        priority: z.number().min(1).max(5),
-        status: z.enum(["unchanged", "modified", "removed", "added"]),
-        dependencies: z.array(z.string()).optional()
-      })),
-      changesSummary: z.object({
-        itemsModified: z.number(),
-        itemsAdded: z.number(),
-        itemsRemoved: z.number(),
-        confidenceScore: z.number().min(0).max(1)
-      })
-    });
-
-    return RevisionResponseSchema.parse(response);
-  }
 }
