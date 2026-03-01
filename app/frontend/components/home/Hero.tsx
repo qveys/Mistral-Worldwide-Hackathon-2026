@@ -18,7 +18,9 @@ export function Hero() {
       </h1>
       
       <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-light text-balance">
-        {t('subtitle')}
+        {t.rich('subtitle', {
+          br: () => <br className="hidden md:block" />,
+        })}
       </p>
     </div>
   );

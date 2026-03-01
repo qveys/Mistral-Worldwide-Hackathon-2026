@@ -28,11 +28,13 @@ import {
   Lock,
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 export default function ProjectPage() {
+  const t = useTranslations('projectPage');
   const params = useParams();
   const searchParams = useSearchParams();
   const projectId = params.id as string;
@@ -103,12 +105,12 @@ export default function ProjectPage() {
         <div className="w-full max-w-lg bg-[#161618] border border-zinc-800 rounded-[2.5rem] p-10 shadow-2xl text-center space-y-6">
           <AlertCircle size={40} className="text-red-500 mx-auto" />
           <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
-            System Interrupt
+            {t('systemInterrupt')}
           </h2>
           <p className="text-zinc-500 italic">&quot;{error}&quot;</p>
           <Link href="/dashboard" className="block">
             <Button className="w-full bg-white text-black font-bold uppercase text-xs h-12 rounded-xl">
-              Return to Console
+              {t('returnToConsole')}
             </Button>
           </Link>
         </div>
@@ -118,7 +120,7 @@ export default function ProjectPage() {
   if (!roadmap)
     return (
       <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-6 font-mono text-xs text-zinc-600 animate-pulse">
-        {`> INITIALIZING NEURAL CONTEXT...`}
+        {`> ${t('initializingNeuralContext')}`}
       </div>
     );
 
@@ -143,34 +145,34 @@ export default function ProjectPage() {
         <div className="space-y-10">
           <SectionHeader
             title={roadmap.title}
-            description="Planification stratégique multicouche optimisée par Mistral."
+            description={t('sectionDescription')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatBox
-              label="Nodes"
+              label={t('nodes')}
               value={localTasks.length.toString()}
-              detail="TASKS"
+              detail={t('tasks')}
               icon={Zap}
               color="text-violet-400"
             />
             <StatBox
-              label="Integrity"
-              value="Verified"
-              detail="NO CYCLES"
+              label={t('integrity')}
+              value={t('verified')}
+              detail={t('noCycles')}
               icon={Activity}
               color="text-emerald-400"
             />
             <StatBox
-              label="Path"
-              value="Active"
-              detail="OPTIMIZED"
+              label={t('path')}
+              value={t('active')}
+              detail={t('optimized')}
               icon={Network}
               color="text-blue-400"
             />
             <StatBox
-              label="Status"
-              value={localPlanning ? 'Scheduled' : 'Draft'}
-              detail="SYNC READY"
+              label={t('status')}
+              value={localPlanning ? t('scheduled') : t('draft')}
+              detail={t('syncReady')}
               icon={History}
               color="text-amber-400"
             />
@@ -231,13 +233,13 @@ export default function ProjectPage() {
                 <div className="bg-[#161618] border border-zinc-800/50 border-dashed rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center space-y-6">
                   <Lock size={32} className="text-amber-500" />
                   <h3 className="text-xl font-bold text-white uppercase tracking-tight">
-                    Timeline Not Initialized
+                    {t('timelineNotInitialized')}
                   </h3>
                   <Button
-                    onClick={() => handleRevision('Génère un planning')}
+                    onClick={() => handleRevision(t('generatePlanningPrompt'))}
                     className="bg-amber-500 hover:bg-amber-600 text-black font-bold uppercase text-[10px] tracking-widest px-8 h-12 rounded-xl"
                   >
-                    Initialize Timeline
+                    {t('initializeTimeline')}
                   </Button>
                 </div>
               )}
@@ -255,7 +257,7 @@ export default function ProjectPage() {
             <Sparkles size={20} />
           </div>
           <h3 className="text-xl font-bold text-white uppercase tracking-tight italic leading-none">
-            Neural Refinement
+            {t('neuralRefinement')}
           </h3>
           <RoadmapRevisionInput onUpdate={handleRevision} />
         </motion.section>

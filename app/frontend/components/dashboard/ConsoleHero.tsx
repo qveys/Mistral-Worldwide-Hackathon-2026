@@ -26,7 +26,19 @@ export function ConsoleHero() {
           "text-4xl lg:text-5xl font-medium tracking-tight leading-[1.1]",
           isDarkMode ? "text-white" : "text-slate-900"
         )}>
-          {t('designRoadmap')}
+          {t.rich('designRoadmap', {
+            br: () => <br />,
+            spanStyle: (chunks) => (
+              <span
+                className={cn(
+                  'italic font-serif',
+                  isDarkMode ? 'text-zinc-500' : 'text-slate-600'
+                )}
+              >
+                {chunks}
+              </span>
+            ),
+          })}
         </h2>
       </div>
       <div className="relative z-10 flex items-center gap-4">

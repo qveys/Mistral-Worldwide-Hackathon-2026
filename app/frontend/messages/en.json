@@ -15,7 +15,7 @@
   "home": {
     "title": "EchoMaps | Chaos to Clarity",
     "tagline": "Chaos to Clarity.",
-    "subtitle": "Capture your messy streams of thought. Our AI turns them into flawless engineering roadmaps.",
+    "subtitle": "Capture your messy streams of thought.<br/>Our AI turns them into flawless engineering roadmaps.",
     "poweredBy": "Powered by Mistral Large 2",
     "heroDescription": "Turn your ideas into structured roadmaps..."
   },
@@ -104,7 +104,7 @@
   },
   "dashboard": {
     "neuralSync": "Neural Sync: Optimal",
-    "designRoadmap": "Design your next strategic roadmap.",
+    "designRoadmap": "Design your next<br/><spanStyle>strategic roadmap.</spanStyle>",
     "newBrainDump": "New Brain Dump",
     "collaborationHub": "Collaboration Hub",
     "collaborationDescription": "Invite your engineering team to sync neural contexts in real-time.",
@@ -140,6 +140,28 @@
     "inferenceSpeedDetail": "42ms LATENCY",
     "topologicalSortValue": "Healthy",
     "topologicalSortDetail": "VERIFIED"
+  },
+  "projectPage": {
+    "systemInterrupt": "System Interrupt",
+    "returnToConsole": "Return to Console",
+    "initializingNeuralContext": "INITIALIZING NEURAL CONTEXT...",
+    "sectionDescription": "Multilayer strategic planning optimized by Mistral.",
+    "nodes": "Nodes",
+    "tasks": "TASKS",
+    "integrity": "Integrity",
+    "verified": "Verified",
+    "noCycles": "NO CYCLES",
+    "path": "Path",
+    "active": "Active",
+    "optimized": "OPTIMIZED",
+    "status": "Status",
+    "scheduled": "Scheduled",
+    "draft": "Draft",
+    "syncReady": "SYNC READY",
+    "timelineNotInitialized": "Timeline Not Initialized",
+    "generatePlanningPrompt": "Generate a planning timeline",
+    "initializeTimeline": "Initialize Timeline",
+    "neuralRefinement": "Neural Refinement"
   },
   "activity": {
     "neuralEventLog": "Neural Event Log",
