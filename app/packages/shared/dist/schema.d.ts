@@ -8,6 +8,10 @@ export declare const ObjectiveSchema: z.ZodObject<{
         low: "low";
     }>;
 }, z.core.$strip>;
+export declare const ResourceSchema: z.ZodObject<{
+    title: z.ZodString;
+    url: z.ZodString;
+}, z.core.$strip>;
 export declare const TaskSchema: z.ZodObject<{
     id: z.ZodString;
     title: z.ZodString;
@@ -28,6 +32,10 @@ export declare const TaskSchema: z.ZodObject<{
         low: "low";
     }>;
     dependsOn: z.ZodDefault<z.ZodArray<z.ZodString>>;
+    resources: z.ZodDefault<z.ZodArray<z.ZodObject<{
+        title: z.ZodString;
+        url: z.ZodString;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export declare const PlanningSlotSchema: z.ZodObject<{
     taskId: z.ZodString;
@@ -89,6 +97,10 @@ export declare const RoadmapSchema: z.ZodObject<{
             low: "low";
         }>;
         dependsOn: z.ZodDefault<z.ZodArray<z.ZodString>>;
+        resources: z.ZodDefault<z.ZodArray<z.ZodObject<{
+            title: z.ZodString;
+            url: z.ZodString;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>;
     planning: z.ZodOptional<z.ZodObject<{
         startDate: z.ZodString;
@@ -109,6 +121,7 @@ export declare const RoadmapSchema: z.ZodObject<{
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 export type Objective = z.infer<typeof ObjectiveSchema>;
+export type Resource = z.infer<typeof ResourceSchema>;
 export type Task = z.infer<typeof TaskSchema>;
 export type PlanningSlot = z.infer<typeof PlanningSlotSchema>;
 export type Planning = z.infer<typeof PlanningSchema>;

@@ -28,6 +28,10 @@ export const metadata: Metadata = {
     title: { default: 'EchoMaps', template: '%s | EchoMaps' },
     description:
         "Transformez vos flux de pensée désordonnés en roadmaps stratégiques structurées grâce à l'IA.",
+    icons: {
+        icon: '/logo.png',
+        apple: '/logo.png',
+    },
     openGraph: {
         title: 'EchoMaps',
         description: 'De Chaos à Clarté : Roadmaps instantanées via IA.',

@@ -2,15 +2,16 @@ import type { Roadmap } from '@echomaps/shared';
 
 export type {
     Objective,
-    Task,
-    PlanningSlot,
     Planning,
+    PlanningSlot,
+    Resource,
     RevisionEntry,
     Roadmap,
-    TaskStatus,
-    TaskPriority,
-    TaskEstimate,
     SlotTime,
+    Task,
+    TaskEstimate,
+    TaskPriority,
+    TaskStatus,
 } from '@echomaps/shared';
 
 /** Labels for locale-aware markdown export (from exportMarkdown namespace). */
@@ -46,7 +47,7 @@ const DEFAULT_LABELS_FR: ExportMarkdownLabels = {
  */
 export function roadmapToMarkdown(
     roadmap: Roadmap,
-    options?: { locale: string; labels: ExportMarkdownLabels }
+    options?: { locale: string; labels: ExportMarkdownLabels },
 ): string {
     const locale = options?.locale ?? 'fr-FR';
     const L = options?.labels ?? DEFAULT_LABELS_FR;
@@ -69,12 +70,19 @@ export function roadmapToMarkdown(
 
     lines.push(`## ${L.tasks}`);
     lines.push('');
-    lines.push(`| ${L.tableTask} | ${L.tablePriority} | ${L.tableEstimate} | ${L.tableStatus} | ${L.tableDependencies} |`);
+    lines.push(
+        `| ${L.tableTask} | ${L.tablePriority} | ${L.tableEstimate} | ${L.tableStatus} | ${L.tableDependencies} |`,
+    );
     lines.push('|-------|----------|------------|--------|-------------|');
     for (const task of roadmap.tasks) {
         const deps = task.dependsOn.length > 0 ? task.dependsOn.join(', ') : '—';
         const status = task.status === 'done' ? '✅' : task.status === 'doing' ? '🔄' : '⬜';
         lines.push(`| ${task.title} | ${task.priority} | ${task.estimate} | ${status} | ${deps} |`);
+        if (task.resources && task.resources.length > 0) {
+            for (const res of task.resources) {
+                lines.push(`|   ↳ 📎 [${res.title}](${res.url}) | | | | |`);
+            }
+        }
     }
     lines.push('');
 

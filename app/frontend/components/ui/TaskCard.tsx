@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, BarChart3, Clock, Lock, Zap } from 'lucide-react';
+import { AlertCircle, BarChart3, Clock, ExternalLink, Lock, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 export type TaskStatus = 'backlog' | 'doing' | 'done';
@@ -20,6 +20,7 @@ export interface Task {
     dependsOn?: string[];
     /** @deprecated Use dependsOn instead */
     dependencies?: string[];
+    resources?: { title: string; url: string }[];
 }
 
 interface TaskCardProps {
@@ -187,6 +188,33 @@ export function TaskCard({
                         Size: {task.estimate}
                     </div>
                 </div>
+
+                {/* Resources */}
+                {task.resources && task.resources.length > 0 && (
+                    <div className="flex flex-col gap-1.5 pt-1 border-t border-white/10 dark:border-white/5">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                            {tTask('resources')}
+                        </span>
+                        {task.resources.map((res, i) => (
+                            <a
+                                key={i}
+                                href={res.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="group/link flex items-center gap-1.5 text-[11px] text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors truncate"
+                            >
+                                <ExternalLink
+                                    size={10}
+                                    className="shrink-0 opacity-60 group-hover/link:opacity-100"
+                                />
+                                <span className="truncate underline underline-offset-2 decoration-blue-300/40 group-hover/link:decoration-blue-400">
+                                    {res.title}
+                                </span>
+                            </a>
+                        ))}
+                    </div>
+                )}
             </div>
         </motion.div>
     );
