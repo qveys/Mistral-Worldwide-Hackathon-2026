@@ -29,10 +29,10 @@ Pour le MVP 48h, l'authentification est **minimale** :
 
 Le système distingue deux types d'accès par projet :
 
-| Rôle | Description | Permissions |
-| ---- | ------------ | ------------ |
+| Rôle         | Description                        | Permissions                                        |
+| ------------ | ---------------------------------- | -------------------------------------------------- |
 | **Créateur** | Utilisateur à l'origine du projet. | Création, modification, révision, export, partage. |
-| **Lecteur** | Accès via lien partagé. | Vue read-only de la roadmap et des tâches. |
+| **Lecteur**  | Accès via lien partagé.            | Vue read-only de la roadmap et des tâches.         |
 
 ## 🔗 Conditionnement des Tâches
 
@@ -43,7 +43,7 @@ Le **conditionnement des tâches** gère les dépendances, prérequis et ordre d
 Chaque tâche peut déclarer des **prérequis** via le champ `dependsOn` :
 
 - **Dépendance :** une tâche B ne peut commencer qu'une fois la tâche A terminée.
-- **Blocage :** une tâche est *bloquée* tant que ses dépendances ne sont pas `done`.
+- **Blocage :** une tâche est _bloquée_ tant que ses dépendances ne sont pas `done`.
 - **Ordre topologique :** la timeline respecte le graphe de dépendances.
 
 ### Extraction par IA (Mistral)
@@ -63,7 +63,7 @@ L'IA extrait les dépendances implicites du brain dump :
 ## 🛠️ Stack Technique & Flux
 
 1. **Frontend (Next.js)** → Utilisateur parle ou saisit du texte.
-2. **ElevenLabs WebSocket** → Transcription audio en temps réel.
+2. **Voxtral WebSocket** → Transcription audio en temps réel.
 3. **Backend (Express)** → `POST /structure` : envoi du texte à AWS Bedrock (Mistral Large).
 4. **Mistral** → Génère JSON structuré (objectives, tasks avec `dependsOn`, timeline).
 5. **Zod** → Validation du schéma, détection de cycles.

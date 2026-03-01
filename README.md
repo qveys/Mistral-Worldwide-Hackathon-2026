@@ -5,7 +5,7 @@ Built for the **Mistral Worldwide Hackathon 2026**.
 
 ## ✨ Features
 
-- 🎤 **Voice-First** — speak your mind, watch ideas appear instantly (ElevenLabs WebSocket STT)
+- 🎤 **Voice-First** — speak your mind, watch ideas appear instantly (Voxtral WebSocket STT)
 - 🧠 **AI Structuring** — Mistral Large organizes your dump into a JSON roadmap (AWS Bedrock)
 - 📋 **Priority Matrix** — drag & drop tasks by urgency/importance
 - 🗺️ **Visual Roadmap** — clean vertical timeline
@@ -14,21 +14,22 @@ Built for the **Mistral Worldwide Hackathon 2026**.
 
 ## 🛠️ Tech Stack
 
-| Layer | Tech |
-|-------|------|
-| Frontend | Next.js 15 (App Router) + TailwindCSS + Framer Motion |
-| Backend | Node.js / Express (TypeScript) |
-| AI | AWS Bedrock → Mistral Large (`mistral.mistral-large-2402-v1:0`) |
-| Voice | ElevenLabs WebSocket SDK |
-| Infra | AWS Amplify Hosting, Lambda, CloudWatch |
-| Validation | Zod |
+| Layer      | Tech                                                            |
+| ---------- | --------------------------------------------------------------- |
+| Frontend   | Next.js 16 (App Router) + TailwindCSS + Framer Motion           |
+| Backend    | Node.js / Express (TypeScript)                                  |
+| AI         | AWS Bedrock → Mistral Large (`mistral.mistral-large-2402-v1:0`) |
+| Voice      | Voxtral WebSocket SDK                                           |
+| Infra      | AWS Amplify Hosting, Lambda, CloudWatch                         |
+| Validation | Zod                                                             |
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js v18+
 - AWS Account with Bedrock access (Mistral Large enabled)
-- ElevenLabs API Key
+- Voxtral API Key
 
 ### Setup
 
@@ -43,7 +44,7 @@ npm run dev                  # http://localhost:3000
 ### Environment Variables
 
 ```env
-ELEVENLABS_API_KEY=...
+MISTRAL_API_KEY=...
 AWS_REGION=eu-west-1
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
@@ -82,7 +83,7 @@ AWS_SECRET_ACCESS_KEY=...
 ├── src/
 │   ├── app/             # Next.js App Router pages
 │   ├── components/      # Atomic UI components
-│   ├── hooks/           # useElevenLabs, useBedrock, ...
+│   ├── hooks/           # useVoxtral, useBedrock, ...
 │   └── lib/             # bedrock.ts, schema.ts, ...
 └── backend/             # Express API (TypeScript)
     ├── routes/
@@ -93,17 +94,61 @@ AWS_SECRET_ACCESS_KEY=...
 
 ```jsonc
 {
-  "projectId": "string",
-  "title": "string",
-  "createdAt": "ISO timestamp",
-  "brainDump": "string",
-  "objectives": [{ "id": "string", "text": "string", "priority": "High|Med|Low" }],
-  "tasks": [{
-    "id": "string", "text": "string", "objectiveId": "string",
-    "status": "backlog|doing|done", "estimate": "S|M|L", "priority": "High|Med|Low"
-  }],
-  "timeline": [{ "taskId": "string", "day": "string", "slot": "AM|PM" }],
-  "revisionHistory": [{ "timestamp": "string", "patch": "json-patch" }]
+    "projectId": "179b1942-7527-4968-9ca5-02f14dfcce96",
+    "title": "Organisation travail et sport",
+    "createdAt": "2026-02-28T20:23:13.000Z",
+    "brainDump": "Je veux aller faire du sport mais avant ça j'ai du travail",
+    "objectives": [
+        {
+            "id": "obj-1",
+            "text": "Terminer le travail en cours",
+            "priority": "high",
+        },
+        {
+            "id": "obj-2",
+            "text": "Aller faire du sport",
+            "priority": "medium",
+        },
+    ],
+    "tasks": [
+        {
+            "id": "task-1",
+            "title": "Identifier les tâches de travail à compléter",
+            "objectiveId": "obj-1",
+            "status": "backlog",
+            "estimate": "S",
+            "priority": "high",
+            "dependsOn": [],
+        },
+        {
+            "id": "task-2",
+            "title": "Réaliser le travail prioritaire",
+            "objectiveId": "obj-1",
+            "status": "backlog",
+            "estimate": "M",
+            "priority": "high",
+            "dependsOn": ["task-1"],
+        },
+        {
+            "id": "task-3",
+            "title": "Préparer les affaires de sport",
+            "objectiveId": "obj-2",
+            "status": "backlog",
+            "estimate": "S",
+            "priority": "medium",
+            "dependsOn": [],
+        },
+        {
+            "id": "task-4",
+            "title": "Aller à la salle de sport",
+            "objectiveId": "obj-2",
+            "status": "backlog",
+            "estimate": "M",
+            "priority": "medium",
+            "dependsOn": ["task-2", "task-3"],
+        },
+    ],
+    "revisionHistory": [],
 }
 ```
 
@@ -111,25 +156,25 @@ AWS_SECRET_ACCESS_KEY=...
 
 ```bash
 # 1. Create a PRP for the next feature
-/create-prp Implement real-time ElevenLabs transcription
+/create-prp Implement real-time Voxtral transcription
 
 # 2. Explore codebase, plan & implement
-/explore-and-plan PRPs/elevenlabs-transcription.md
+/explore-and-plan PRPs/Voxtral-transcription.md
 ```
 
 See `PRPs/README.md` for the full PRP workflow.
 
 ## 📜 API Endpoints
 
-| Endpoint | Role |
-|----------|------|
-| `POST /transcribe` | Audio → text (ElevenLabs) |
-| `POST /structure` | Text → structured JSON (Bedrock) |
-| `POST /revise` | Patch existing plan (Bedrock) |
-| `GET /project/:id` | Retrieve saved project |
+| Endpoint           | Role                             |
+| ------------------ | -------------------------------- |
+| `POST /transcribe` | Audio → text (Voxtral)           |
+| `POST /structure`  | Text → structured JSON (Bedrock) |
+| `POST /revise`     | Patch existing plan (Bedrock)    |
+| `GET /project/:id` | Retrieve saved project           |
 
 ## 🧑‍💻 Team (48h Hackathon)
 
 - **Dev 1** — Frontend (WebAudio, Timeline/Roadmap UI)
 - **Dev 2** — Backend (API Gateway, Lambda, Auth)
-- **Dev 3** — AI (Prompts, JSON schema, ElevenLabs loop)
+- **Dev 3** — AI (Prompts, JSON schema, Voxtral loop)

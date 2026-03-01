@@ -4,16 +4,16 @@ Un **PRP (Product Requirement Prompt)** est le packet minimum qu'un agent IA a b
 
 ## Différence avec un PRD classique
 
-| PRD | PRP |
-|-----|-----|
-| Décrit **quoi** | Décrit **quoi + comment** |
-| Pour les humains | Optimisé pour les agents IA |
-| Descriptions vagues | Chemins de fichiers exacts |
+| PRD                 | PRP                         |
+| ------------------- | --------------------------- |
+| Décrit **quoi**     | Décrit **quoi + comment**   |
+| Pour les humains    | Optimisé pour les agents IA |
+| Descriptions vagues | Chemins de fichiers exacts  |
 
 ## Les 3 couches d'un PRP
 
 1. **Contexte** — chemins de fichiers, stack, JSON schema, env vars
-2. **Implémentation** — endpoints, prompt Mistral, flow ElevenLabs, composants
+2. **Implémentation** — endpoints, prompt Mistral, flow Voxtral, composants
 3. **Validation** — checklist testable + anti-patterns à éviter
 
 ## Workflow Vibe Coding
@@ -61,7 +61,7 @@ Un **PRP (Product Requirement Prompt)** est le packet minimum qu'un agent IA a b
 
 ```bash
 # Dans Antigravity / Claude Code :
-/create-prp Ajouter la transcription ElevenLabs en temps réel
+/create-prp Ajouter la transcription Voxtral en temps réel
 /create-prp Endpoint POST /structure avec validation Zod
 /create-prp Composant PriorityMatrix drag-and-drop
 ```
