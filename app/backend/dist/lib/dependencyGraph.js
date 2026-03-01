@@ -8,9 +8,10 @@ export function hasCycle(tasks) {
     const BLACK = 2; // fully processed
     const color = new Map();
     const adj = new Map();
+    const validIds = new Set(tasks.map((task) => task.id));
     for (const task of tasks) {
         color.set(task.id, WHITE);
-        adj.set(task.id, task.dependsOn.filter((dep) => tasks.some((t) => t.id === dep)));
+        adj.set(task.id, task.dependsOn.filter((dep) => validIds.has(dep)));
     }
     function dfs(nodeId) {
         color.set(nodeId, GRAY);

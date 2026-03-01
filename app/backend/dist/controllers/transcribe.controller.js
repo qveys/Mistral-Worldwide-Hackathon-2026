@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { logger } from '../lib/logger.js';
 import { TranscriptionWsEventSchema } from '../lib/schema.js';
 import { VoxtralService } from '../services/voxtral.service.js';

@@ -28,7 +28,7 @@ export function roadmapToMarkdown(roadmap: Roadmap): string {
     lines.push('## Objectifs');
     lines.push('');
     for (const obj of roadmap.objectives) {
-        const badge = obj.priority === 'high' ? '🔴' : obj.priority === 'medium' ? '🟡' : '🟡';
+        const badge = obj.priority === 'high' ? '🔴' : obj.priority === 'medium' ? '🟡' : '🔵';
         lines.push(`- ${badge} **${obj.text}** (${obj.priority})`);
     }
     lines.push('');
