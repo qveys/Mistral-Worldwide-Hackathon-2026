@@ -1,12 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from '@/i18n/navigation';
-import { Navbar } from '@/components/home/Navbar';
-import { Hero } from '@/components/home/Hero';
-import { FeaturesGrid } from '@/components/home/FeaturesGrid';
 import { QuickStart } from '@/components/brain-dump/QuickStart';
-import { useAuth } from '@/lib/AuthContext';
+import { FeaturesGrid } from '@/components/home/FeaturesGrid';
+import { Hero } from '@/components/home/Hero';
+import { Navbar } from '@/components/home/Navbar';
 
 export function HomePageContent() {
   const router = useRouter();

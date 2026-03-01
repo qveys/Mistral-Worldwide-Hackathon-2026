@@ -1,10 +1,10 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useVoxtralSTT } from '@/lib/useVoxtralSTT';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CalendarDays, Eraser, RefreshCcw, Send, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { LoadingOrchestrator } from '../ui/LoadingOrchestrator';
 import { MicButton, MicButtonState } from '../ui/MicButton';
@@ -14,14 +14,16 @@ interface BrainDumpInputProps {
     onGenerate: (text: string, includePlanning: boolean) => void;
     isProcessing?: boolean;
     className?: string;
+    initialText?: string;
 }
 
 export function BrainDumpInput({
     onGenerate,
     isProcessing = false,
     className,
+    initialText = '',
 }: BrainDumpInputProps) {
-    const [manualText, setManualText] = useState('');
+    const [manualText, setManualText] = useState(initialText);
     const [isEditing, setIsEditing] = useState(false);
     const [manualFallback, setManualFallback] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
@@ -185,7 +187,9 @@ export function BrainDumpInput({
                                         onChange={(e) => setManualText(e.target.value)}
                                         onFocus={() => setIsEditing(true)}
                                         placeholder=""
-                                        aria-label={isFallback ? t('ariaManualInput') : t('ariaIdeaInput')}
+                                        aria-label={
+                                            isFallback ? t('ariaManualInput') : t('ariaIdeaInput')
+                                        }
                                         className="w-full min-h-[140px] bg-transparent border-none focus:ring-0 text-lg text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 resize-none py-1"
                                     />
 

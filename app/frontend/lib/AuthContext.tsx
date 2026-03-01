@@ -15,14 +15,11 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    // Always start with false to match server render and avoid hydration mismatch.
-    // Sync from localStorage in useEffect after mount.
+    // Start false to match SSR, then hydrate from localStorage after mount
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        queueMicrotask(() => {
-            setIsLoggedIn(!!localStorage.getItem(AUTH_TOKEN_KEY));
-        });
+        setIsLoggedIn(!!localStorage.getItem(AUTH_TOKEN_KEY));
     }, []);
 
     const login = useCallback((token: string) => {
