@@ -89,7 +89,7 @@ export class BedrockService {
   }
 
   async generateRoadmap(transcript: string): Promise<any> {
-    const prompt = this.buildRoadmapPrompt(transcript);
+    const prompt = buildStructurePrompt(transcript);
     return this.invokeWithRetry(prompt, 'generateRoadmap', (body) => this.validateRoadmapResponse(body));
   }
 
@@ -240,17 +240,6 @@ export class BedrockService {
       MAX_VALIDATION_RETRIES + 1,
       lastZodError!
     );
-  }
-
-  private buildRoadmapPrompt(transcript: string): string {
-    return `${buildStructurePrompt(transcript)}
-
-Ajoute aussi l'objet "metadata" avec:
-{
-  "processingTimeMs": number,
-  "modelUsed": "string",
-  "confidenceScore": number (0-1)
-}`;
   }
 
   private validateRoadmapResponse(response: unknown): any {
