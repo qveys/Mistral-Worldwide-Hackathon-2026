@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export function PreferencesSection() {
   return (
-    <div className="bg-[#161618] border border-zinc-800/50 rounded-[2.5rem] p-8 lg:p-10 space-y-8">
+    <div className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700/50 rounded-[2.5rem] p-8 lg:p-10 space-y-8">
       <div className="flex items-center gap-3 border-b border-zinc-800/50 pb-6">
         <Layout size={18} className="text-blue-500" />
         <h3 className="text-sm font-bold uppercase tracking-widest text-white">Console Interface</h3>
