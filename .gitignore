@@ -160,6 +160,7 @@ Thumbs.db
 .*
 !.gitignore
 !.gitattributes
+!.dockerignore
 !.github/
 !.github/**
 /CUsersu248563.claudepluginsmarketplacesclaude-plugins-official/

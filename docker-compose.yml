@@ -1,31 +1,37 @@
 services:
     frontend:
         build:
-            context: app/frontend
+            context: .
             dockerfile: Dockerfile
+            args:
+                APP: frontend
+                PORT: "3000"
         ports:
             - '3000:3000'
         volumes:
-            - ./app/frontend:/app
-            - /app/node_modules
-            - /app/.next
+            - ./app/frontend:/app/app/frontend
+            - /app/app/frontend/node_modules
+            - /app/app/frontend/.next
         environment:
             - NODE_ENV=development
-        command: npm run dev
+        command: npm run dev -w frontend
         restart: unless-stopped
 
     backend:
         build:
-            context: app/backend
+            context: .
             dockerfile: Dockerfile
+            args:
+                APP: backend
+                PORT: "4000"
         ports:
             - '4000:4000'
         volumes:
-            - ./app/backend:/app
-            - /app/node_modules
+            - ./app/backend:/app/app/backend
+            - /app/app/backend/node_modules
         env_file:
             - ./app/backend/.env
         environment:
             - PORT=4000
-        command: npm run dev
+        command: npm run dev -w backend
         restart: unless-stopped
