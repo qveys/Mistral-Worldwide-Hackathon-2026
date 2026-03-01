@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { getRequiredEnv } from '../lib/env.js';
 import { logger } from '../lib/logger.js';
 
 const LOCAL_DATA_DIR = path.resolve(process.cwd(), 'data');
