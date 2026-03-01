@@ -1,45 +1,44 @@
-import { mkdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import * as os from 'node:os';
 import * as path from 'node:path';
+import { assertValidProjectId } from '../lib/projectId.js';
+import { HttpError } from '../lib/httpError.js';
 
-const PROJECT_ID_REGEX = /^[A-Za-z0-9_-]+$/;
-const PROJECTS_DIR = process.env.PROJECTS_DIR ?? 'data/projects';
-export type Roadmap = Record<string, unknown>;
+const PROJECTS_DIR = process.env.STORAGE_DIR || process.env.PROJECTS_DIR || path.join(os.tmpdir(), 'projects');
+const PROJECTS_DIR_RESOLVED = path.resolve(PROJECTS_DIR);
 
 async function ensureDir(): Promise<void> {
   await mkdir(PROJECTS_DIR, { recursive: true });
 }
 
-function validateProjectId(projectId: string): void {
-  if (!PROJECT_ID_REGEX.test(projectId)) {
-    throw new Error('Invalid projectId format');
-  }
-}
-
 function getProjectFilePath(projectId: string): string {
-  validateProjectId(projectId);
-  return path.join(PROJECTS_DIR, `${projectId}.json`);
+  const safeProjectId = assertValidProjectId(projectId);
+  const candidatePath = path.join(PROJECTS_DIR_RESOLVED, `${safeProjectId}.json`);
+  const resolvedPath = path.resolve(candidatePath);
+
+  if (!resolvedPath.startsWith(`${PROJECTS_DIR_RESOLVED}${path.sep}`)) {
+    throw new HttpError('Invalid project path', 400);
+  }
+
+  return resolvedPath;
 }
 
-export async function saveProject(projectId: string, roadmap: Roadmap): Promise<void> {
+export async function saveProject(projectId: string, payload: unknown): Promise<void> {
   await ensureDir();
   const filePath = getProjectFilePath(projectId);
-  await writeFile(filePath, JSON.stringify(roadmap, null, 2), 'utf-8');
+  await writeFile(filePath, JSON.stringify(payload, null, 2), 'utf-8');
 }
 
-export async function getProject(projectId: string): Promise<Roadmap | null> {
+export async function getProject(projectId: string): Promise<unknown | null> {
   const filePath = getProjectFilePath(projectId);
   try {
     const data = await readFile(filePath, 'utf-8');
-    return JSON.parse(data) as Roadmap;
+    return JSON.parse(data) as unknown;
   } catch (err: unknown) {
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'code' in err &&
-      (err as { code?: string }).code === 'ENOENT'
-    ) {
+    const fsError = err as NodeJS.ErrnoException;
+    if (fsError.code === 'ENOENT') {
       return null;
     }
-    throw err;
+    throw fsError;
   }
 }

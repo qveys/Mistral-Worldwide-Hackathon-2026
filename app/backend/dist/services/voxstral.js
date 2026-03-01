@@ -1,33 +1,53 @@
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-const WS = require('ws');
+import WebSocket, { WebSocketServer } from 'ws';
 /**
  * Voxstral WebSocket Service for real-time voice transcription
  * This service handles WebSocket connections for voice input and provides transcription events
  */
 export class VoxstralService extends EventEmitter {
     wss;
+    server;
     activeConnections;
     transcriptionSessions;
     constructor(server) {
         super();
+        this.server = server;
         this.activeConnections = new Map();
         this.transcriptionSessions = new Map();
-        // Initialize WebSocket server
-        this.wss = new WS.Server({ server });
+        this.initWebSocketServer();
+        this.log('info', 'Voxstral WebSocket service initialized');
+    }
+    log(level, message, extra = {}) {
+        const entry = {
+            timestamp: new Date().toISOString(),
+            level,
+            service: 'voxstral',
+            message,
+            ...extra,
+        };
+        if (level === 'error') {
+            console.error(JSON.stringify(entry));
+        }
+        else {
+            console.log(JSON.stringify(entry));
+        }
+    }
+    initWebSocketServer() {
+        this.wss = new WebSocketServer({ server: this.server });
         this.wss.on('connection', (ws) => {
             const connectionId = uuidv4();
             this.activeConnections.set(connectionId, ws);
-            console.log(`New Voxstral connection: ${connectionId}`);
+            this.log('info', 'New Voxstral connection', { connectionId });
             ws.on('message', (message) => {
-                this.handleMessage(connectionId, message);
+                this.handleMessage(connectionId, message.toString());
             });
             ws.on('close', () => {
-                this.cleanupConnection(connectionId);
+                this.handleDisconnect(connectionId);
             });
             ws.on('error', (error) => {
-                console.error(`Voxstral connection error: ${connectionId}`, error);
-                this.cleanupConnection(connectionId);
+                this.log('error', 'Voxstral connection error', { connectionId, error: String(error) });
+                this.handleDisconnect(connectionId);
             });
             // Send connection acknowledgment
             ws.send(JSON.stringify({
@@ -36,7 +56,11 @@ export class VoxstralService extends EventEmitter {
                 timestamp: Date.now()
             }));
         });
-        console.log('Voxstral WebSocket service initialized');
+    }
+    handleDisconnect(connectionId) {
+        this.log('info', 'WebSocket disconnected, cleaning up server state', { connectionId });
+        this.cleanupConnection(connectionId);
+        this.emit('disconnected', { connectionId });
     }
     handleMessage(connectionId, message) {
         try {
@@ -52,11 +76,11 @@ export class VoxstralService extends EventEmitter {
                     this.endTranscriptionSession(connectionId);
                     break;
                 default:
-                    console.warn(`Unknown message type: ${data.type}`);
+                    this.log('warn', 'Unknown message type', { type: data.type });
             }
         }
         catch (error) {
-            console.error('Error processing Voxstral message:', error);
+            this.log('error', 'Error processing Voxstral message', { error: String(error) });
         }
     }
     startTranscriptionSession(connectionId, userId) {
@@ -71,7 +95,7 @@ export class VoxstralService extends EventEmitter {
             transcript: '',
             startTime: Date.now()
         });
-        console.log(`Started transcription session: ${sessionId} for user: ${userId}`);
+        this.log('info', 'Started transcription session', { sessionId, userId });
         ws.send(JSON.stringify({
             type: 'transcription_started',
             sessionId,
@@ -79,18 +103,14 @@ export class VoxstralService extends EventEmitter {
         }));
     }
     processAudioData(connectionId, audioData) {
-        // Find the active session for this connection
         const session = Array.from(this.transcriptionSessions.values()).find(s => s.connectionId === connectionId);
         if (!session) {
-            console.warn(`No active session for connection: ${connectionId}`);
+            this.log('warn', 'No active session for connection', { connectionId });
             return;
         }
         // TODO: Implement actual Voxstral audio processing
-        // For now, we'll simulate transcription
         const simulatedTranscript = this.simulateVoxstralTranscription(audioData);
-        // Update the session transcript
         session.transcript += simulatedTranscript + ' ';
-        // Emit transcription event
         this.emit('transcription_update', {
             sessionId: session.sessionId,
             userId: session.userId,
@@ -98,7 +118,6 @@ export class VoxstralService extends EventEmitter {
             isFinal: false,
             timestamp: Date.now()
         });
-        // Send interim result to client
         const ws = this.activeConnections.get(connectionId);
         if (ws) {
             ws.send(JSON.stringify({
@@ -111,10 +130,7 @@ export class VoxstralService extends EventEmitter {
         }
     }
     simulateVoxstralTranscription(audioData) {
-        // Simulate Voxstral transcription based on audio data length
-        // In a real implementation, this would call the Voxstral API
         const audioLength = audioData.length;
-        // Simple simulation: return placeholder text based on audio length
         if (audioLength < 100)
             return '';
         if (audioLength < 500)
@@ -128,11 +144,10 @@ export class VoxstralService extends EventEmitter {
     endTranscriptionSession(connectionId) {
         const session = Array.from(this.transcriptionSessions.values()).find(s => s.connectionId === connectionId);
         if (!session) {
-            console.warn(`No active session for connection: ${connectionId}`);
+            this.log('warn', 'No active session for connection', { connectionId });
             return;
         }
-        console.log(`Ending transcription session: ${session.sessionId}`);
-        // Emit final transcription event
+        this.log('info', 'Ending transcription session', { sessionId: session.sessionId });
         this.emit('transcription_complete', {
             sessionId: session.sessionId,
             userId: session.userId,
@@ -141,7 +156,6 @@ export class VoxstralService extends EventEmitter {
             timestamp: Date.now(),
             durationMs: Date.now() - session.startTime
         });
-        // Send final result to client
         const ws = this.activeConnections.get(connectionId);
         if (ws) {
             ws.send(JSON.stringify({
@@ -153,12 +167,10 @@ export class VoxstralService extends EventEmitter {
                 timestamp: Date.now()
             }));
         }
-        // Clean up the session
         this.transcriptionSessions.delete(session.sessionId);
     }
     cleanupConnection(connectionId) {
-        console.log(`Cleaning up connection: ${connectionId}`);
-        // Clean up any active sessions for this connection
+        this.log('info', 'Cleaning up connection', { connectionId });
         const sessionsToClean = Array.from(this.transcriptionSessions.entries())
             .filter(([_, session]) => session.connectionId === connectionId)
             .map(([sessionId]) => sessionId);
@@ -167,25 +179,16 @@ export class VoxstralService extends EventEmitter {
         });
         this.activeConnections.delete(connectionId);
     }
-    /**
-     * Get active session count
-     */
     getActiveSessionCount() {
         return this.transcriptionSessions.size;
     }
-    /**
-     * Get active connection count
-     */
     getActiveConnectionCount() {
         return this.activeConnections.size;
     }
-    /**
-     * Broadcast message to all connected clients
-     */
     broadcast(message) {
         const payload = JSON.stringify(message);
         this.activeConnections.forEach((ws) => {
-            if (ws.readyState === WS.OPEN) {
+            if (ws.readyState === WebSocket.OPEN) {
                 ws.send(payload);
             }
         });
