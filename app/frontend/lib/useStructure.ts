@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { API_URL } from './api';
+import { API_URL, getAuthHeaders } from './api';
 import type { Roadmap } from './types';
 
 interface UseStructureReturn {
@@ -46,7 +46,7 @@ export function useStructure(): UseStructureReturn {
             try {
                 const response = await fetch(`${API_URL}/structure`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text, includePlanning }),
                     signal: controller.signal,
                 });
@@ -86,9 +86,18 @@ export function useStructure(): UseStructureReturn {
 
         try {
             const response = await fetch(`${API_URL}/project/${projectId}`, {
+                headers: getAuthHeaders(),
                 signal: controller.signal,
             });
 
+            if (response.status === 401) {
+                setError('Authentication required');
+                return null;
+            }
+            if (response.status === 403) {
+                setError('Access denied');
+                return null;
+            }
             if (response.status === 404) {
                 setError('Project not found');
                 return null;
