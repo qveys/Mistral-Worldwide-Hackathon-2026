@@ -30,7 +30,8 @@
     "themeLight": "Switch to light mode",
     "themeDark": "Switch to dark mode",
     "settings": "Settings",
-    "exit": "Exit"
+    "exit": "Exit",
+    "logout": "Log out"
   },
   "errors": {
     "systemInterrupt": "System Interrupt / Error {code}",
