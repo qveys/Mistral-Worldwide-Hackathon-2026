@@ -13,6 +13,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   activity: 'Activity',
   timeline: 'Timeline',
   settings: 'Settings',
+  new: 'New Roadmap',
 };
 
 export function DashboardBreadcrumb() {

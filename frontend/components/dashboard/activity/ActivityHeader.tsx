@@ -1,17 +1,8 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { useDashboardTheme } from '@/lib/DashboardThemeContext';
+import { DashboardPageHeader } from '@/components/dashboard/DashboardPageHeader';
 
 export function ActivityHeader() {
-  const { isDarkMode } = useDashboardTheme();
-
-  return (
-    <div className="space-y-2">
-      <h2 className={cn("text-4xl lg:text-5xl font-medium tracking-tight leading-tight", isDarkMode ? "text-white" : "text-slate-900")}>
-        System <span className={cn("italic font-serif text-3xl lg:text-4xl", isDarkMode ? "text-zinc-600" : "text-slate-600")}>Activity</span>
-      </h2>
-    </div>
-  );
+  return <DashboardPageHeader title="Activity" accent="Stream" />;
 }
