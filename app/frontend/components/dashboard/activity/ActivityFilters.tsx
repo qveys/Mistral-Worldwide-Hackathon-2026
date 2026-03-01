@@ -16,13 +16,13 @@ export function ActivityFilters() {
       isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"
     )}>
       <div className="relative w-full sm:w-72 group">
-        <Search size={14} className={cn("absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-violet-400 transition-colors", isDarkMode ? "text-zinc-600" : "text-slate-500")} />
+        <Search size={14} className={cn("absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#536dfe] transition-colors", isDarkMode ? "text-zinc-600" : "text-slate-500")} />
         <input 
           type="text" 
           placeholder={t('filterEvents')} 
           className={cn(
             "w-full rounded-xl py-2.5 pl-10 pr-4 text-xs outline-none transition-all",
-            isDarkMode ? "bg-zinc-900/50 border border-zinc-800 focus:border-violet-500/50 text-zinc-300" : "bg-slate-50 border border-slate-300 focus:border-violet-500/50 text-slate-800"
+            isDarkMode ? "bg-zinc-900/50 border border-zinc-800 focus:border-[#536dfe]/50 text-zinc-300" : "bg-slate-50 border border-slate-300 focus:border-[#536dfe]/50 text-slate-800"
           )}
         />
       </div>

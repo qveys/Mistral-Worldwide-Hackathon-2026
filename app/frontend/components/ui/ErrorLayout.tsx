@@ -60,12 +60,12 @@ export function ErrorLayout({ code, title, message, icon }: ErrorLayoutProps) {
           <Button 
             onClick={() => window.history.back()}
             variant="ghost" 
-            className="w-full sm:w-auto h-12 border border-zinc-800 hover:bg-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+            className="w-full sm:w-auto h-12 border border-zinc-800 hover:bg-zinc-800 rounded-full text-[10px] font-bold uppercase tracking-widest"
           >
             <MoveLeft size={14} className="mr-2" /> {tCommon('back')}
           </Button>
           <Link href="/" className="w-full sm:w-auto">
-            <Button className="w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-xl px-8 text-[10px] font-bold uppercase tracking-widest shadow-xl">
+            <Button className="w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-full px-8 text-[10px] font-bold uppercase tracking-widest shadow-xl">
               <Home size={14} className="mr-2" /> {tCommon('returnHome')}
             </Button>
           </Link>

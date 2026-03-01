@@ -22,7 +22,7 @@ export interface ActivityItem {
 }
 
 const icons = {
-  commit: { icon: GitBranch, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+  commit: { icon: GitBranch, color: 'text-[#536dfe]', bg: 'bg-[#536dfe]/10' },
   comment: { icon: MessageSquare, color: 'text-blue-400', bg: 'bg-blue-500/10' },
   status: { icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
   neural: { icon: Zap, color: 'text-amber-400', bg: 'bg-amber-500/10' },
@@ -59,7 +59,7 @@ export function ActivityFeed({ activities }: { activities: ActivityItem[] }) {
                   <Config.icon size={20} />
                 </div>
                 <div className="space-y-1">
-                  <p className={cn("text-sm font-medium group-hover:text-violet-400 transition-colors leading-tight", isDarkMode ? "text-zinc-200" : "text-slate-800")}>
+                  <p className={cn("text-sm font-medium group-hover:text-[#536dfe] transition-colors leading-tight", isDarkMode ? "text-zinc-200" : "text-slate-800")}>
                     {t(item.msgKey)}
                   </p>
                   <div className={cn("flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest", isDarkMode ? "text-zinc-600" : "text-slate-600")}>
@@ -71,7 +71,7 @@ export function ActivityFeed({ activities }: { activities: ActivityItem[] }) {
               </div>
               <div className="flex items-center gap-4">
                 <span className={cn("text-[10px] font-mono", isDarkMode ? "text-zinc-700" : "text-slate-500")}>{t(item.timeKey)}</span>
-                <ArrowRight size={14} className={cn("transition-all", isDarkMode ? "text-zinc-800 group-hover:text-white" : "text-slate-400 group-hover:text-violet-500")} />
+                <ArrowRight size={14} className={cn("transition-all", isDarkMode ? "text-zinc-800 group-hover:text-white" : "text-slate-400 group-hover:text-[#536dfe]")} />
               </div>
             </div>
           );

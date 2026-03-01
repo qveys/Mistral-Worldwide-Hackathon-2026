@@ -114,7 +114,7 @@ export default function ProjectPage() {
           </h2>
           <p className="text-slate-600 dark:text-zinc-500 italic">&quot;{localizedError}&quot;</p>
           <Link href="/dashboard" className="block">
-            <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold uppercase text-xs h-12 rounded-xl">
+            <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold uppercase text-xs h-12 rounded-full">
               {t('returnToConsole')}
             </Button>
           </Link>
@@ -259,7 +259,7 @@ export default function ProjectPage() {
                   </h3>
                   <Button
                     onClick={() => handleRevision(t('generatePlanningPrompt'))}
-                    className="bg-amber-500 hover:bg-amber-600 text-black font-bold uppercase text-[10px] tracking-widest px-8 h-12 rounded-xl"
+                    className="bg-amber-500 hover:bg-amber-600 text-black font-bold uppercase text-[10px] tracking-widest px-8 h-12 rounded-full"
                   >
                     {t('initializeTimeline')}
                   </Button>

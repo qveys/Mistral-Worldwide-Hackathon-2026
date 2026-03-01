@@ -18,7 +18,7 @@ export function ConsoleHero() {
       isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"
     )}>
       <div className="relative z-10 space-y-4">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-black uppercase tracking-widest w-fit">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#536dfe]/10 border border-[#536dfe]/20 text-[#536dfe] text-[10px] font-black uppercase tracking-widest w-fit">
           <Activity size={12} className="animate-pulse" />
           {t('neuralSync')}
         </div>
@@ -44,7 +44,7 @@ export function ConsoleHero() {
       <div className="relative z-10 flex items-center gap-4">
         <Link href="/dashboard/roadmaps/new">
           <Button className={cn(
-            "h-14 px-8 rounded-2xl font-bold transition-all group/btn",
+            "h-14 px-8 rounded-full font-bold transition-all group/btn",
             isDarkMode ? "bg-zinc-100 text-black hover:bg-white shadow-2xl shadow-white/5" : "bg-blue-500 text-white hover:bg-blue-600 shadow-lg"
           )}>
             <Mic size={18} className="mr-2 group-hover/btn:scale-110 transition-transform" />

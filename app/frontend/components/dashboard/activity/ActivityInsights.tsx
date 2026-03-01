@@ -16,7 +16,7 @@ export function ActivityInsights({ insights }: { insights: string[] }) {
       <div className="space-y-4">
         {insights.map((insight, i) => (
           <div key={i} className="flex gap-3 items-start">
-            <div className="mt-1 h-1.5 w-1.5 rounded-full bg-violet-500 flex-shrink-0" />
+            <div className="mt-1 h-1.5 w-1.5 rounded-full bg-[#536dfe] flex-shrink-0" />
             <p className={cn("text-[11px] leading-relaxed italic font-medium", isDarkMode ? "text-zinc-400" : "text-slate-600")}>{insight}</p>
           </div>
         ))}

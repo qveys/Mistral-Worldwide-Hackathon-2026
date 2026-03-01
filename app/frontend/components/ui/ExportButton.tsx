@@ -59,7 +59,7 @@ export function ExportButton({ markdown, data, filename = "roadmap", className }
     <div className={cn("relative inline-block", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
+        className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full font-semibold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
       >
         <Download size={18} />
         {t('export')}

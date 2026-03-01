@@ -63,7 +63,7 @@ export default function DashboardOverview() {
             <Link
               href="/dashboard/roadmaps"
               className={cn(
-                'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all',
+                'inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all',
                 isDarkMode
                   ? 'bg-blue-500/15 text-blue-400 border border-blue-500/40 hover:bg-blue-500/25 hover:border-blue-400/60'
                   : 'bg-blue-50 text-blue-600 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 shadow-sm'

@@ -22,7 +22,7 @@ export function ActivityHeatmap({ data, title = "Neural Activity", className }: 
     )}>
       <div className="flex justify-between items-center">
         <h3 className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{title}</h3>
-        <Badge className="bg-violet-500/10 text-violet-400 border-none text-[9px]">Live</Badge>
+        <Badge className="bg-[#536dfe]/10 text-[#536dfe] border-none text-[9px]">Live</Badge>
       </div>
       <div className="grid grid-cols-14 grid-rows-7 gap-1.5 h-36 w-full mt-4">
         {data.map((level, i) => (
@@ -31,9 +31,9 @@ export function ActivityHeatmap({ data, title = "Neural Activity", className }: 
             className={cn(
               "rounded-[2px] w-full h-full transition-colors duration-500",
               level === 0 ? (isDarkMode ? "bg-zinc-800/50" : "bg-slate-200") : 
-              level === 1 ? "bg-violet-900/40" : 
-              level === 2 ? "bg-violet-600/60" : 
-              "bg-violet-400"
+              level === 1 ? "bg-[#00b0ff]/40" : 
+              level === 2 ? "bg-[#536dfe]/60" : 
+              "bg-[#536dfe]"
             )} 
           />
         ))}

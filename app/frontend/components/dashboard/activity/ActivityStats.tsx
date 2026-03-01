@@ -12,7 +12,7 @@ export function ActivityStats() {
   const { isDarkMode } = useDashboardTheme();
   const t = useTranslations('dashboard');
   const stats = [
-    { labelKey: STAT_KEYS[0], value: '1,284', trend: '+12%', icon: Activity, color: 'text-violet-400' },
+    { labelKey: STAT_KEYS[0], value: '1,284', trend: '+12%', icon: Activity, color: 'text-[#536dfe]' },
     { labelKey: STAT_KEYS[1], value: '42ms', trend: '-2ms', icon: Zap, color: 'text-amber-400' },
     { labelKey: STAT_KEYS[2], value: '99.9%', trend: t('statusStable'), icon: Target, color: 'text-emerald-400' },
     { labelKey: STAT_KEYS[3], value: '48.2k', trend: '+15.8%', icon: BarChart3, color: 'text-blue-400' },

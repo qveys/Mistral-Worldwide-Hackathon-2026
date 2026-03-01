@@ -60,7 +60,7 @@ export const CaptureSection = ({
         <div className="flex flex-col items-center justify-center p-8 bg-blue-50 dark:bg-slate-800 rounded-[2.5rem] border-2 border-blue-200 dark:border-slate-600 shadow-lg dark:shadow-xl text-center gap-4 shadow-lg dark:shadow-none">
           <button 
             onClick={() => setIsBubbleVisible(true)} 
-            className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-2xl font-black uppercase italic shadow-xl hover:scale-105 transition-all"
+            className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-black rounded-full font-black uppercase italic shadow-xl hover:scale-105 transition-all"
           >
             Bulle Clarification
           </button>

@@ -114,6 +114,7 @@
     "chip5": "Étaler sur 6 mois"
   },
   "dashboard": {
+    "roadmaps": "Roadmaps",
     "neuralSync": "Synchronisation neurale : optimale",
     "designRoadmap": "Concevez votre prochaine<br></br><spanStyle>roadmap stratégique.</spanStyle>",
     "newBrainDump": "Nouveau Brain Dump",

@@ -64,7 +64,7 @@ export function TimelineControls({ zoomMode, onZoomModeChange }: TimelineControl
         )}>
           <Filter size={16} />
         </button>
-        <button className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white transition-all shadow-lg", isDarkMode ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/20" : "bg-blue-500 hover:bg-blue-600 shadow-blue-500/20")}>
+        <button className={cn("flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-white transition-all shadow-lg", isDarkMode ? "bg-blue-600 hover:bg-blue-500 shadow-blue-600/20" : "bg-blue-500 hover:bg-blue-600 shadow-blue-500/20")}>
           <Download size={14} /> {t('export')}
         </button>
       </div>

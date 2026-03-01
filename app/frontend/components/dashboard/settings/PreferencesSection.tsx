@@ -28,7 +28,7 @@ export function PreferencesSection() {
             </div>
             <button className={cn(
               "w-10 h-5 rounded-full transition-all relative",
-              pref.active ? "bg-violet-600 shadow-[0_0_10px_rgba(139,92,246,0.3)]" : "bg-slate-300 dark:bg-zinc-800"
+              pref.active ? "bg-[#536dfe] shadow-[0_0_10px_rgba(83,109,254,0.3)]" : "bg-slate-300 dark:bg-zinc-800"
             )}>
               <div className={cn(
                 "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",

@@ -15,7 +15,7 @@ export function SystemHealthSection() {
         {[
           { label: 'Neural Engine', status: 'Stable', icon: Server, color: 'text-emerald-500' },
           { label: 'Primary DB', status: 'Optimal', icon: Database, color: 'text-blue-500' },
-          { label: 'Security Unit', status: 'Active', icon: ShieldCheck, color: 'text-violet-500' },
+          { label: 'Security Unit', status: 'Active', icon: ShieldCheck, color: 'text-[#536dfe]' },
         ].map((sys, i) => (
           <div key={i} className="flex items-center justify-between p-4 bg-zinc-900/30 rounded-2xl border border-zinc-800/50">
             <div className="flex items-center gap-4">

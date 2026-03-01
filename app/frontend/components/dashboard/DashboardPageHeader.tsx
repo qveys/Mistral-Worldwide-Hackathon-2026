@@ -20,7 +20,7 @@ export function DashboardPageHeader({ title, accent }: DashboardPageHeaderProps)
       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={cn(
         "relative pl-6 border-l-2",
-        isDarkMode ? "border-violet-500/40" : "border-violet-500/50"
+        isDarkMode ? "border-[#536dfe]/40" : "border-[#536dfe]/50"
       )}
     >
       <h1
@@ -33,9 +33,7 @@ export function DashboardPageHeader({ title, accent }: DashboardPageHeaderProps)
         <span
           className={cn(
             "italic font-serif text-3xl lg:text-4xl xl:text-5xl",
-            isDarkMode
-              ? "bg-gradient-to-r from-violet-400 via-violet-500 to-violet-600 bg-clip-text text-transparent"
-              : "bg-gradient-to-r from-violet-600 via-violet-700 to-indigo-700 bg-clip-text text-transparent"
+            "bg-gradient-to-r from-[#00b0ff] to-[#536dfe] bg-clip-text text-transparent"
           )}
         >
           {accent}
