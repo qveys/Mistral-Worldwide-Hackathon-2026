@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { BedrockService } from '../services/bedrock.js';
-import { hasCycle, topologicalSort, validateReferentialIntegrity } from '../lib/graph.js';
+import { topologicalSort, validateReferentialIntegrity } from '../lib/graph.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
@@ -65,15 +65,16 @@ router.post('/revise', async (req, res) => {
       return;
     }
 
-    // Build adjacency list and check for cycles
+    // Build adjacency list as prerequisite -> dependents for topological sorting
     const adjacencyList = new Map<string, string[]>();
     for (const task of validatedResponse.revisedRoadmap) {
-      adjacencyList.set(task.id, task.dependsOn);
+      adjacencyList.set(task.id, []);
     }
 
-    if (hasCycle(adjacencyList)) {
-      res.status(400).json({ error: "Circular dependency detected in revised roadmap" });
-      return;
+    for (const task of validatedResponse.revisedRoadmap) {
+      for (const dependencyId of task.dependsOn) {
+        adjacencyList.get(dependencyId)!.push(task.id);
+      }
     }
 
     // Re-order using topological sort
@@ -84,9 +85,7 @@ router.post('/revise', async (req, res) => {
     }
 
     const taskMap = new Map(validatedResponse.revisedRoadmap.map(t => [t.id, t]));
-    const sortedRoadmap = sortedIds
-      .filter(id => taskMap.has(id))
-      .map(id => taskMap.get(id)!);
+    const sortedRoadmap = sortedIds.map(id => taskMap.get(id)!);
 
     res.json({
       revisedRoadmap: sortedRoadmap,
@@ -95,7 +94,7 @@ router.post('/revise', async (req, res) => {
   } catch (error) {
     console.error('Revise endpoint error:', error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Invalid request", details: error.errors });
+      res.status(400).json({ error: "Invalid request", details: error.issues });
     } else {
       res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
     }

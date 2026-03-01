@@ -4,23 +4,12 @@ declare const BedrockConfigSchema: z.ZodObject<{
     modelId: z.ZodDefault<z.ZodString>;
     maxTokens: z.ZodDefault<z.ZodNumber>;
     temperature: z.ZodDefault<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    region: string;
-    modelId: string;
-    maxTokens: number;
-    temperature: number;
-}, {
-    region?: string | undefined;
-    modelId?: string | undefined;
-    maxTokens?: number | undefined;
-    temperature?: number | undefined;
-}>;
+}, z.core.$strip>;
 export declare class BedrockService {
     private client;
     private config;
     constructor(config?: Partial<z.infer<typeof BedrockConfigSchema>>);
     generateRoadmap(transcript: string, userId: string): Promise<any>;
-    private buildRoadmapPrompt;
     private validateRoadmapResponse;
     generateRevision(roadmapId: string, instructions: string): Promise<any>;
     private buildRevisionPrompt;

@@ -1,5 +1,6 @@
 /**
- * Detect if a directed graph has a cycle using DFS
+ * Detect if a directed graph has a cycle using DFS.
+ * Expects adjacency as prerequisite -> dependent nodes.
  * @param adjacencyList - Map of node ID to array of dependent node IDs
  * @returns true if cycle exists
  */
@@ -34,7 +35,8 @@ export function hasCycle(adjacencyList: Map<string, string[]>): boolean {
 }
 
 /**
- * Topological sort using Kahn's algorithm
+ * Topological sort using Kahn's algorithm.
+ * Expects adjacency as prerequisite -> dependent nodes.
  * @returns sorted array of node IDs, or null if cycle exists
  */
 export function topologicalSort(adjacencyList: Map<string, string[]>): string[] | null {
@@ -58,7 +60,11 @@ export function topologicalSort(adjacencyList: Map<string, string[]>): string[] 
     const node = queue.shift()!;
     sorted.push(node);
     for (const neighbor of adjacencyList.get(node) || []) {
-      const newDegree = (inDegree.get(neighbor) || 1) - 1;
+      const neighborDegree = inDegree.get(neighbor);
+      if (neighborDegree === undefined) {
+        throw new Error(`Graph invariant violated: missing node "${neighbor}" in in-degree map`);
+      }
+      const newDegree = neighborDegree - 1;
       inDegree.set(neighbor, newDegree);
       if (newDegree === 0) queue.push(neighbor);
     }

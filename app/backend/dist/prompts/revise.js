@@ -1,7 +1,6 @@
-export function buildRevisePrompt(roadmapId: string, instructions: string): string {
-  const escapedInstructions = JSON.stringify(instructions);
-
-  return `You are an AI assistant that revises project roadmaps based on user feedback.
+export function buildRevisePrompt(roadmapId, instructions) {
+    const escapedInstructions = JSON.stringify(instructions);
+    return `You are an AI assistant that revises project roadmaps based on user feedback.
 
 ## Current Roadmap ID
 ${roadmapId}
@@ -42,3 +41,4 @@ Return ONLY valid JSON:
 
 JSON ONLY:`;
 }
+//# sourceMappingURL=revise.js.map

@@ -27,7 +27,7 @@ export class BedrockService {
 
   async generateRoadmap(transcript: string, userId: string): Promise<any> {
     try {
-      const prompt = this.buildRoadmapPrompt(transcript);
+      const prompt = buildStructurePrompt(transcript);
       
       const input = {
         modelId: this.config.modelId,
@@ -54,10 +54,6 @@ export class BedrockService {
       console.error("Bedrock service error:", error);
       throw error;
     }
-  }
-
-  private buildRoadmapPrompt(transcript: string): string {
-    return buildStructurePrompt(transcript);
   }
 
   private validateRoadmapResponse(response: any): any {
@@ -122,7 +118,7 @@ export class BedrockService {
         description: z.string(),
         priority: z.number().min(1).max(5),
         status: z.enum(["unchanged", "modified", "removed", "added"]),
-        dependencies: z.array(z.string()).optional()
+        dependsOn: z.array(z.string()).default([])
       })),
       changesSummary: z.object({
         itemsModified: z.number(),

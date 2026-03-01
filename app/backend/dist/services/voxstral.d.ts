@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import type { Server as HttpServer } from 'http';
 /**
  * Voxstral WebSocket Service for real-time voice transcription
  * This service handles WebSocket connections for voice input and provides transcription events
@@ -7,7 +8,7 @@ export declare class VoxstralService extends EventEmitter {
     private wss;
     private activeConnections;
     private transcriptionSessions;
-    constructor(server: any);
+    constructor(server: HttpServer);
     private handleMessage;
     private startTranscriptionSession;
     private processAudioData;
@@ -25,6 +26,6 @@ export declare class VoxstralService extends EventEmitter {
     /**
      * Broadcast message to all connected clients
      */
-    broadcast(message: any): void;
+    broadcast(message: unknown): void;
 }
 //# sourceMappingURL=voxstral.d.ts.map

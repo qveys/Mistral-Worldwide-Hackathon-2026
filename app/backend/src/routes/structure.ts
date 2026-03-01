@@ -57,7 +57,7 @@ router.post('/structure', async (req, res) => {
   } catch (error) {
     console.error('Structure endpoint error:', error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Invalid request", details: error.errors });
+      res.status(400).json({ error: "Invalid request", details: error.issues });
     } else {
       res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : "Unknown error" });
     }

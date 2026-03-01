@@ -1,14 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-const WS = require('ws');
+import type { Server as HttpServer } from 'http';
+import { WebSocket, WebSocketServer } from 'ws';
 
 /**
  * Voxstral WebSocket Service for real-time voice transcription
  * This service handles WebSocket connections for voice input and provides transcription events
  */
 export class VoxstralService extends EventEmitter {
-  private wss: any;
-  private activeConnections: Map<string, any>;
+  private wss: WebSocketServer;
+  private activeConnections: Map<string, WebSocket>;
   private transcriptionSessions: Map<string, {
     connectionId: string;
     userId: string;
@@ -17,13 +18,13 @@ export class VoxstralService extends EventEmitter {
     startTime: number;
   }>;
 
-  constructor(server: any) {
+  constructor(server: HttpServer) {
     super();
     this.activeConnections = new Map();
     this.transcriptionSessions = new Map();
     
     // Initialize WebSocket server
-    this.wss = new WS.Server({ server });
+    this.wss = new WebSocketServer({ server });
     
     this.wss.on('connection', (ws: WebSocket) => {
       const connectionId = uuidv4();
@@ -31,15 +32,15 @@ export class VoxstralService extends EventEmitter {
       
       console.log(`New Voxstral connection: ${connectionId}`);
       
-      ws.on('message', (message: string) => {
-        this.handleMessage(connectionId, message);
+      ws.on('message', (message) => {
+        this.handleMessage(connectionId, message.toString());
       });
       
       ws.on('close', () => {
         this.cleanupConnection(connectionId);
       });
       
-      ws.on('error', (error: any) => {
+      ws.on('error', (error) => {
         console.error(`Voxstral connection error: ${connectionId}`, error);
         this.cleanupConnection(connectionId);
       });
@@ -226,10 +227,10 @@ export class VoxstralService extends EventEmitter {
   /**
    * Broadcast message to all connected clients
    */
-  broadcast(message: any) {
+  broadcast(message: unknown) {
     const payload = JSON.stringify(message);
-    this.activeConnections.forEach((ws: any) => {
-      if (ws.readyState === WS.OPEN) {
+    this.activeConnections.forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
         ws.send(payload);
       }
     });

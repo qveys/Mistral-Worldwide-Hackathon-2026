@@ -1,5 +1,7 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
+import { buildStructurePrompt } from "../prompts/structure.js";
+import { buildRevisePrompt } from "../prompts/revise.js";
 // Configuration schema for Bedrock
 const BedrockConfigSchema = z.object({
     region: z.string().default("us-east-1"),
@@ -20,7 +22,7 @@ export class BedrockService {
     }
     async generateRoadmap(transcript, userId) {
         try {
-            const prompt = this.buildRoadmapPrompt(transcript);
+            const prompt = buildStructurePrompt(transcript);
             const input = {
                 modelId: this.config.modelId,
                 contentType: "application/json",
@@ -44,29 +46,6 @@ export class BedrockService {
             console.error("Bedrock service error:", error);
             throw error;
         }
-    }
-    buildRoadmapPrompt(transcript) {
-        return `You are an AI strategic planning assistant. Convert this brain dump into a structured roadmap:
-
-${transcript}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "roadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "dependencies": ["string"]
-    }
-  ],
-  "metadata": {
-    "processingTimeMs": number,
-    "modelUsed": "string",
-    "confidenceScore": number (0-1)
-  }
-}`;
     }
     validateRoadmapResponse(response) {
         const RoadmapResponseSchema = z.object({
@@ -113,29 +92,7 @@ Return ONLY valid JSON in this exact schema:
         }
     }
     buildRevisionPrompt(roadmapId, instructions) {
-        return `Revise the existing roadmap ${roadmapId} based on these instructions:
-
-${instructions}
-
-Return ONLY valid JSON in this exact schema:
-{
-  "revisedRoadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "status": "unchanged" | "modified" | "removed" | "added",
-      "dependencies": ["string"]
-    }
-  ],
-  "changesSummary": {
-    "itemsModified": number,
-    "itemsAdded": number,
-    "itemsRemoved": number,
-    "confidenceScore": number (0-1)
-  }
-}`;
+        return buildRevisePrompt(roadmapId, instructions);
     }
     validateRevisionResponse(response) {
         const RevisionResponseSchema = z.object({
@@ -145,7 +102,7 @@ Return ONLY valid JSON in this exact schema:
                 description: z.string(),
                 priority: z.number().min(1).max(5),
                 status: z.enum(["unchanged", "modified", "removed", "added"]),
-                dependencies: z.array(z.string()).optional()
+                dependsOn: z.array(z.string()).default([])
             })),
             changesSummary: z.object({
                 itemsModified: z.number(),
