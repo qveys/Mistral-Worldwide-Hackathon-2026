@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { SectionHeader } from './SectionHeader';
 import { Card } from '@/components/ui/Card';
@@ -6,28 +9,15 @@ import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 import { Terminal, Copy, Globe, Lock, Code2, Zap } from 'lucide-react';
 
-const endpoints = [
-  {
-    method: "POST",
-    path: "/api/v1/transcribe",
-    desc: "Transforme un flux audio ou un fichier en texte brut structuré.",
-    auth: true,
-  },
-  {
-    method: "POST",
-    path: "/api/v1/roadmap/generate",
-    desc: "Génère une roadmap complète à partir d'un texte brut.",
-    auth: true,
-  },
-  {
-    method: "GET",
-    path: "/api/v1/roadmap/:id",
-    desc: "Récupère les détails d'une roadmap spécifique et son graphe.",
-    auth: false,
-  }
-];
-
-export const ApiSection = () => (
+export const ApiSection = () => {
+  const t = useTranslations('doc');
+  const tDashboard = useTranslations('dashboard');
+  const endpoints = [
+    { method: 'POST' as const, path: '/api/v1/transcribe', descKey: 'endpointTranscribeDesc' as const, auth: true },
+    { method: 'POST' as const, path: '/api/v1/roadmap/generate', descKey: 'endpointGenerateDesc' as const, auth: true },
+    { method: 'GET' as const, path: '/api/v1/roadmap/:id', descKey: 'endpointGetDesc' as const, auth: false },
+  ];
+  return (
   <motion.div 
     key="api" 
     initial={{ opacity: 0, y: 20 }} 
@@ -36,8 +26,8 @@ export const ApiSection = () => (
     className="space-y-12"
   >
     <SectionHeader 
-      title="API Reference" 
-      description="Intégrez la puissance du Brain Dump Engine dans vos propres outils." 
+      title={t('apiReference')} 
+      description={t('sectionApiDescription')} 
     />
 
     <div className="space-y-6">
@@ -47,7 +37,7 @@ export const ApiSection = () => (
             <div className="h-3 w-3 rounded-full bg-red-500" />
             <div className="h-3 w-3 rounded-full bg-amber-500" />
             <div className="h-3 w-3 rounded-full bg-green-500" />
-            <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-500 italic">Quick Start SDK</span>
+            <span className="ml-4 text-[10px] font-black uppercase tracking-widest text-slate-500 italic">{t('quickStartSdk')}</span>
           </div>
           <button className="text-slate-500 hover:text-white transition-colors">
             <Copy size={16} />
@@ -82,14 +72,14 @@ const roadmap = await echomaps.brainDump.generate({
               <div className="flex items-center gap-3">
                 {ep.auth && (
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-full text-[9px] font-black uppercase text-slate-400">
-                    <Lock size={10} /> API Key
+                    <Lock size={10} /> {t('apiKey')}
                   </div>
                 )}
-                <Badge variant="status" type="done">Stable</Badge>
+                <Badge variant="status" type="done">{tDashboard('statusStable')}</Badge>
               </div>
             </div>
             <p className="mt-4 text-sm text-slate-700 dark:text-slate-200 font-medium">
-              {ep.desc}
+              {t(ep.descKey)}
             </p>
           </Card>
         ))}
@@ -101,20 +91,21 @@ const roadmap = await echomaps.brainDump.generate({
         <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
           <Globe size={24} />
         </div>
-        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">Webhooks</h4>
+        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white">{t('webhooks')}</h4>
         <p className="text-sm text-slate-500 font-medium leading-relaxed">
-          Recevez des notifications en temps réel lorsque la génération d&apos;une roadmap est terminée ou si une action nécessite une intervention manuelle.
+          {t('webhooksDesc')}
         </p>
       </div>
       <div className="p-8 bg-blue-50 dark:bg-slate-800 rounded-[2.5rem] border-2 border-blue-200 dark:border-slate-600 shadow-lg dark:shadow-xl space-y-4">
         <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
           <Code2 size={24} />
         </div>
-        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">Custom LLM</h4>
+        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white">{t('customLlm')}</h4>
         <p className="text-sm text-slate-500 font-medium leading-relaxed">
-          Option pour utiliser vos propres modèles Mistral ou configurer des prompts système personnalisés via l&apos;API.
+          {t('customLlmDesc')}
         </p>
       </div>
     </div>
   </motion.div>
-);
+  );
+};
