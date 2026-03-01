@@ -1,4 +1,6 @@
 {
+  "private": true,
+  "workspaces": ["app/frontend", "app/backend"],
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
