@@ -21,6 +21,13 @@
     "poweredBy": "Powered by Mistral Large 2",
     "heroDescription": "Transformez vos idées en roadmaps structurées..."
   },
+  "login": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "vous@exemple.com",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Se connecter"
+  },
   "nav": {
     "github": "GitHub",
     "console": "Console",
