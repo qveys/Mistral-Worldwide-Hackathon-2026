@@ -45,7 +45,6 @@ target/
 node_modules/
 app/backend/node_modules
 app/frontend/node_modules
-app/backend/data/
 
 #############################################
 # Git worktrees (isolated branches)
