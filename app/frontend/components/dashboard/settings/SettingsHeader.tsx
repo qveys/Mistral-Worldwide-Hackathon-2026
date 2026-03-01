@@ -3,6 +3,6 @@
 import React from 'react';
 import { DashboardPageHeader } from '@/components/dashboard/DashboardPageHeader';
 
-export function ActivityHeader() {
-  return <DashboardPageHeader title="Activity" accent="Stream" />;
+export function SettingsHeader() {
+  return <DashboardPageHeader title="Workspace" accent="Settings" />;
 }
