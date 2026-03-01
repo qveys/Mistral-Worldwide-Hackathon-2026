@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import type { WebSocket } from 'ws';
 import { logger } from '../lib/logger.js';
 import { TranscriptionWsEventSchema } from '../lib/schema.js';

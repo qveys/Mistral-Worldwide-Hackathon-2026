@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SectionHeader } from './SectionHeader';
-import { RoadmapCanvas, Roadmap } from '@/components/roadmap/RoadmapCanvas';
+import { RoadmapCanvas } from '@/components/roadmap/RoadmapCanvas';
 import { DependencyGraph } from '@/components/roadmap/DependencyGraph';
 import { ObjectiveCard } from '@/components/roadmap/ObjectiveCard';
 import { TaskCard, Task } from '@/components/ui/TaskCard';

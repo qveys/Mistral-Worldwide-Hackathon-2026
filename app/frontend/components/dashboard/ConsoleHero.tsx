@@ -29,7 +29,7 @@ export function ConsoleHero() {
         </h2>
       </div>
       <div className="relative z-10 flex items-center gap-4">
-        <Link href="/">
+        <Link href="/dashboard/roadmaps/new">
           <Button className={cn(
             "h-14 px-8 rounded-2xl font-bold transition-all group/btn",
             isDarkMode ? "bg-zinc-100 text-black hover:bg-white shadow-2xl shadow-white/5" : "bg-blue-500 text-white hover:bg-blue-600 shadow-lg"

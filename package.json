@@ -1,10 +1,11 @@
 {
-  "private": true,
-  "workspaces": ["app/frontend", "app/backend"],
-  "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.3.2",
-    "ts-node-dev": "^2.0.0"
-  }
+    "name": "echomaps-root",
+    "private": true,
+    "workspaces": ["app/backend", "app/frontend", "app/packages/shared"],
+    "devDependencies": {
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.3.2",
+        "ts-node-dev": "^2.0.0"
+    }
 }
