@@ -6,7 +6,7 @@ import { Send, Sparkles, Wand2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-const REVISION_CHIP_KEYS = ['chip1', 'chip2', 'chip3', 'chip4'] as const;
+const REVISION_CHIP_KEYS = ['chip1', 'chip2', 'chip3', 'chip4', 'chip5'] as const;
 
 interface ReviseInputProps {
   onRevise: (instruction: string) => void;
@@ -51,8 +51,8 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
             disabled={isProcessing}
             className={cn(
               "px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border shadow-sm",
-              "bg-white/40 dark:bg-white/5 border-white/20 dark:border-white/10 text-slate-600 dark:text-slate-300",
-              "hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-blue-500/10",
+              "bg-white/40 dark:bg-zinc-800 border-white/20 dark:border-zinc-600/80 text-slate-600 dark:text-slate-100",
+              "hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-300 dark:hover:bg-zinc-700 dark:hover:border-blue-500/40",
               "disabled:opacity-40 disabled:cursor-not-allowed"
             )}
           >
@@ -72,7 +72,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
       >
         <div className="absolute inset-0 bg-blue-500/5 blur-2xl rounded-[2rem] -z-10 group-focus-within:bg-blue-500/10 transition-colors" />
         
-        <div className="relative flex items-center bg-white/60 dark:bg-black/40 backdrop-blur-3xl rounded-[2rem] border border-white/20 dark:border-white/10 shadow-2xl p-2 focus-within:border-blue-500/50 transition-all">
+        <div className="relative flex items-center bg-white/60 dark:bg-zinc-800/90 backdrop-blur-3xl rounded-[2rem] border border-white/20 dark:border-zinc-600/80 shadow-2xl p-2 focus-within:border-blue-500/50 transition-all">
           <div className="pl-4 pr-2 text-blue-500">
             <Wand2 size={20} className={cn(isProcessing && "animate-pulse")} />
           </div>
@@ -83,7 +83,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
             onChange={(e) => setInputValue(e.target.value)}
             disabled={isProcessing}
             placeholder={t('placeholder')}
-            className="flex-1 bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white py-4 px-2 text-lg font-medium placeholder:text-slate-400 dark:placeholder:text-slate-600"
+            className="flex-1 bg-transparent border-none focus:ring-0 text-slate-900 dark:text-zinc-100 py-4 px-2 text-lg font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-400"
           />
 
           <button
@@ -93,7 +93,7 @@ export function ReviseInput({ onRevise, isProcessing = false, className }: Revis
               "flex items-center gap-2 px-6 py-4 rounded-2xl font-black uppercase tracking-tighter italic transition-all",
               inputValue.trim() && !isProcessing
                 ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xl hover:scale-105 active:scale-95"
-                : "bg-slate-100 dark:bg-white/5 text-slate-400 cursor-not-allowed"
+                : "bg-slate-100 dark:bg-zinc-700 dark:text-zinc-400 cursor-not-allowed"
             )}
           >
             <span>{t('button')}</span>
