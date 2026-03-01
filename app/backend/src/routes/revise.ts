@@ -7,12 +7,6 @@ import { saveProject } from '../services/storage.js';
 const router = Router();
 const bedrockService = new BedrockService();
 
-const ReviseRequestSchema = z.object({
-  projectId: z.string(),
-  instruction: z.string().min(1, "Instruction is required"),
-  roadmap: z.any()
-});
-
 const RoadmapItemSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -21,13 +15,22 @@ const RoadmapItemSchema = z.object({
   dependencies: z.array(z.string()).optional()
 });
 
+const ReviseRequestSchema = z.object({
+  projectId: z.string().uuid(),
+  userId: z.string().uuid(),
+  instruction: z.string().min(1, "Instruction is required"),
+  roadmap: z.object({
+    roadmap: z.array(RoadmapItemSchema)
+  })
+});
+
 const ReviseResponseSchema = z.object({
   roadmap: z.array(RoadmapItemSchema)
 });
 
-router.post('/revise', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const { projectId, instruction, roadmap } = ReviseRequestSchema.parse(req.body);
+    const { projectId, userId, instruction, roadmap } = ReviseRequestSchema.parse(req.body);
 
     const prompt = buildRevisePrompt(roadmap, instruction);
 
@@ -35,7 +38,10 @@ router.post('/revise', async (req, res) => {
 
     const revisedRoadmap = ReviseResponseSchema.parse(rawResponse);
 
-    await saveProject(projectId, revisedRoadmap);
+    await saveProject(projectId, {
+      userId,
+      roadmap: revisedRoadmap.roadmap
+    });
 
     res.json(revisedRoadmap);
   } catch (error) {

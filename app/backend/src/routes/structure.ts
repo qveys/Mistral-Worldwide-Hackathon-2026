@@ -28,7 +28,7 @@ const StructureResponseSchema = z.object({
   })
 });
 
-router.post('/structure', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     // Validate request
     const validatedRequest = StructureRequestSchema.parse(req.body);
