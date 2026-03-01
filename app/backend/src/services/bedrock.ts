@@ -134,9 +134,10 @@ export class BedrockService {
     operation: string,
     validate: (body: unknown) => T
   ): Promise<T> {
+    const totalAttempts = MAX_VALIDATION_RETRIES + 1;
     let lastZodError: z.ZodError | undefined;
 
-    for (let attempt = 1; attempt <= MAX_VALIDATION_RETRIES + 1; attempt++) {
+    for (let attempt = 1; attempt <= totalAttempts; attempt++) {
       const startTime = Date.now();
       try {
         const input = {
@@ -169,10 +170,14 @@ export class BedrockService {
             log('warn', 'Model output is not valid JSON, retrying', {
               operation,
               attempt,
+              maxRetries: MAX_VALIDATION_RETRIES,
+              totalAttempts,
               latencyMs,
               error: String(parseError),
             });
             if (attempt <= MAX_VALIDATION_RETRIES) {
+              const delayMs = 1000 * (2 ** (attempt - 1));
+              await new Promise((resolve) => setTimeout(resolve, delayMs));
               continue;
             }
             throw parseError;
@@ -187,7 +192,14 @@ export class BedrockService {
 
         try {
           const validated = validate(responseBody);
-          log('info', 'Bedrock call succeeded', { operation, attempt, latencyMs, ...cost });
+          log('info', 'Bedrock call succeeded', {
+            operation,
+            attempt,
+            maxRetries: MAX_VALIDATION_RETRIES,
+            totalAttempts,
+            latencyMs,
+            ...cost,
+          });
           return validated;
         } catch (validationError) {
           if (validationError instanceof z.ZodError) {
@@ -195,11 +207,15 @@ export class BedrockService {
             log('warn', 'Zod validation failed, retrying', {
               operation,
               attempt,
+              maxRetries: MAX_VALIDATION_RETRIES,
+              totalAttempts,
               latencyMs,
               zodErrors: validationError.errors,
               ...cost,
             });
             if (attempt <= MAX_VALIDATION_RETRIES) {
+              const delayMs = 1000 * (2 ** (attempt - 1));
+              await new Promise((resolve) => setTimeout(resolve, delayMs));
               continue;
             }
           } else {

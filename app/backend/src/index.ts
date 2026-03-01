@@ -5,6 +5,7 @@ import { createServer } from 'http';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
 import projectRouter from './routes/project.js';
+import { demoModeMiddleware } from './middleware/demoMode.js';
 import templatesRouter from './routes/templates.js';
 import clarifyRouter from './routes/clarify.js';
 import { VoxstralService } from './services/voxstral.js';
@@ -16,6 +17,7 @@ const port = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use(demoModeMiddleware);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
