@@ -28,7 +28,6 @@ export function HomePageContent() {
     if (hasCredentials) {
       login();
     }
-
     setIsSubmitting(false);
   };
 
