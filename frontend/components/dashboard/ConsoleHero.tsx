@@ -38,12 +38,6 @@ export function ConsoleHero() {
             New Brain Dump
           </Button>
         </Link>
-        <div className={cn(
-          "hidden sm:flex h-14 items-center gap-2 px-5 rounded-2xl border text-xs font-mono transition-colors cursor-text",
-          isDarkMode ? "border-zinc-800 bg-zinc-900/50 text-zinc-500 hover:border-zinc-700" : "border-slate-300 bg-slate-100 text-slate-600 hover:border-slate-400"
-        )}>
-          <span className={isDarkMode ? "text-zinc-700" : "text-slate-500"}>⌘</span>K to search context...
-        </div>
       </div>
       <Command size={320} className={cn(
         "absolute -right-16 -bottom-16 rotate-12 group-hover:rotate-0 transition-transform duration-1000",

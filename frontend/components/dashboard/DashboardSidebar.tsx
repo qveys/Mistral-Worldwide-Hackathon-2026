@@ -72,14 +72,19 @@ export function DashboardSidebar({
               key={item.id} 
               href={item.href}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-xs font-medium",
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium",
                 isActive 
                   ? isDarkMode ? "text-white bg-zinc-800" : "text-slate-900 bg-slate-200" 
-                  : isDarkMode ? "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
+                  : isDarkMode ? "text-zinc-300 hover:text-white hover:bg-zinc-800/50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
                 isCollapsed && "justify-center px-0"
               )}
             >
-              <item.icon size={16} />
+              <span className={cn(
+                "flex items-center justify-center rounded-lg p-1.5 flex-shrink-0 transition-colors",
+                isActive ? (isDarkMode ? "bg-blue-500/20 text-blue-400" : "bg-blue-100 text-blue-600") : "text-current"
+              )}>
+                <item.icon size={22} strokeWidth={2} />
+              </span>
               {!isCollapsed && <span>{item.label}</span>}
             </Link>
           );
@@ -91,20 +96,26 @@ export function DashboardSidebar({
           onClick={toggleTheme}
           aria-label={isDarkMode ? 'Passer en mode clair' : 'Passer en mode sombre'}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[10px] font-medium transition-colors",
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
             isDarkMode ? "text-amber-400 hover:text-amber-300 hover:bg-zinc-800" : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
             isCollapsed && "justify-center px-0"
           )}
         >
-          {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+          <span className="flex items-center justify-center rounded-lg p-1.5 flex-shrink-0 text-current">
+            {isDarkMode ? <Sun size={22} strokeWidth={2} /> : <Moon size={22} strokeWidth={2} />}
+          </span>
           {!isCollapsed && <span>{isDarkMode ? 'Clair' : 'Sombre'}</span>}
         </button>
-        <button className={cn("w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[10px] font-medium", isDarkMode ? "text-zinc-500 hover:text-white" : "text-slate-600 hover:text-slate-900", isCollapsed && "justify-center px-0")}>
-          <Settings size={16} />
+        <button className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium", isDarkMode ? "text-zinc-300 hover:text-white" : "text-slate-600 hover:text-slate-900", isCollapsed && "justify-center px-0")}>
+          <span className="flex items-center justify-center rounded-lg p-1.5 flex-shrink-0 text-current">
+            <Settings size={22} strokeWidth={2} />
+          </span>
           {!isCollapsed && <span>Settings</span>}
         </button>
-        <Link href="/" className={cn("w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[10px] font-medium", isDarkMode ? "text-zinc-600 hover:text-red-400" : "text-slate-600 hover:text-red-500", isCollapsed && "justify-center px-0")}>
-          <LogOut size={16} />
+        <Link href="/" className={cn("w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium", isDarkMode ? "text-zinc-300 hover:text-red-400" : "text-slate-600 hover:text-red-500", isCollapsed && "justify-center px-0")}>
+          <span className="flex items-center justify-center rounded-lg p-1.5 flex-shrink-0 text-current">
+            <LogOut size={22} strokeWidth={2} />
+          </span>
           {!isCollapsed && <span>Exit</span>}
         </Link>
       </div>

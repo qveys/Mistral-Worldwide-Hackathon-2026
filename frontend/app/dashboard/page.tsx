@@ -55,8 +55,16 @@ export default function DashboardOverview() {
           )}>
             <div className={cn("flex items-center justify-between border-b pb-6", isDarkMode ? "border-zinc-800/50" : "border-slate-200")}>
               <h3 className={cn("text-[11px] font-bold uppercase tracking-[0.3em] px-2", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Active Units</h3>
-              <Link href="/dashboard/roadmaps" className={cn("text-[10px] font-bold px-2 flex items-center gap-2 transition-colors", isDarkMode ? "text-violet-400 hover:text-white" : "text-violet-600 hover:text-violet-700")}>
-                EXPLORE ROADMAPS <ChevronRight size={12} />
+              <Link 
+                href="/dashboard/roadmaps" 
+                className={cn(
+                  "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all",
+                  isDarkMode 
+                    ? "bg-blue-500/15 text-blue-400 border border-blue-500/40 hover:bg-blue-500/25 hover:border-blue-400/60" 
+                    : "bg-blue-50 text-blue-600 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 shadow-sm"
+                )}
+              >
+                EXPLORE ROADMAPS <ChevronRight size={14} strokeWidth={2.5} />
               </Link>
             </div>
             <div className="space-y-1 overflow-y-auto pr-2 custom-scrollbar">

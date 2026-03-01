@@ -15,10 +15,17 @@ export function CollaborationHub({ className }: CollaborationHubProps) {
 
   return (
     <div className={cn(
-      "bg-gradient-to-r from-violet-600/10 to-indigo-900/5 border border-violet-500/20 rounded-[2rem] px-10 py-6 flex items-center justify-between group overflow-hidden",
+      "relative bg-gradient-to-r from-violet-600/10 to-indigo-900/5 border border-violet-500/20 rounded-[2rem] px-10 py-6 flex items-center justify-between group overflow-hidden",
       isDarkMode ? "via-[#161618]" : "via-white",
       className
     )}>
+      <Globe 
+        size={240} 
+        className={cn(
+          "absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none",
+          isDarkMode ? "text-white/[0.04]" : "text-slate-400/30"
+        )} 
+      />
       <div className="flex items-center gap-10 relative z-10">
         <div className="h-12 w-12 bg-violet-500/20 rounded-2xl flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform">
           <Share2 size={24} />
@@ -39,10 +46,6 @@ export function CollaborationHub({ className }: CollaborationHubProps) {
           Invite Team
         </Button>
       </div>
-      <Globe size={160} className={cn(
-        "absolute -right-8 -bottom-16 group-hover:rotate-45 transition-transform duration-[2000ms]",
-        isDarkMode ? "text-white/5" : "text-slate-300"
-      )} />
     </div>
   );
 }
