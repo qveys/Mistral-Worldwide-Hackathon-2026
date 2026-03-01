@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#fafafa] text-slate-900 flex flex-col font-sans selection:bg-orange-100 selection:text-orange-900 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
       
       <Navbar />
 
-      <main className="flex-1 flex flex-col items-center justify-center py-12 px-6 text-center max-w-5xl mx-auto space-y-12 relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-center pt-6 pb-12 px-12 text-center max-w-5xl mx-auto space-y-12 relative z-10">
         
         <Hero />
 
@@ -28,8 +28,8 @@ export default function HomePage() {
       </main>
 
       {/* --- BACKGROUND DECOR --- */}
-      <div className="fixed top-[20%] left-[-10%] w-[40%] h-[40%] bg-orange-100/30 rounded-full blur-[120px] -z-0 pointer-events-none" />
-      <div className="fixed bottom-[10%] right-[-10%] w-[30%] h-[30%] bg-blue-50/50 rounded-full blur-[100px] -z-0 pointer-events-none" />
+      <div className="fixed top-[20%] left-[-10%] w-[40%] h-[40%] bg-blue-100/40 rounded-full blur-[120px] -z-0 pointer-events-none" />
+      <div className="fixed bottom-[10%] right-[-10%] w-[30%] h-[30%] bg-slate-200/50 rounded-full blur-[100px] -z-0 pointer-events-none" />
     </div>
   );
 }

@@ -18,7 +18,7 @@ export function QuickStart() {
         <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <BrainDumpInput
                 onGenerate={handleGenerate}
-                className="shadow-2xl shadow-orange-500/5 border-slate-200/60"
+                className="shadow-2xl shadow-blue-500/5 border-2 border-slate-300 rounded-[2rem]"
             />
         </div>
     );

@@ -1,45 +1,57 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, Download, Filter, LayoutGrid } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
 export function TimelineControls() {
+  const { isDarkMode } = useDashboardTheme();
+
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-[#161618] border border-zinc-800/50 p-4 rounded-[2rem]">
+    <div className={cn(
+      "flex flex-col sm:flex-row gap-4 items-center justify-between p-4 rounded-[2rem]",
+      isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"
+    )}>
       <div className="flex items-center gap-4">
-        <div className="flex bg-zinc-900 rounded-xl p-1 border border-zinc-800">
-          <button className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all">
+        <div className={cn("flex rounded-xl p-1", isDarkMode ? "bg-zinc-900 border border-zinc-800" : "bg-slate-200 border border-slate-300")}>
+          <button className={cn("p-2 rounded-lg transition-all", isDarkMode ? "hover:bg-zinc-800 text-zinc-500 hover:text-white" : "hover:bg-slate-300 text-slate-600 hover:text-slate-900")}>
             <ChevronLeft size={16} />
           </button>
-          <button className="px-4 py-1.5 bg-zinc-800 text-white rounded-lg text-xs font-bold uppercase tracking-widest">
+          <button className={cn("px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest", isDarkMode ? "bg-zinc-800 text-white" : "bg-white text-slate-900 shadow-sm")}>
             March 2026
           </button>
-          <button className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all">
+          <button className={cn("p-2 rounded-lg transition-all", isDarkMode ? "hover:bg-zinc-800 text-zinc-500 hover:text-white" : "hover:bg-slate-300 text-slate-600 hover:text-slate-900")}>
             <ChevronRight size={16} />
           </button>
         </div>
-        <button className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-white transition-all">
+        <button className={cn(
+          "px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+          isDarkMode ? "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white" : "bg-slate-100 border border-slate-300 text-slate-600 hover:text-slate-900"
+        )}>
           Today
         </button>
       </div>
       
       <div className="flex items-center gap-2">
-        <div className="flex bg-zinc-900 rounded-xl p-1 border border-zinc-800">
+        <div className={cn("flex rounded-xl p-1", isDarkMode ? "bg-zinc-900 border border-zinc-800" : "bg-slate-200 border border-slate-300")}>
           {['Day', 'Week', 'Month'].map((mode) => (
             <button 
               key={mode}
               className={cn(
                 "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
-                mode === 'Week' ? "bg-zinc-800 text-white" : "text-zinc-600 hover:text-zinc-400"
+                mode === 'Week' ? (isDarkMode ? "bg-zinc-800 text-white" : "bg-white text-slate-900 shadow-sm") : (isDarkMode ? "text-zinc-600 hover:text-zinc-400" : "text-slate-600 hover:text-slate-900")
               )}
             >
               {mode}
             </button>
           ))}
         </div>
-        <div className="h-8 w-[1px] bg-zinc-800 mx-2" />
-        <button className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white transition-all">
+        <div className={cn("h-8 w-[1px] mx-2", isDarkMode ? "bg-zinc-800" : "bg-slate-300")} />
+        <button className={cn(
+          "p-2.5 rounded-xl transition-all",
+          isDarkMode ? "bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white" : "bg-slate-100 border border-slate-300 text-slate-600 hover:text-slate-900"
+        )}>
           <Filter size={16} />
         </button>
         <button className="flex items-center gap-2 px-4 py-2.5 bg-violet-600 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white hover:bg-violet-700 transition-all shadow-lg shadow-violet-600/20">

@@ -8,8 +8,10 @@ import {
   Zap 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
 export function ActivityStats() {
+  const { isDarkMode } = useDashboardTheme();
   const stats = [
     { label: 'Weekly Events', value: '1,284', trend: '+12%', icon: Activity, color: 'text-violet-400' },
     { label: 'Avg Inference', value: '42ms', trend: '-2ms', icon: Zap, color: 'text-amber-400' },
@@ -20,16 +22,19 @@ export function ActivityStats() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       {stats.map((stat, i) => (
-        <div key={i} className="p-6 bg-[#161618] border border-zinc-800/50 rounded-3xl flex flex-col justify-between group hover:border-zinc-700 transition-all">
+        <div key={i} className={cn(
+          "p-6 rounded-3xl flex flex-col justify-between group transition-all",
+          isDarkMode ? "bg-[#161618] border border-zinc-800/50 hover:border-zinc-700" : "bg-white border-2 border-slate-300 shadow-lg hover:border-slate-400"
+        )}>
           <div className="flex justify-between items-start">
-            <div className={cn("p-2 rounded-xl bg-zinc-800", stat.color)}>
+            <div className={cn("p-2 rounded-xl", stat.color, isDarkMode ? "bg-zinc-800" : "bg-slate-200")}>
               <stat.icon size={18} />
             </div>
-            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">{stat.trend}</span>
+            <span className={cn("text-[10px] font-bold uppercase tracking-widest", isDarkMode ? "text-zinc-600" : "text-slate-600")}>{stat.trend}</span>
           </div>
           <div className="mt-4 space-y-1">
-            <p className="text-xl font-bold text-white tracking-tight">{stat.value}</p>
-            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{stat.label}</p>
+            <p className={cn("text-xl font-bold tracking-tight", isDarkMode ? "text-white" : "text-slate-900")}>{stat.value}</p>
+            <p className={cn("text-[10px] font-bold uppercase tracking-widest", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{stat.label}</p>
           </div>
         </div>
       ))}

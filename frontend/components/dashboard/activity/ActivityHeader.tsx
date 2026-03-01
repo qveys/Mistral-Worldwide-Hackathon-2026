@@ -2,16 +2,20 @@
 
 import React from 'react';
 import { History } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
 export function ActivityHeader() {
+  const { isDarkMode } = useDashboardTheme();
+
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+      <div className={cn("flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em]", isDarkMode ? "text-zinc-500" : "text-slate-600")}>
         <History size={12} />
         Workspace / Activity Log
       </div>
-      <h2 className="text-4xl lg:text-5xl font-medium tracking-tight text-white leading-tight">
-        System <span className="text-zinc-600 italic font-serif text-3xl lg:text-4xl">Activity</span>
+      <h2 className={cn("text-4xl lg:text-5xl font-medium tracking-tight leading-tight", isDarkMode ? "text-white" : "text-slate-900")}>
+        System <span className={cn("italic font-serif text-3xl lg:text-4xl", isDarkMode ? "text-zinc-600" : "text-slate-600")}>Activity</span>
       </h2>
     </div>
   );

@@ -7,6 +7,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
 // Dashboard Components
 import { ConsoleHero } from '@/components/dashboard/ConsoleHero';
@@ -34,6 +36,8 @@ const recentProjects = [
 ];
 
 export default function DashboardOverview() {
+  const { isDarkMode } = useDashboardTheme();
+
   return (
     <div className="p-6 lg:p-8">
       <div className="max-w-7xl mx-auto grid grid-cols-12 gap-4 auto-rows-[160px]">
@@ -45,10 +49,13 @@ export default function DashboardOverview() {
           </div>
 
           {/* Box 3: Roadmaps List */}
-          <div className="col-span-12 lg:col-span-8 row-span-3 bg-[#161618] border border-zinc-800/50 rounded-[2.5rem] p-8 flex flex-col gap-6 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-zinc-800/50 pb-6">
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-zinc-500 px-2">Active Units</h3>
-              <Link href="/dashboard/roadmaps" className="text-[10px] font-bold text-violet-400 hover:text-white transition-colors px-2 flex items-center gap-2">
+          <div className={cn(
+            "col-span-12 lg:col-span-8 row-span-3 rounded-[2.5rem] p-8 flex flex-col gap-6 overflow-hidden",
+            isDarkMode ? "bg-[#161618] border border-zinc-800/50" : "bg-white border-2 border-slate-300 shadow-lg"
+          )}>
+            <div className={cn("flex items-center justify-between border-b pb-6", isDarkMode ? "border-zinc-800/50" : "border-slate-200")}>
+              <h3 className={cn("text-[11px] font-bold uppercase tracking-[0.3em] px-2", isDarkMode ? "text-zinc-500" : "text-slate-600")}>Active Units</h3>
+              <Link href="/dashboard/roadmaps" className={cn("text-[10px] font-bold px-2 flex items-center gap-2 transition-colors", isDarkMode ? "text-violet-400 hover:text-white" : "text-violet-600 hover:text-violet-700")}>
                 EXPLORE ROADMAPS <ChevronRight size={12} />
               </Link>
             </div>
@@ -69,6 +76,7 @@ export default function DashboardOverview() {
                 color="text-amber-500"
                 progress={84}
                 className="flex-1"
+                variant={isDarkMode ? 'dark' : 'light'}
              />
              <StatBox 
                 label="Topological Sort"
@@ -78,6 +86,7 @@ export default function DashboardOverview() {
                 color="text-emerald-500"
                 progress={100}
                 className="flex-1"
+                variant={isDarkMode ? 'dark' : 'light'}
              />
           </div>
 

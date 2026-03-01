@@ -12,6 +12,7 @@ interface StatBoxProps {
   color?: string;
   progress?: number;
   className?: string;
+  variant?: 'dark' | 'light';
 }
 
 export function StatBox({ 
@@ -21,19 +22,25 @@ export function StatBox({
   icon: Icon, 
   color = "text-amber-500", 
   progress,
-  className 
+  className,
+  variant = 'dark',
 }: StatBoxProps) {
+  const isLight = variant === 'light';
   return (
-    <div className={cn("bg-[#161618] border border-zinc-800/50 rounded-[2.5rem] p-8 flex flex-col justify-between group", className)}>
+    <div className={cn(
+      "rounded-[2.5rem] p-8 flex flex-col justify-between group",
+      isLight ? "bg-white border-2 border-slate-300 shadow-lg" : "bg-[#161618] border border-zinc-800/50",
+      className
+    )}>
       <div className="flex justify-between items-center">
         <Icon size={20} className={cn(color, "group-hover:scale-110 transition-transform")} />
-        <span className="text-[10px] font-mono text-zinc-500 bg-zinc-800 px-2 py-1 rounded">{detail}</span>
+        <span className={cn("text-[10px] font-mono px-2 py-1 rounded", isLight ? "text-slate-600 bg-slate-200" : "text-zinc-500 bg-zinc-800")}>{detail}</span>
       </div>
       <div className="space-y-3">
-        <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">{label}</p>
-        <p className="text-4xl font-medium text-white tracking-tighter">{value}</p>
+        <p className={cn("text-[10px] font-bold uppercase tracking-widest", isLight ? "text-slate-600" : "text-zinc-600")}>{label}</p>
+        <p className={cn("text-4xl font-medium tracking-tighter", isLight ? "text-slate-900" : "text-white")}>{value}</p>
         {progress !== undefined && (
-          <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div className={cn("w-full h-1.5 rounded-full overflow-hidden", isLight ? "bg-slate-200" : "bg-zinc-800")}>
             <div 
               className={cn("h-full transition-all duration-1000", color.replace('text-', 'bg-'))} 
               style={{ width: `${progress}%`, boxShadow: `0 0 10px rgba(var(--${color}-rgb), 0.3)` }} 

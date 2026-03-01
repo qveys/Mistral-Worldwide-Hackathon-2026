@@ -120,7 +120,7 @@ export function BrainDumpInput({
                                         isFallback ? 'bg-amber-500' : 'bg-blue-500',
                                     )}
                                 />
-                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                                <span className="text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest">
                                     {isFallback ? 'Saisie Manuelle' : 'Brain Dump Engine'}
                                 </span>
                             </div>
@@ -139,9 +139,9 @@ export function BrainDumpInput({
                                     <button
                                         onClick={clearText}
                                         aria-label="Effacer le texte"
-                                        className="text-slate-400 dark:text-slate-500 hover:text-red-500 transition-colors flex items-center gap-1 text-[10px] font-bold uppercase"
+                                        className="text-slate-600 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 text-xs font-bold uppercase"
                                     >
-                                        <Eraser size={12} />
+                                        <Eraser size={14} />
                                         Effacer
                                     </button>
                                 )}
@@ -222,8 +222,8 @@ export function BrainDumpInput({
                                 className={cn(
                                     'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border',
                                     includePlanning
-                                        ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-400'
-                                        : 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-orange-300 hover:text-orange-600',
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400'
+                                        : 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-blue-300 hover:text-blue-600',
                                 )}
                             >
                                 <CalendarDays size={16} />
@@ -232,7 +232,7 @@ export function BrainDumpInput({
                                     className={cn(
                                         'h-5 w-9 rounded-full transition-colors relative',
                                         includePlanning
-                                            ? 'bg-orange-500'
+                                            ? 'bg-blue-500'
                                             : 'bg-slate-300 dark:bg-slate-700',
                                     )}
                                 >
@@ -245,7 +245,7 @@ export function BrainDumpInput({
                                 </div>
                             </button>
                             {includePlanning && (
-                                <span className="text-[10px] font-bold text-orange-500 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">
                                     L&apos;IA génèrera un planning jour par jour
                                 </span>
                             )}
