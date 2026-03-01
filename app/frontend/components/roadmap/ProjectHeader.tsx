@@ -5,10 +5,10 @@ import { Link } from '@/i18n/navigation';
 import { useTheme } from '@/lib/ThemeContext';
 import type { Roadmap } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Calendar, Layout, Moon, Network, Sun } from 'lucide-react';
+import { ArrowLeft, Calendar, Layout, Moon, Network, Share2, Sun } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-type ViewMode = 'grid' | 'graph' | 'timeline';
+type ViewMode = 'grid' | 'graph' | 'knowledge' | 'timeline';
 
 interface ProjectHeaderProps {
     projectId: string;
@@ -50,6 +50,7 @@ export function ProjectHeader({
                         {[
                             { id: 'grid', icon: Layout, labelKey: 'viewStructured' as const },
                             { id: 'graph', icon: Network, labelKey: 'viewGraph' as const },
+                            { id: 'knowledge', icon: Share2, labelKey: 'viewKnowledge' as const },
                             { id: 'timeline', icon: Calendar, labelKey: 'viewTimeline' as const },
                         ].map((mode) => (
                             <button

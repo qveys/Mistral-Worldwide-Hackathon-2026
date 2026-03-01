@@ -47,6 +47,7 @@
         "roadmapUnit": "Unité {id}",
         "viewStructured": "Vue structurée",
         "viewGraph": "Vue graphe",
+        "viewKnowledge": "Vue Knowledge Graph",
         "viewTimeline": "Vue chronologie"
     },
     "errors": {

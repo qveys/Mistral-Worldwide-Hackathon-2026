@@ -47,6 +47,7 @@
         "roadmapUnit": "Unit {id}",
         "viewStructured": "Structured view",
         "viewGraph": "Graph view",
+        "viewKnowledge": "Knowledge Graph view",
         "viewTimeline": "Timeline view"
     },
     "errors": {
