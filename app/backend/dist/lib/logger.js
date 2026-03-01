@@ -18,4 +18,13 @@ export const logger = {
         console.error(JSON.stringify(createEntry('error', service, message, meta)));
     },
 };
+export function logRouteError(route, error) {
+    const meta = {
+        route,
+        error: error instanceof Error ? error.message : String(error),
+    };
+    if (error instanceof Error && error.stack)
+        meta.stack = error.stack;
+    logger.error('Route', `${route} failed`, meta);
+}
 //# sourceMappingURL=logger.js.map
