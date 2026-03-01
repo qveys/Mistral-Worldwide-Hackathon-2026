@@ -7,7 +7,7 @@
   "defaultTasks": [
     {
       "id": "task-1",
-      "title": "Etude de marche",
+      "title": "Étude de marché",
       "description": "Analyser la concurrence, identifier le public cible",
       "priority": 1,
       "dependencies": []

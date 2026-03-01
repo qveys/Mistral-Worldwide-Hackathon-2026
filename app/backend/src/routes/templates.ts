@@ -30,17 +30,17 @@ const TemplateSchema = z.object({
 const templates = [etudiant, freelance, productLaunch].map((t) =>
   TemplateSchema.parse(t)
 );
+const templateSummaries = templates.map(({ slug, title, description, icon, examples }) => ({
+  slug,
+  title,
+  description,
+  icon,
+  examples,
+}));
 
 // GET / - list all templates (summary only, no defaultTasks)
 router.get('/', (_req, res) => {
-  const summaries = templates.map(({ slug, title, description, icon, examples }) => ({
-    slug,
-    title,
-    description,
-    icon,
-    examples,
-  }));
-  res.json(summaries);
+  res.json(templateSummaries);
 });
 
 // GET /:slug - get full template by slug
