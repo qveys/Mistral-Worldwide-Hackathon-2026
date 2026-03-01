@@ -4,6 +4,7 @@ import express, { type Request, type Response } from 'express';
 import { createServer } from 'http';
 import structureRouter from './routes/structure.js';
 import reviseRouter from './routes/revise.js';
+import projectRouter from './routes/project.js';
 import templatesRouter from './routes/templates.js';
 import clarifyRouter from './routes/clarify.js';
 import { VoxstralService } from './services/voxstral.js';
@@ -24,6 +25,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes
 app.use('/api/structure', structureRouter);
 app.use('/api/revise', reviseRouter);
+app.use('/api', projectRouter);
 app.use('/api/templates', templatesRouter);
 app.use('/api/clarify', clarifyRouter);
 
@@ -48,6 +50,7 @@ server.listen(port, () => {
   console.log(`- GET /health`);
   console.log(`- POST /api/structure`);
   console.log(`- POST /api/revise`);
+  console.log(`- GET /api/project/:id`);
   console.log(`- GET  /api/templates`);
   console.log(`- GET  /api/templates/:slug`);
   console.log(`- POST /api/clarify`);
