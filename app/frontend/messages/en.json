@@ -21,6 +21,13 @@
     "poweredBy": "Powered by Mistral Large 2",
     "heroDescription": "Turn your ideas into structured roadmaps..."
   },
+  "login": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Log in"
+  },
   "nav": {
     "github": "GitHub",
     "console": "Console",
@@ -95,6 +102,7 @@
     "chip2": "Merge with...",
     "chip3": "Move to Day 2",
     "chip4": "Split into sub-tasks",
+    "chip5": "Split into sub-tasks",
     "intelligentAdjustment": "Intelligent Adjustment",
     "helperText": "AI will rebuild the roadmap according to your instructions."
   },
