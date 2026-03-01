@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
@@ -32,7 +31,7 @@ export function DashboardPageHeader({ title, accent }: DashboardPageHeaderProps)
         {title}{' '}
         <span
           className={cn(
-            "italic font-serif text-3xl lg:text-4xl xl:text-5xl",
+            "text-3xl lg:text-4xl xl:text-5xl",
             "bg-gradient-to-r from-[#00b0ff] to-[#536dfe] bg-clip-text text-transparent"
           )}
         >

@@ -324,7 +324,7 @@
         "tableDependencies": "Dépendances",
         "planning": "Planning",
         "fromTo": "Du {start} au {end}"
-    }
+    },
   "common": {
     "back": "Retour",
     "returnHome": "Retour à l'accueil",
