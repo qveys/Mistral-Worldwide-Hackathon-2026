@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_URL } from './api';
 import type { Roadmap } from './types';
 
@@ -22,6 +22,14 @@ export function useStructure(): UseStructureReturn {
         'analysis',
     );
     const abortRef = useRef<AbortController | null>(null);
+    const fetchProjectAbortRef = useRef<AbortController | null>(null);
+
+    useEffect(() => {
+        return () => {
+            abortRef.current?.abort();
+            fetchProjectAbortRef.current?.abort();
+        };
+    }, []);
 
     const structureBrainDump = useCallback(
         async (text: string, includePlanning: boolean): Promise<Roadmap | null> => {
@@ -69,14 +77,20 @@ export function useStructure(): UseStructureReturn {
     );
 
     const fetchProject = useCallback(async (projectId: string): Promise<Roadmap | null> => {
+        fetchProjectAbortRef.current?.abort();
+        const controller = new AbortController();
+        fetchProjectAbortRef.current = controller;
+
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await fetch(`${API_URL}/project/${projectId}`);
+            const response = await fetch(`${API_URL}/project/${projectId}`, {
+                signal: controller.signal,
+            });
 
             if (response.status === 404) {
-                setError('Projet non trouvé');
+                setError('Project not found');
                 return null;
             }
 
@@ -88,11 +102,14 @@ export function useStructure(): UseStructureReturn {
             setRoadmap(data);
             return data;
         } catch (err) {
+            if ((err as Error).name === 'AbortError') return null;
             const message = err instanceof Error ? err.message : 'Failed to load project';
             setError(message);
             return null;
         } finally {
-            setIsLoading(false);
+            if (fetchProjectAbortRef.current === controller) {
+                setIsLoading(false);
+            }
         }
     }, []);
 
