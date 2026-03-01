@@ -4,16 +4,11 @@ import { BedrockService } from '../services/bedrock.js';
 import { buildRevisePrompt } from '../prompts/revise.js';
 import { saveProject } from '../services/storage.js';
 import { DEMO_REVISED_ROADMAP } from '../mocks/demoRoadmap.js';
+import { isValidProjectId, sanitizeProjectId } from '../lib/projectId.js';
 
 const router = Router();
 const bedrockService = new BedrockService();
 const DEMO_MODE = process.env.DEMO_MODE === 'true';
-
-const ReviseRequestSchema = z.object({
-  projectId: z.string(),
-  instruction: z.string().min(1, "Instruction is required"),
-  roadmap: z.any()
-});
 
 const RoadmapItemSchema = z.object({
   id: z.string(),
@@ -27,7 +22,39 @@ const ReviseResponseSchema = z.object({
   roadmap: z.array(RoadmapItemSchema)
 });
 
-router.post('/revise', async (req, res) => {
+const ReviseRequestSchema = z.object({
+  projectId: z.string().min(1).refine(isValidProjectId, 'Invalid project id'),
+  instruction: z.string().min(1, 'Instruction is required'),
+  roadmap: ReviseResponseSchema
+});
+
+const BedrockOutputSchema = z.object({
+  outputs: z.array(z.object({ text: z.string() })).min(1)
+});
+
+function parseReviseModelResponse(rawResponse: unknown): z.infer<typeof ReviseResponseSchema> {
+  const directParsed = ReviseResponseSchema.safeParse(rawResponse);
+  if (directParsed.success) {
+    return directParsed.data;
+  }
+
+  const bedrockOutput = BedrockOutputSchema.parse(rawResponse);
+  const firstText = bedrockOutput.outputs[0]?.text;
+  if (!firstText) {
+    throw new Error('Missing Bedrock output text');
+  }
+
+  let parsedTextPayload: unknown;
+  try {
+    parsedTextPayload = JSON.parse(firstText);
+  } catch {
+    throw new Error('Invalid JSON in Bedrock output text');
+  }
+
+  return ReviseResponseSchema.parse(parsedTextPayload);
+}
+
+router.post('/', async (req, res) => {
   try {
     if (DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -41,9 +68,9 @@ router.post('/revise', async (req, res) => {
 
     const rawResponse = await bedrockService.invokeModel(prompt);
 
-    const revisedRoadmap = ReviseResponseSchema.parse(rawResponse);
+    const revisedRoadmap = parseReviseModelResponse(rawResponse);
 
-    await saveProject(projectId, revisedRoadmap);
+    await saveProject(sanitizeProjectId(projectId), revisedRoadmap);
 
     res.json(revisedRoadmap);
   } catch (error) {

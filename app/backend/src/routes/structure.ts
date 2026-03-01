@@ -30,7 +30,7 @@ const StructureResponseSchema = z.object({
   })
 });
 
-router.post('/structure', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     if (DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 2000));

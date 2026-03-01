@@ -23,7 +23,7 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes
 app.use('/api/structure', structureRouter);
 app.use('/api/revise', reviseRouter);
-app.use('/api', projectRouter);
+app.use('/api/project', projectRouter);
 
 // Create HTTP server and integrate Voxstral WebSocket service
 const server = createServer(app);
