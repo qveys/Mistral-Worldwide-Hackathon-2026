@@ -13,11 +13,11 @@ export default function TimelinePage() {
   const [zoomMode, setZoomMode] = useState<TimelineZoomMode>('week');
 
   return (
-    <div className="p-6 lg:p-10 space-y-8">
+    <div className="p-4 max-sm:px-3 sm:p-6 lg:p-10 space-y-6 max-sm:space-y-6 sm:space-y-8">
       <TimelineHeader />
       <TimelineControls zoomMode={zoomMode} onZoomModeChange={setZoomMode} />
 
-      <div className="space-y-4">
+      <div className="space-y-4 min-w-0">
         <TimelineView tasks={TIMELINE_TASKS} zoomMode={zoomMode} />
       </div>
     </div>

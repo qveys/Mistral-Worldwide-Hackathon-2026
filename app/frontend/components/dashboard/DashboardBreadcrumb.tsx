@@ -39,7 +39,7 @@ export function DashboardBreadcrumb() {
   return (
     <nav
       className={cn(
-        "flex items-center gap-1 py-4 px-6 lg:px-8",
+        "flex flex-wrap items-center gap-1 py-3 max-sm:py-3 sm:py-4 px-3 max-sm:px-3 sm:px-6 lg:px-8 overflow-x-auto",
         isDarkMode ? "text-zinc-500" : "text-slate-500"
       )}
       aria-label={tCommon('breadcrumbAria')}
