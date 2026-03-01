@@ -15,16 +15,21 @@ declare const BedrockConfigSchema: z.ZodObject<{
     maxTokens?: number | undefined;
     temperature?: number | undefined;
 }>;
+export declare class BedrockValidationExhaustedError extends Error {
+    readonly attempts: number;
+    readonly lastZodError: z.ZodError;
+    constructor(message: string, attempts: number, lastZodError: z.ZodError);
+}
 export declare class BedrockService {
     private client;
     private config;
     constructor(config?: Partial<z.infer<typeof BedrockConfigSchema>>);
-    generateRoadmap(transcript: string, userId: string): Promise<any>;
+    generateRoadmap(transcript: string): Promise<any>;
+    invokeModel(prompt: string): Promise<any>;
+    invokeModelWithRetry<T>(prompt: string, operation: string, validate: (body: unknown) => T): Promise<T>;
+    private invokeWithRetry;
     private buildRoadmapPrompt;
     private validateRoadmapResponse;
-    generateRevision(roadmapId: string, instructions: string): Promise<any>;
-    private buildRevisionPrompt;
-    private validateRevisionResponse;
 }
 export {};
 //# sourceMappingURL=bedrock.d.ts.map

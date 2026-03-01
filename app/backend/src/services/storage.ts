@@ -1,25 +1,26 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { z } from 'zod';
+import { assertValidProjectId } from '../lib/projectId.js';
+import { HttpError } from '../lib/httpError.js';
 
-const ProjectIdSchema = z.string().uuid();
-const PROJECTS_DIR = process.env.STORAGE_DIR ?? path.join(os.tmpdir(), 'projects');
+const PROJECTS_DIR = process.env.STORAGE_DIR || process.env.PROJECTS_DIR || path.join(os.tmpdir(), 'projects');
+const PROJECTS_DIR_RESOLVED = path.resolve(PROJECTS_DIR);
 
 async function ensureDir(): Promise<void> {
   await mkdir(PROJECTS_DIR, { recursive: true });
 }
 
 function getProjectFilePath(projectId: string): string {
-  const validatedId = ProjectIdSchema.parse(projectId);
-  const baseDir = path.resolve(PROJECTS_DIR);
-  const filePath = path.resolve(baseDir, `${validatedId}.json`);
+  const safeProjectId = assertValidProjectId(projectId);
+  const candidatePath = path.join(PROJECTS_DIR_RESOLVED, `${safeProjectId}.json`);
+  const resolvedPath = path.resolve(candidatePath);
 
-  if (path.dirname(filePath) !== baseDir) {
-    throw new Error('Resolved project path escapes the projects directory');
+  if (!resolvedPath.startsWith(`${PROJECTS_DIR_RESOLVED}${path.sep}`)) {
+    throw new HttpError('Invalid project path', 400);
   }
 
-  return filePath;
+  return resolvedPath;
 }
 
 export async function saveProject(projectId: string, payload: unknown): Promise<void> {
@@ -29,20 +30,15 @@ export async function saveProject(projectId: string, payload: unknown): Promise<
 }
 
 export async function getProject(projectId: string): Promise<unknown | null> {
-  const idValidation = ProjectIdSchema.safeParse(projectId);
-  if (!idValidation.success) {
-    return null;
-  }
-
-  const filePath = getProjectFilePath(idValidation.data);
-
+  const filePath = getProjectFilePath(projectId);
   try {
     const data = await readFile(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error: unknown) {
-    if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+    return JSON.parse(data) as unknown;
+  } catch (err: unknown) {
+    const fsError = err as NodeJS.ErrnoException;
+    if (fsError.code === 'ENOENT') {
       return null;
     }
-    throw error;
+    throw fsError;
   }
 }
