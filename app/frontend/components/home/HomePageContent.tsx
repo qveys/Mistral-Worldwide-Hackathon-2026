@@ -19,9 +19,16 @@ export function HomePageContent() {
   }, [isLoggedIn, router]);
 
   const handleLoginSubmit = (credentials: LoginCredentials) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
-    login();
-    router.replace('/dashboard');
+
+    const hasCredentials =
+      credentials.email.trim().length > 0 && credentials.password.length > 0;
+
+    if (hasCredentials) {
+      login();
+    }
+
     setIsSubmitting(false);
   };
 
