@@ -16,6 +16,36 @@ const S3_INDEX_KEY = 'projects/.project_index.json';
 const s3 = USE_S3 ? new S3Client({ region: process.env['AWS_REGION'] || 'eu-west-3' }) : null;
 
 type ProjectIndex = Record<string, string>;
+type ProjectAccessResult =
+    | { status: 'not_found' }
+    | { status: 'forbidden' }
+    | { status: 'found'; project: Roadmap };
+
+let indexWriteQueue: Promise<void> = Promise.resolve();
+
+function parseProjectIndex(raw: string, source: 'local' | 's3'): ProjectIndex {
+    try {
+        const parsed = JSON.parse(raw) as unknown;
+        return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+            ? (parsed as ProjectIndex)
+            : {};
+    } catch (error) {
+        logger.error('StorageService', 'Failed to parse project index JSON, using empty index', {
+            source,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return {};
+    }
+}
+
+async function withIndexWriteLock<T>(operation: () => Promise<T>): Promise<T> {
+    const run = indexWriteQueue.then(operation, operation);
+    indexWriteQueue = run.then(
+        () => undefined,
+        () => undefined
+    );
+    return run;
+}
 
 async function readIndex(): Promise<ProjectIndex> {
     if (USE_S3 && s3) {
@@ -28,10 +58,7 @@ async function readIndex(): Promise<ProjectIndex> {
             );
             const body = await response.Body?.transformToString();
             if (!body) return {};
-            const parsed = JSON.parse(body) as unknown;
-            return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
-                ? (parsed as ProjectIndex)
-                : {};
+            return parseProjectIndex(body, 's3');
         } catch (error) {
             if ((error as { name?: string }).name === 'NoSuchKey') return {};
             logger.error('StorageService', 'Failed to read project index from S3', {
@@ -42,10 +69,7 @@ async function readIndex(): Promise<ProjectIndex> {
     }
     if (!fs.existsSync(PROJECT_INDEX_FILE)) return {};
     const content = fs.readFileSync(PROJECT_INDEX_FILE, 'utf-8');
-    const parsed = JSON.parse(content) as unknown;
-    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
-        ? (parsed as ProjectIndex)
-        : {};
+    return parseProjectIndex(content, 'local');
 }
 
 async function writeIndex(index: ProjectIndex): Promise<void> {
@@ -64,7 +88,9 @@ async function writeIndex(index: ProjectIndex): Promise<void> {
     if (!fs.existsSync(LOCAL_DATA_DIR)) {
         fs.mkdirSync(LOCAL_DATA_DIR, { recursive: true });
     }
-    fs.writeFileSync(PROJECT_INDEX_FILE, json, 'utf-8');
+    const tempPath = `${PROJECT_INDEX_FILE}.tmp`;
+    fs.writeFileSync(tempPath, json, 'utf-8');
+    fs.renameSync(tempPath, PROJECT_INDEX_FILE);
 }
 
 /**
@@ -88,9 +114,11 @@ export async function saveProject(
                     ContentType: 'application/json',
                 }),
             );
-            const index = await readIndex();
-            index[projectId] = userId;
-            await writeIndex(index);
+            await withIndexWriteLock(async () => {
+                const index = await readIndex();
+                index[projectId] = userId;
+                await writeIndex(index);
+            });
             logger.info('StorageService', 'Project saved to S3', { projectId, userId });
         } catch (error) {
             logger.error('StorageService', 'S3 save failed', {
@@ -107,24 +135,27 @@ export async function saveProject(
         }
         const filePath = path.join(userDir, `${projectId}.json`);
         fs.writeFileSync(filePath, json, 'utf-8');
-        const index = await readIndex();
-        index[projectId] = userId;
-        await writeIndex(index);
+        await withIndexWriteLock(async () => {
+            const index = await readIndex();
+            index[projectId] = userId;
+            await writeIndex(index);
+        });
         logger.info('StorageService', 'Project saved locally', { projectId, userId, filePath });
     }
 }
 
 /**
- * Retrieve a project roadmap by ID. Returns null if not found or if requestUserId is not the owner.
+ * Retrieve a project roadmap with a single index read while preserving
+ * not_found vs forbidden outcomes.
  */
-export async function getProject(
+export async function getProjectForUser(
     projectId: string,
     requestUserId: string
-): Promise<Roadmap | null> {
+): Promise<ProjectAccessResult> {
     const index = await readIndex();
     const ownerId = index[projectId];
-    if (ownerId === undefined) return null;
-    if (ownerId !== requestUserId) return null;
+    if (ownerId === undefined) return { status: 'not_found' };
+    if (ownerId !== requestUserId) return { status: 'forbidden' };
 
     if (USE_S3 && s3) {
         try {
@@ -135,10 +166,10 @@ export async function getProject(
                 }),
             );
             const body = await response.Body?.transformToString();
-            if (!body) return null;
-            return JSON.parse(body) as Roadmap;
+            if (!body) return { status: 'not_found' };
+            return { status: 'found', project: JSON.parse(body) as Roadmap };
         } catch (error) {
-            if ((error as { name?: string }).name === 'NoSuchKey') return null;
+            if ((error as { name?: string }).name === 'NoSuchKey') return { status: 'not_found' };
             logger.error('StorageService', 'S3 get failed', {
                 projectId,
                 error: error instanceof Error ? error.message : String(error),
@@ -148,17 +179,7 @@ export async function getProject(
     }
 
     const filePath = path.join(LOCAL_DATA_DIR, ownerId, `${projectId}.json`);
-    if (!fs.existsSync(filePath)) return null;
+    if (!fs.existsSync(filePath)) return { status: 'not_found' };
     const content = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(content) as Roadmap;
-}
-
-/**
- * Return the owner userId for a project, or null if the project is not in the index.
- * Used by controllers to return 404 vs 403 (not found vs forbidden).
- */
-export async function getProjectOwner(projectId: string): Promise<string | null> {
-    const index = await readIndex();
-    const ownerId = index[projectId];
-    return ownerId ?? null;
+    return { status: 'found', project: JSON.parse(content) as Roadmap };
 }

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { logger } from '../lib/logger.js';
 import { RoadmapSchema } from '../lib/schema.js';
-import { getProject, getProjectOwner } from '../services/storage.service.js';
+import { getProjectForUser } from '../services/storage.service.js';
 
 /**
  * GET /project/:id
@@ -22,24 +22,18 @@ export async function projectController(req: Request, res: Response): Promise<vo
     }
 
     try {
-        const ownerId = await getProjectOwner(id);
-        if (ownerId === null) {
+        const result = await getProjectForUser(id, userId);
+        if (result.status === 'not_found') {
             res.status(404).json({ error: 'Project not found' });
             return;
         }
-        if (ownerId !== userId) {
+        if (result.status === 'forbidden') {
             res.status(403).json({ error: 'Forbidden' });
             return;
         }
 
-        const project = await getProject(id, userId);
-        if (!project) {
-            res.status(404).json({ error: 'Project not found' });
-            return;
-        }
-
         // Validate stored data integrity
-        const validated = RoadmapSchema.parse(project);
+        const validated = RoadmapSchema.parse(result.project);
         res.json(validated);
     } catch (error) {
         logger.error('ProjectController', 'Failed to retrieve project', {

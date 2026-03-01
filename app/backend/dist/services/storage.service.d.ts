@@ -1,19 +1,23 @@
 import type { z } from 'zod';
 import type { RoadmapSchema } from '../lib/schema.js';
 type Roadmap = z.infer<typeof RoadmapSchema>;
+type ProjectAccessResult = {
+    status: 'not_found';
+} | {
+    status: 'forbidden';
+} | {
+    status: 'found';
+    project: Roadmap;
+};
 /**
  * Save a project roadmap for the given user. Uses S3 if configured, fallback to local filesystem.
  * Stores under data/{userId}/{projectId}.json and updates the project index.
  */
 export declare function saveProject(userId: string, projectId: string, roadmap: Roadmap): Promise<void>;
 /**
- * Retrieve a project roadmap by ID. Returns null if not found or if requestUserId is not the owner.
+ * Retrieve a project roadmap with a single index read while preserving
+ * not_found vs forbidden outcomes.
  */
-export declare function getProject(projectId: string, requestUserId: string): Promise<Roadmap | null>;
-/**
- * Return the owner userId for a project, or null if the project is not in the index.
- * Used by controllers to return 404 vs 403 (not found vs forbidden).
- */
-export declare function getProjectOwner(projectId: string): Promise<string | null>;
+export declare function getProjectForUser(projectId: string, requestUserId: string): Promise<ProjectAccessResult>;
 export {};
 //# sourceMappingURL=storage.service.d.ts.map

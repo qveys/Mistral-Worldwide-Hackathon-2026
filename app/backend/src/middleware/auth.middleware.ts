@@ -1,12 +1,29 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { getRequiredEnv } from '../lib/env.js';
 import { logger } from '../lib/logger.js';
 
-const JWT_SECRET = process.env['JWT_SECRET'] || 'dev-secret-change-in-production';
+const JWT_SECRET = getRequiredEnv('JWT_SECRET', 'AuthMiddleware');
+const UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 interface JwtPayload {
     userId: string;
     email: string;
+}
+
+function isJwtPayload(payload: unknown): payload is JwtPayload {
+    if (typeof payload !== 'object' || payload === null) {
+        return false;
+    }
+
+    const claims = payload as Record<string, unknown>;
+    return (
+        typeof claims['userId'] === 'string' &&
+        UUID_REGEX.test(claims['userId']) &&
+        typeof claims['email'] === 'string' &&
+        claims['email'].trim().length > 0
+    );
 }
 
 /**
@@ -26,7 +43,12 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (!isJwtPayload(decoded)) {
+            logger.warn('AuthMiddleware', 'JWT payload is missing required claims');
+            res.status(401).json({ error: 'Invalid token payload' });
+            return;
+        }
         req.userId = decoded.userId;
         req.user = { id: decoded.userId, email: decoded.email };
         next();

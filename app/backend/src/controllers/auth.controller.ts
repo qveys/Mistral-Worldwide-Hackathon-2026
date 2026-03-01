@@ -3,12 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
+import { getRequiredEnv } from '../lib/env.js';
 import { logger } from '../lib/logger.js';
 
 const LOCAL_DATA_DIR = path.resolve(process.cwd(), 'data');
 const USERS_FILE = path.join(LOCAL_DATA_DIR, 'users.json');
 const USERS_CACHE_TTL_MS = 30_000;
-const JWT_SECRET = process.env['JWT_SECRET'] || 'dev-secret-change-in-production';
+const JWT_SECRET = getRequiredEnv('JWT_SECRET', 'AuthController');
 const JWT_EXPIRES_IN = process.env['JWT_EXPIRES_IN'] || '7d';
 
 export interface User {
