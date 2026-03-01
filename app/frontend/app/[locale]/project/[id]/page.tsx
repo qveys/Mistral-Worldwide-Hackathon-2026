@@ -38,13 +38,13 @@ export default function ProjectPage() {
 
   const { roadmap, isLoading, error, fetchProject } = useStructure();
 
-  const hasStarted = useRef(false);
+  const lastFetchedProjectId = useRef<string | null>(null);
   const [localTasks, setLocalTasks] = useState<RoadmapTask[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'graph' | 'timeline'>('grid');
 
   useEffect(() => {
-    if (hasStarted.current) return;
-    hasStarted.current = true;
+    if (lastFetchedProjectId.current === projectId) return;
+    lastFetchedProjectId.current = projectId;
     fetchProject(projectId);
   }, [projectId, fetchProject]);
 
