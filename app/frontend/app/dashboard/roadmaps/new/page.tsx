@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
 import { API_URL } from '@/lib/api';
+import { useAuth } from '@/lib/AuthContext';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { getErrorMessageKey } from '@/lib/errorMessages';
@@ -12,6 +13,7 @@ import { getErrorMessageKey } from '@/lib/errorMessages';
 export default function NewRoadmapPage() {
   const router = useRouter();
   const { isDarkMode } = useDashboardTheme();
+  const { isLoggedIn } = useAuth();
   const t = useTranslations('dashboard');
   const tErrors = useTranslations('errors');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -36,7 +38,8 @@ export default function NewRoadmapPage() {
       if (typeof data.projectId !== 'string' || data.projectId.trim() === '') {
         throw new Error(tErrors('failedGenerateRoadmap'));
       }
-      router.push(`/project/${encodeURIComponent(data.projectId)}`);
+      const query = !isLoggedIn ? '?register=1' : '';
+      router.push(`/project/${encodeURIComponent(data.projectId)}${query}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : null;
       const key = getErrorMessageKey(message);

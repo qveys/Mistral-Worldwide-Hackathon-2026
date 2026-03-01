@@ -28,9 +28,26 @@
     "passwordPlaceholder": "••••••••",
     "submit": "Log in"
   },
+  "register": {
+    "title": "Sign up",
+    "firstNameLabel": "First name",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Last name",
+    "lastNamePlaceholder": "Doe",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordConfirmLabel": "Confirm password",
+    "passwordConfirmPlaceholder": "••••••••",
+    "submit": "Create my account",
+    "errorEmailRequired": "Email required",
+    "errorPasswordsMismatch": "Passwords do not match"
+  },
   "nav": {
     "github": "GitHub",
     "console": "Console",
+    "createRoadmap": "Create a roadmap",
     "roadmaps": "Roadmaps",
     "activity": "Activity",
     "timeline": "Timeline",
