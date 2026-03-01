@@ -33,23 +33,30 @@ Built for the **Mistral Worldwide Hackathon 2026**.
 
 ### Setup
 
-From the **repo root**:
+From the **repo root** (monorepo avec workspaces) :
 
 ```bash
 git clone <repo-url>
 cd Mistral-Worldwide-Hackathon-2026
-
-# Frontend (http://localhost:3000)
-cd app/frontend
 npm install
-npm run dev
 
-# Backend API (http://localhost:3001)
-cd ../backend
-npm install
-cp env.example .env
-npm run dev
+# Backend : copier l’env
+cp app/backend/env.example app/backend/.env
+# Éditer app/backend/.env (AWS, Voxtral, etc.)
 ```
+
+### Lancer l’app
+
+| Commande | Usage |
+|----------|--------|
+| `npm run dev` | **Recommandé en local.** Backend + frontend en mode développement (hot reload). Aucun build requis. |
+| `npm run start` | Backend en prod (`node dist/`) + frontend en **mode dev** (`next dev`). Pratique pour tester sans faire `next build`. Le frontend ne sert pas un build de prod. |
+| `npm run build` puis `npm run start:backend` + `npm run start:frontend` | Vraie prod : backend et frontend servent les artefacts compilés. `next start` exige un `next build` préalable (dossier `.next`). |
+
+**Nuance importante :** `next start` (frontend prod) ne fonctionne que si un build existe (`.next`). Le script racine `npm run start` lance donc le frontend en `next dev` pour éviter l’erreur « Could not find a production build ». Pour servir le frontend en prod, lancer `npm run build` puis `npm run start:frontend` (ou les deux `start:*` après un build).
+
+- Frontend : **http://localhost:3000**
+- Backend API : **http://localhost:4000**
 
 ### Environment Variables
 
@@ -106,60 +113,60 @@ AWS_SECRET_ACCESS_KEY=...
 ```jsonc
 {
     "projectId": "179b1942-7527-4968-9ca5-02f14dfcce96",
-    "title": "Organisation travail et sport",
+    "title": "Work and Sport Organization",
     "createdAt": "2026-02-28T20:23:13.000Z",
-    "brainDump": "Je veux aller faire du sport mais avant ça j'ai du travail",
+    "brainDump": "I want to go work out but before that I have some work to do",
     "objectives": [
         {
             "id": "obj-1",
-            "text": "Terminer le travail en cours",
-            "priority": "high",
+            "text": "Finish the ongoing work",
+            "priority": "high"
         },
         {
             "id": "obj-2",
-            "text": "Aller faire du sport",
-            "priority": "medium",
-        },
+            "text": "Go do some sport",
+            "priority": "medium"
+        }
     ],
     "tasks": [
         {
             "id": "task-1",
-            "title": "Identifier les tâches de travail à compléter",
+            "title": "Identify the work tasks to complete",
             "objectiveId": "obj-1",
             "status": "backlog",
             "estimate": "S",
             "priority": "high",
-            "dependsOn": [],
+            "dependsOn": []
         },
         {
             "id": "task-2",
-            "title": "Réaliser le travail prioritaire",
+            "title": "Complete the priority work",
             "objectiveId": "obj-1",
             "status": "backlog",
             "estimate": "M",
             "priority": "high",
-            "dependsOn": ["task-1"],
+            "dependsOn": ["task-1"]
         },
         {
             "id": "task-3",
-            "title": "Préparer les affaires de sport",
+            "title": "Prepare sports gear",
             "objectiveId": "obj-2",
             "status": "backlog",
             "estimate": "S",
             "priority": "medium",
-            "dependsOn": [],
+            "dependsOn": []
         },
         {
             "id": "task-4",
-            "title": "Aller à la salle de sport",
+            "title": "Go to the gym",
             "objectiveId": "obj-2",
             "status": "backlog",
             "estimate": "M",
             "priority": "medium",
-            "dependsOn": ["task-2", "task-3"],
-        },
+            "dependsOn": ["task-2", "task-3"]
+        }
     ],
-    "revisionHistory": [],
+    "revisionHistory": []
 }
 ```
 

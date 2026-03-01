@@ -13,18 +13,14 @@ import { ObjectiveGrid } from '@/components/roadmap/ObjectiveGrid';
 import type { Task as RoadmapTask, TaskStatus } from '@/lib/types';
 import { roadmapToMarkdown } from '@/lib/types';
 import { useStructure } from '@/lib/useStructure';
-import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   AlertCircle,
-  ArrowLeft,
   Zap,
-  Calendar,
   History,
   Network,
   Activity,
   Sparkles,
-  Clock,
   Lock,
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
@@ -59,13 +55,11 @@ export default function ProjectPage() {
   }, [textParam, planningParam, projectId, structureBrainDump, fetchProject]);
 
   const [localPlanning, setLocalPlanning] = useState(roadmap?.planning);
-  const [prevRoadmap, setPrevRoadmap] = useState(roadmap);
-
-  if (roadmap !== prevRoadmap) {
-    setPrevRoadmap(roadmap);
-    if (roadmap?.tasks) setLocalTasks(roadmap.tasks);
-    if (roadmap?.planning) setLocalPlanning(roadmap.planning);
-  }
+  useEffect(() => {
+    if (!roadmap) return;
+    setLocalTasks(roadmap.tasks ?? []);
+    setLocalPlanning(roadmap.planning);
+  }, [roadmap]);
 
   const handleStatusChange = useCallback((id: string, newStatus: TaskStatus) => {
     setLocalTasks((prev) =>

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { ChevronRight, Zap, CheckCircle2 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
@@ -10,21 +11,25 @@ import { ActivityHeatmap } from '@/components/dashboard/ActivityHeatmap';
 import { RoadmapCard } from '@/components/dashboard/RoadmapCard';
 import { StatBox } from '@/components/dashboard/StatBox';
 import { CollaborationHub } from '@/components/dashboard/CollaborationHub';
-import { Zap, CheckCircle2 } from 'lucide-react';
+import { STATIC_ACTIVITY_DATA } from '@/components/dashboard/activity/activity.constants';
 
-const STATIC_ACTIVITY_DATA = [
-  1, 2, 0, 3, 1, 0, 0, 2, 3, 1, 0, 2, 0, 1, 0, 1, 2, 1, 0, 3, 2, 1, 0, 0, 2, 3, 1, 0, 3, 2, 1, 0, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 1, 0, 0, 2, 3, 1, 2, 0, 3, 1, 0, 0, 2, 3, 2, 1, 0, 0, 1, 2, 3, 1, 0, 2, 0, 1, 0, 1, 0, 3, 2, 1, 0, 0, 2, 3, 1, 0, 3, 2, 1, 0, 2, 1, 0, 0, 1, 2, 3, 2, 1, 0, 1, 0, 0, 2,
-].slice(0, 14 * 7);
-
-const recentProjects = [
-  { id: '1', title: 'Microservices Architecture v2', status: 'Stable', lastEdit: '2m ago', nodes: 24 },
-  { id: '2', title: 'Product Launch Q3', status: 'Review', lastEdit: '1h ago', nodes: 12 },
-  { id: '3', title: 'Mobile UI/UX Refactor', status: 'Draft', lastEdit: '4h ago', nodes: 18 },
-  { id: '4', title: 'API Gateway Scaling', status: 'Stable', lastEdit: '1d ago', nodes: 32 },
-];
+const RECENT_PROJECT_KEYS = [
+  { id: '1', titleKey: 'recentProject1Title', statusKey: 'statusStable', lastEditKey: 'lastEdit2m', nodes: 24 },
+  { id: '2', titleKey: 'recentProject2Title', statusKey: 'statusReview', lastEditKey: 'lastEdit1h', nodes: 12 },
+  { id: '3', titleKey: 'recentProject3Title', statusKey: 'statusDraft', lastEditKey: 'lastEdit4h', nodes: 18 },
+  { id: '4', titleKey: 'recentProject4Title', statusKey: 'statusStable', lastEditKey: 'lastEdit1d', nodes: 32 },
+] as const;
 
 export default function DashboardOverview() {
   const { isDarkMode } = useDashboardTheme();
+  const t = useTranslations('dashboard');
+  const recentProjects = RECENT_PROJECT_KEYS.map((p) => ({
+    id: p.id,
+    title: t(p.titleKey),
+    status: t(p.statusKey),
+    lastEdit: t(p.lastEditKey),
+    nodes: p.nodes,
+  }));
 
   return (
     <div className="p-6 lg:p-8">
@@ -53,7 +58,7 @@ export default function DashboardOverview() {
                 isDarkMode ? 'text-zinc-500' : 'text-slate-600'
               )}
             >
-              Active Units
+              {t('activeUnits')}
             </h3>
             <Link
               href="/dashboard/roadmaps"
@@ -64,7 +69,7 @@ export default function DashboardOverview() {
                   : 'bg-blue-50 text-blue-600 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 shadow-sm'
               )}
             >
-              EXPLORE ROADMAPS <ChevronRight size={14} strokeWidth={2.5} />
+              {t('exploreRoadmaps')} <ChevronRight size={14} strokeWidth={2.5} />
             </Link>
           </div>
           <div className="space-y-1 overflow-y-auto pr-2 custom-scrollbar">
@@ -76,9 +81,9 @@ export default function DashboardOverview() {
 
         <div className="col-span-12 lg:col-span-4 row-span-3 flex flex-col gap-4">
           <StatBox
-            label="Inference Speed"
-            value="84.2 t/s"
-            detail="42ms LATENCY"
+            label={t('inferenceSpeed')}
+            value={t('inferenceSpeedValue')}
+            detail={t('inferenceSpeedDetail')}
             icon={Zap}
             color="text-amber-500"
             progress={84}
@@ -86,9 +91,9 @@ export default function DashboardOverview() {
             variant={isDarkMode ? 'dark' : 'light'}
           />
           <StatBox
-            label="Topological Sort"
-            value="Healthy"
-            detail="VERIFIED"
+            label={t('topologicalSort')}
+            value={t('topologicalSortValue')}
+            detail={t('topologicalSortDetail')}
             icon={CheckCircle2}
             color="text-emerald-500"
             progress={100}
