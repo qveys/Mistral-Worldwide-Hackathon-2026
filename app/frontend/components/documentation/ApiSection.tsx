@@ -91,7 +91,7 @@ const roadmap = await echomaps.brainDump.generate({
         <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
           <Globe size={24} />
         </div>
-        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">{t('webhooks')}</h4>
+        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white">{t('webhooks')}</h4>
         <p className="text-sm text-slate-500 font-medium leading-relaxed">
           {t('webhooksDesc')}
         </p>
@@ -100,7 +100,7 @@ const roadmap = await echomaps.brainDump.generate({
         <div className="h-12 w-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg">
           <Code2 size={24} />
         </div>
-        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white font-bold">{t('customLlm')}</h4>
+        <h4 className="text-lg font-black uppercase italic text-slate-900 dark:text-white">{t('customLlm')}</h4>
         <p className="text-sm text-slate-500 font-medium leading-relaxed">
           {t('customLlmDesc')}
         </p>

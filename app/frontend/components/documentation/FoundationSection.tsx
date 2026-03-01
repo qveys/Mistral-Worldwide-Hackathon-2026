@@ -29,7 +29,7 @@ export const FoundationSection = () => {
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant="priority" type="high">{tTask('priorityHigh')}</Badge>
           <Badge variant="status" type="doing">{tTask('inProgress')}</Badge>
-          <Badge variant="estimate">{t('sizeLabel')}: M</Badge>
+          <Badge variant="estimate">{tTask('estimateSizeM')}</Badge>
           <Spinner size="md" className="text-blue-600 dark:text-blue-400 ml-2" />
         </div>
       </div>

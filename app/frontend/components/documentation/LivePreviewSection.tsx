@@ -21,6 +21,7 @@ export const LivePreviewSection = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [micState, setMicState] = useState<MicButtonState>('idle');
   const [searchQuery, setSearchQuery] = useState('');
+  const [email, setEmail] = useState('');
 
   const simulateLoading = () => {
     setBtnLoading(true);
@@ -85,7 +86,7 @@ export const LivePreviewSection = () => {
           <div className="space-y-8">
             <div className="flex flex-wrap gap-3">
               <Badge variant="priority" type="high">{tTask('priorityHigh')}</Badge>
-              <Badge variant="priority" type="medium">{t('normal')}</Badge>
+              <Badge variant="priority" type="medium">{tTask('priorityMedium')}</Badge>
               <Badge variant="priority" type="low">{tTask('priorityLow')}</Badge>
               <Badge variant="status" type="done">{tTask('completed')}</Badge>
               <Badge variant="status" type="doing">{tTask('inProgress')}</Badge>
@@ -147,7 +148,9 @@ export const LivePreviewSection = () => {
                 label={t('contactEmail')} 
                 placeholder={t('contactEmailPlaceholder')} 
                 type="email"
-                error={searchQuery.length > 0 && !searchQuery.includes('@') ? t('emailInvalid') : undefined}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={email.length > 0 && !email.includes('@') ? t('emailInvalid') : undefined}
               />
               <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-2xl border-2 border-slate-200 dark:border-slate-600">
                 <span className="text-[9px] font-black uppercase text-slate-400 block mb-3">{t('quickSelect')}</span>

@@ -1,14 +1,20 @@
 'use client';
 
-import React from 'react';
-import { useTranslations } from 'next-intl';
+import React, { useState, useEffect } from 'react';
+import { useTranslations, useFormatter } from 'next-intl';
 import { Activity, ShieldCheck, Database, Server } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 
 export function SystemHealthSection() {
   const t = useTranslations('settings');
-  const lastHealthCheckTime = React.useMemo(() => new Date().toLocaleTimeString(), []);
+  const format = useFormatter();
+  const [lastHealthCheckTime, setLastHealthCheckTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLastHealthCheckTime(format.dateTime(new Date(), { timeStyle: 'medium' }));
+  }, [format]);
+
   const systems = [
     { labelKey: 'neuralEngine' as const, statusKey: 'stable' as const, icon: Server, color: 'text-emerald-500' },
     { labelKey: 'primaryDb' as const, statusKey: 'optimal' as const, icon: Database, color: 'text-blue-500' },
@@ -19,7 +25,7 @@ export function SystemHealthSection() {
     <div className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700/50 rounded-[2.5rem] p-8 lg:p-10 space-y-8 h-full flex flex-col">
       <div className="flex items-center gap-3 border-b border-zinc-800/50 pb-6">
         <Activity size={18} className="text-emerald-500" />
-        <h3 className="text-sm font-bold uppercase tracking-widest text-white">{t('systemIntegrity')}</h3>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-white">{t('systemIntegrity')}</h3>
       </div>
 
       <div className="flex-1 space-y-6">
@@ -38,7 +44,7 @@ export function SystemHealthSection() {
 
       <div className="pt-6 border-t border-zinc-800/50">
         <p className="text-[10px] text-zinc-600 font-mono italic">
-          {t('lastHealthCheck', { time: lastHealthCheckTime })}
+          {lastHealthCheckTime != null ? t('lastHealthCheck', { time: lastHealthCheckTime }) : null}
         </p>
       </div>
     </div>

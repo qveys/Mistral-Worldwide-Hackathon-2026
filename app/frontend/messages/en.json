@@ -269,7 +269,8 @@
     "blocked": "Blocked",
     "priorityHigh": "High",
     "priorityMedium": "Med",
-    "priorityLow": "Low"
+    "priorityLow": "Low",
+    "estimateSizeM": "Size: M"
   },
   "loading": {
     "analyzing": "Analyzing your brain dump...",

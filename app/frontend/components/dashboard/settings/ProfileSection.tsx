@@ -38,16 +38,17 @@ export function ProfileSection() {
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('displayName')}</label>
-            <Input defaultValue={t('defaultDisplayName')} className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
+            <label htmlFor="displayName" className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('displayName')}</label>
+            <Input id="displayName" defaultValue={t('defaultDisplayName')} className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
           </div>
           <div className="space-y-2">
-            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('emailAddress')}</label>
-            <Input defaultValue={t('defaultEmail')} className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
+            <label htmlFor="emailAddress" className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('emailAddress')}</label>
+            <Input id="emailAddress" defaultValue={t('defaultEmail')} className={cn("h-12", isDarkMode ? "bg-zinc-900/50 border-zinc-800" : "bg-slate-50 border-slate-300")} />
           </div>
           <div className="md:col-span-2 space-y-2">
-            <label className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('professionalBio')}</label>
-            <textarea 
+            <label htmlFor="bioTextarea" className={cn("text-[10px] font-bold uppercase tracking-widest ml-1", isDarkMode ? "text-zinc-500" : "text-slate-600")}>{t('professionalBio')}</label>
+            <textarea
+              id="bioTextarea"
               className={cn(
                 "w-full rounded-xl p-4 text-sm outline-none focus:border-violet-500/50 transition-all h-24",
                 isDarkMode ? "bg-zinc-900/50 border border-zinc-800 text-zinc-300" : "bg-slate-50 border border-slate-300 text-slate-700"
