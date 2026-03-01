@@ -7,6 +7,7 @@ import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 import { getErrorMessageKey } from '@/lib/errorMessages';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function NewRoadmapPage() {
@@ -14,6 +15,8 @@ export default function NewRoadmapPage() {
     const { isDarkMode } = useDashboardTheme();
     const t = useTranslations('dashboard');
     const tErrors = useTranslations('errors');
+    const searchParams = useSearchParams();
+    const prefillText = searchParams.get('text') ?? '';
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -83,7 +86,11 @@ export default function NewRoadmapPage() {
                             {error}
                         </p>
                     )}
-                    <BrainDumpInput onGenerate={handleGenerate} isProcessing={isProcessing} />
+                    <BrainDumpInput
+                        onGenerate={handleGenerate}
+                        isProcessing={isProcessing}
+                        initialText={prefillText}
+                    />
                 </div>
             </div>
         </div>

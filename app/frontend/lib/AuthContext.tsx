@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { API_URL, AUTH_TOKEN_KEY } from './api';
 
 type AuthContextValue = {
@@ -15,10 +15,12 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [isLoggedIn, setIsLoggedIn] = useState(() => {
-        if (typeof window === 'undefined') return false;
-        return !!localStorage.getItem(AUTH_TOKEN_KEY);
-    });
+    // Start false to match SSR, then hydrate from localStorage after mount
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem(AUTH_TOKEN_KEY));
+    }, []);
 
     const login = useCallback((token: string) => {
         if (typeof window !== 'undefined') {
