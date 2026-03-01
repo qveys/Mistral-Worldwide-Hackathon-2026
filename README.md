@@ -1,7 +1,14 @@
-# 🗺️ EchoMaps — Chaos to Clarity
+<div align="center">
+  <img src="assets/logo_large.png" alt="EchoMaps Logo" width="420" />
+  <br /><br />
+  <h1>EchoMaps — Chaos to Clarity</h1>
+  <p><strong>EchoMaps</strong> transforms a chaotic voice/text brain dump into a structured, actionable roadmap in real-time.<br />
+  Built for the <strong>Mistral Worldwide Hackathon 2026</strong>.</p>
+  <br />
+  <img src="assets/project_schema.png" alt="EchoMaps Architecture Schema" width="700" />
+</div>
 
-**EchoMaps** transforms a chaotic voice/text brain dump into a structured, actionable roadmap in real-time.  
-Built for the **Mistral Worldwide Hackathon 2026**.
+<br />
 
 ## ✨ Features
 
@@ -47,11 +54,11 @@ cp app/backend/env.example app/backend/.env
 
 ### Lancer l’app
 
-| Commande | Usage |
-|----------|--------|
-| `npm run dev` | **Recommandé en local.** Backend + frontend en mode développement (hot reload). Aucun build requis. |
-| `npm run start` | Backend en prod (`node dist/`) + frontend en **mode dev** (`next dev`). Pratique pour tester sans faire `next build`. Le frontend ne sert pas un build de prod. |
-| `npm run build` puis `npm run start:backend` + `npm run start:frontend` | Vraie prod : backend et frontend servent les artefacts compilés. `next start` exige un `next build` préalable (dossier `.next`). |
+| Commande                                                                | Usage                                                                                                                                                           |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                                                           | **Recommandé en local.** Backend + frontend en mode développement (hot reload). Aucun build requis.                                                             |
+| `npm run start`                                                         | Backend en prod (`node dist/`) + frontend en **mode dev** (`next dev`). Pratique pour tester sans faire `next build`. Le frontend ne sert pas un build de prod. |
+| `npm run build` puis `npm run start:backend` + `npm run start:frontend` | Vraie prod : backend et frontend servent les artefacts compilés. `next start` exige un `next build` préalable (dossier `.next`).                                |
 
 **Nuance importante :** `next start` (frontend prod) ne fonctionne que si un build existe (`.next`). Le script racine `npm run start` lance donc le frontend en `next dev` pour éviter l’erreur « Could not find a production build ». Pour servir le frontend en prod, lancer `npm run build` puis `npm run start:frontend` (ou les deux `start:*` après un build).
 
@@ -120,13 +127,13 @@ AWS_SECRET_ACCESS_KEY=...
         {
             "id": "obj-1",
             "text": "Finish the ongoing work",
-            "priority": "high"
+            "priority": "high",
         },
         {
             "id": "obj-2",
             "text": "Go do some sport",
-            "priority": "medium"
-        }
+            "priority": "medium",
+        },
     ],
     "tasks": [
         {
@@ -136,7 +143,7 @@ AWS_SECRET_ACCESS_KEY=...
             "status": "backlog",
             "estimate": "S",
             "priority": "high",
-            "dependsOn": []
+            "dependsOn": [],
         },
         {
             "id": "task-2",
@@ -145,7 +152,7 @@ AWS_SECRET_ACCESS_KEY=...
             "status": "backlog",
             "estimate": "M",
             "priority": "high",
-            "dependsOn": ["task-1"]
+            "dependsOn": ["task-1"],
         },
         {
             "id": "task-3",
@@ -154,7 +161,7 @@ AWS_SECRET_ACCESS_KEY=...
             "status": "backlog",
             "estimate": "S",
             "priority": "medium",
-            "dependsOn": []
+            "dependsOn": [],
         },
         {
             "id": "task-4",
@@ -163,10 +170,10 @@ AWS_SECRET_ACCESS_KEY=...
             "status": "backlog",
             "estimate": "M",
             "priority": "medium",
-            "dependsOn": ["task-2", "task-3"]
-        }
+            "dependsOn": ["task-2", "task-3"],
+        },
     ],
-    "revisionHistory": []
+    "revisionHistory": [],
 }
 ```
 

@@ -1,15 +1,14 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { API_URL } from './api';
-
-const SESSION_KEY = 'echomaps_session';
+import { API_URL, AUTH_TOKEN_KEY } from './api';
 
 type AuthContextValue = {
   isLoggedIn: boolean;
-  login: () => void;
+  /** Store token after successful login (called internally by loginWithEmail). */
+  login: (token: string) => void;
   logout: () => void;
-  /** Call POST /auth/login with email; on success calls login(), otherwise returns error message. */
+  /** Call POST /auth/login with email; on success stores token and returns ok. */
   loginWithEmail: (email: string) => Promise<{ ok: true } | { ok: false; error: string }>;
 };
 
@@ -19,20 +18,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const has = typeof window !== 'undefined' && !!localStorage.getItem(SESSION_KEY);
+    const has = typeof window !== 'undefined' && !!localStorage.getItem(AUTH_TOKEN_KEY);
     setIsLoggedIn(has);
   }, []);
 
-  const login = useCallback(() => {
+  const login = useCallback((token: string) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(SESSION_KEY, '1');
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
       setIsLoggedIn(true);
     }
   }, []);
 
   const logout = useCallback(() => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(AUTH_TOKEN_KEY);
       setIsLoggedIn(false);
     }
   }, []);
@@ -49,10 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           success?: boolean;
           error?: string;
           code?: string;
+          token?: string;
         };
-        if (res.ok && data.success) {
-          login();
+        if (res.ok && data.success && typeof data.token === 'string') {
+          login(data.token);
           return { ok: true };
+        }
+        if (res.ok && data.success) {
+          return { ok: false, error: 'server_error' };
         }
 
         if (data.error || data.code) {
