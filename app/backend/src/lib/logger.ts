@@ -36,3 +36,12 @@ export const logger = {
         console.error(JSON.stringify(createEntry('error', service, message, meta)));
     },
 };
+
+export function logRouteError(route: string, error: unknown): void {
+    const meta: Record<string, unknown> = {
+        route,
+        error: error instanceof Error ? error.message : String(error),
+    };
+    if (error instanceof Error && error.stack) meta.stack = error.stack;
+    logger.error('Route', `${route} failed`, meta);
+}

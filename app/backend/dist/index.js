@@ -1,52 +1,24 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, {} from 'express';
-import { createServer } from 'http';
-import structureRouter from './routes/structure.js';
-import reviseRouter from './routes/revise.js';
-import projectRouter from './routes/project.js';
-import { demoModeMiddleware } from './middleware/demoMode.js';
-import templatesRouter from './routes/templates.js';
-import clarifyRouter from './routes/clarify.js';
-import { VoxstralService } from './services/voxstral.js';
+import http from 'node:http';
+import { WebSocketServer } from 'ws';
+import { logger } from './lib/logger.js';
+import { registerRoutes } from './routes/index.js';
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 4000;
-app.use(cors());
+const corsOrigin = process.env['CORS_ORIGIN'] || 'http://localhost:3000';
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
-app.use(demoModeMiddleware);
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString(), demoMode: process.env.DEMO_MODE === 'true' });
+app.get('/health', (_req, res) => {
+    res.json({ status: 'OK' });
 });
-// API routes
-app.use('/api/structure', structureRouter);
-app.use('/api/revise', reviseRouter);
-app.use('/api/project', projectRouter);
-app.use('/api/templates', templatesRouter);
-app.use('/api/clarify', clarifyRouter);
-// Create HTTP server and integrate Voxstral WebSocket service
-const server = createServer(app);
-const voxstralService = new VoxstralService(server);
-// Handle Voxstral transcription events
-voxstralService.on('transcription_update', (data) => {
-    console.log(`Transcription update: ${data.transcript.substring(0, 50)}...`);
-});
-voxstralService.on('transcription_complete', (data) => {
-    console.log(`Transcription complete (${data.durationMs}ms): ${data.transcript.substring(0, 100)}...`);
-    // Here you could automatically call the /structure endpoint with the transcript
-});
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server, path: '/ws/transcribe' });
+registerRoutes(app, wss);
 server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-    console.log(`WebSocket server running at ws://localhost:${port}`);
-    console.log('Available endpoints:');
-    console.log('- GET /health');
-    console.log('- POST /api/structure');
-    console.log('- POST /api/revise');
-    console.log('- GET /api/project/:id');
-    console.log('- GET  /api/templates');
-    console.log('- GET  /api/templates/:slug');
-    console.log('- POST /api/clarify');
-    console.log('- WS / (Voxstral WebSocket)');
+    logger.info('Server', `Running at http://localhost:${port}`, { port, corsOrigin });
+    logger.info('Server', `WebSocket available at ws://localhost:${port}/ws/transcribe`);
 });
 //# sourceMappingURL=index.js.map

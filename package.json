@@ -8,7 +8,9 @@
         "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend\"",
         "build": "concurrently \"npm run build -w app/backend\" \"npm run build -w app/frontend\"",
         "docker:up": "docker compose up --build",
-        "start": "npm run start -w app/backend"
+        "start:backend": "npm run start -w app/backend",
+        "start:frontend": "npm run start -w app/frontend",
+        "start": "concurrently \"npm run start:backend\" \"npm run dev:frontend\""
     },
     "devDependencies": {
         "@types/cors": "^2.8.19",

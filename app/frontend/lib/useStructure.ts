@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { API_URL } from './api';
 import type { Roadmap } from './types';
-
-const API_URL = process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:4000';
 
 interface UseStructureReturn {
     roadmap: Roadmap | null;

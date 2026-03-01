@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { BrainDumpInput } from '@/components/brain-dump/BrainDumpInput';
+import { API_URL } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useDashboardTheme } from '@/lib/DashboardThemeContext';
 
@@ -12,13 +13,28 @@ export default function NewRoadmapPage() {
   const { isDarkMode } = useDashboardTheme();
   const t = useTranslations('dashboard');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = (text: string, includePlanning: boolean) => {
+  const handleGenerate = async (text: string, includePlanning: boolean) => {
+    setError(null);
     setIsProcessing(true);
-    const id = crypto.randomUUID();
-    const params = new URLSearchParams({ text });
-    if (includePlanning) params.set('planning', '1');
-    router.push(`/project/${id}?${params.toString()}`);
+    try {
+      const response = await fetch(`${API_URL}/structure`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, includePlanning }),
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error || `Server error: ${response.status}`);
+      }
+      const data = (await response.json()) as { projectId: string };
+      router.push(`/project/${data.projectId}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate roadmap');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -43,6 +59,11 @@ export default function NewRoadmapPage() {
           )}>
             {t('newRoadmapDescription')}
           </p>
+          {error && (
+            <p className="text-sm text-red-500 mb-4 text-center" role="alert">
+              {error}
+            </p>
+          )}
           <BrainDumpInput
             onGenerate={handleGenerate}
             isProcessing={isProcessing}
