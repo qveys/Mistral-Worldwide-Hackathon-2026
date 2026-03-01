@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, CheckCircle2, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -41,6 +42,7 @@ const typeConfig = {
 };
 
 export function Toast({ message, type, isVisible, onClose, duration = 5000, action }: ToastProps) {
+  const t = useTranslations('common');
   useEffect(() => {
     if (isVisible && duration > 0 && !action) {
       const timer = setTimeout(() => {
@@ -92,7 +94,7 @@ export function Toast({ message, type, isVisible, onClose, duration = 5000, acti
 
             <button
               onClick={onClose}
-              aria-label="Fermer la notification"
+              aria-label={t('closeNotification')}
               className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-slate-400 dark:text-slate-500 transition-colors shrink-0"
             >
               <X size={16} />

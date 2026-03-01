@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 
 const locales = [
-  { code: 'fr' as const, label: 'FR' },
-  { code: 'en' as const, label: 'EN' },
+  { code: 'fr' as const, label: 'FR', ariaKey: 'localeFr' as const },
+  { code: 'en' as const, label: 'EN', ariaKey: 'localeEn' as const },
 ] as const;
 
 type LocaleCode = (typeof locales)[number]['code'];
@@ -22,6 +22,7 @@ export function LanguageSwitcher({
   const locale = useLocale() as LocaleCode;
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations('language');
 
   const switchLocale = (newLocale: LocaleCode) => {
     if (newLocale === locale) return;
@@ -31,7 +32,7 @@ export function LanguageSwitcher({
   if (variant === 'compact') {
     return (
       <div className={cn('flex items-center gap-0.5', className)}>
-        {locales.map(({ code, label }) => (
+        {locales.map(({ code, label, ariaKey }) => (
           <button
             key={code}
             type="button"
@@ -42,8 +43,8 @@ export function LanguageSwitcher({
                 ? 'bg-blue-600 text-white'
                 : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
             )}
-            aria-label={code === 'fr' ? 'Français' : 'English'}
-          >
+aria-label={t(ariaKey)}
+            >
             {label}
           </button>
         ))}
@@ -53,7 +54,7 @@ export function LanguageSwitcher({
 
   return (
     <div className={cn('flex items-center gap-1', className)}>
-      {locales.map(({ code, label }) => (
+      {locales.map(({ code, label, ariaKey }) => (
         <button
           key={code}
           type="button"
@@ -64,7 +65,7 @@ export function LanguageSwitcher({
               ? 'bg-blue-600 text-white shadow-sm'
               : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
           )}
-          aria-label={code === 'fr' ? 'Français' : 'English'}
+          aria-label={t(ariaKey)}
         >
           {label}
         </button>
