@@ -63,14 +63,14 @@ router.post('/', async (req, res) => {
   } catch (error) {
     logRouteError('POST /api/revise', error);
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: 'Invalid request or response', details: error.errors });
+      res.status(400).json({ error: 'Invalid request or response', details: error.issues });
     } else if (error instanceof HttpError) {
       res.status(error.statusCode).json({ error: error.message });
     } else if (error instanceof BedrockValidationExhaustedError) {
       res.status(502).json({
         error: 'Upstream model returned invalid format after retries',
         attempts: error.attempts,
-        details: error.lastZodError.errors,
+        details: error.lastZodError.issues,
       });
     } else {
       res.status(500).json({ error: 'Internal server error' });

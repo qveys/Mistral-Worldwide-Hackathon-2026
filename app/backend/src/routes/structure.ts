@@ -63,10 +63,10 @@ router.post('/', async (req, res) => {
         error: 'Bad Gateway',
         message: 'AI model returned invalid responses after multiple attempts',
         attempts: error.attempts,
-        details: error.lastZodError.errors,
+        details: error.lastZodError.issues,
       });
     } else if (error instanceof z.ZodError) {
-      res.status(400).json({ error: 'Invalid request', details: error.errors });
+      res.status(400).json({ error: 'Invalid request', details: error.issues });
     } else if (error instanceof HttpError) {
       res.status(error.statusCode).json({ error: error.message });
     } else {

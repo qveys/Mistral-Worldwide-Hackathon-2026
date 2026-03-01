@@ -210,7 +210,7 @@ export class BedrockService {
               maxRetries: MAX_VALIDATION_RETRIES,
               totalAttempts,
               latencyMs,
-              zodErrors: validationError.errors,
+              zodErrors: validationError.issues,
               ...cost,
             });
             if (attempt <= MAX_VALIDATION_RETRIES) {
@@ -232,7 +232,7 @@ export class BedrockService {
     log('error', 'Bedrock validation retries exhausted', {
       operation,
       maxRetries: MAX_VALIDATION_RETRIES,
-      zodErrors: lastZodError?.errors,
+      zodErrors: lastZodError?.issues,
     });
 
     throw new BedrockValidationExhaustedError(

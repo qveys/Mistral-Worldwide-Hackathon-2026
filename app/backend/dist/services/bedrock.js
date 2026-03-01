@@ -1,5 +1,6 @@
 import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
 import { z } from "zod";
+import { buildStructurePrompt } from "../prompts/structure.js";
 const MAX_VALIDATION_RETRIES = 2;
 // Approximate pricing per token for Mistral Large on Bedrock (USD)
 const PRICE_PER_INPUT_TOKEN = 0.004 / 1000;
@@ -104,8 +105,9 @@ export class BedrockService {
         return this.invokeWithRetry(prompt, operation, validate);
     }
     async invokeWithRetry(prompt, operation, validate) {
+        const totalAttempts = MAX_VALIDATION_RETRIES + 1;
         let lastZodError;
-        for (let attempt = 1; attempt <= MAX_VALIDATION_RETRIES + 1; attempt++) {
+        for (let attempt = 1; attempt <= totalAttempts; attempt++) {
             const startTime = Date.now();
             try {
                 const input = {
@@ -136,10 +138,14 @@ export class BedrockService {
                         log('warn', 'Model output is not valid JSON, retrying', {
                             operation,
                             attempt,
+                            maxRetries: MAX_VALIDATION_RETRIES,
+                            totalAttempts,
                             latencyMs,
                             error: String(parseError),
                         });
                         if (attempt <= MAX_VALIDATION_RETRIES) {
+                            const delayMs = 1000 * (2 ** (attempt - 1));
+                            await new Promise((resolve) => setTimeout(resolve, delayMs));
                             continue;
                         }
                         throw parseError;
@@ -152,7 +158,14 @@ export class BedrockService {
                 const cost = estimateCost(promptTokens, completionTokens);
                 try {
                     const validated = validate(responseBody);
-                    log('info', 'Bedrock call succeeded', { operation, attempt, latencyMs, ...cost });
+                    log('info', 'Bedrock call succeeded', {
+                        operation,
+                        attempt,
+                        maxRetries: MAX_VALIDATION_RETRIES,
+                        totalAttempts,
+                        latencyMs,
+                        ...cost,
+                    });
                     return validated;
                 }
                 catch (validationError) {
@@ -161,11 +174,15 @@ export class BedrockService {
                         log('warn', 'Zod validation failed, retrying', {
                             operation,
                             attempt,
+                            maxRetries: MAX_VALIDATION_RETRIES,
+                            totalAttempts,
                             latencyMs,
-                            zodErrors: validationError.errors,
+                            zodErrors: validationError.issues,
                             ...cost,
                         });
                         if (attempt <= MAX_VALIDATION_RETRIES) {
+                            const delayMs = 1000 * (2 ** (attempt - 1));
+                            await new Promise((resolve) => setTimeout(resolve, delayMs));
                             continue;
                         }
                     }
@@ -183,31 +200,18 @@ export class BedrockService {
         log('error', 'Bedrock validation retries exhausted', {
             operation,
             maxRetries: MAX_VALIDATION_RETRIES,
-            zodErrors: lastZodError?.errors,
+            zodErrors: lastZodError?.issues,
         });
         throw new BedrockValidationExhaustedError(`Bedrock response validation failed after ${MAX_VALIDATION_RETRIES + 1} attempts`, MAX_VALIDATION_RETRIES + 1, lastZodError);
     }
     buildRoadmapPrompt(transcript) {
-        return `You are an AI strategic planning assistant. Convert this brain dump into a structured roadmap:
+        return `${buildStructurePrompt(transcript)}
 
-${transcript}
-
-Return ONLY valid JSON in this exact schema:
+Ajoute aussi l'objet "metadata" avec:
 {
-  "roadmap": [
-    {
-      "id": "string",
-      "title": "string",
-      "description": "string",
-      "priority": number (1-5),
-      "dependencies": ["string"]
-    }
-  ],
-  "metadata": {
-    "processingTimeMs": number,
-    "modelUsed": "string",
-    "confidenceScore": number (0-1)
-  }
+  "processingTimeMs": number,
+  "modelUsed": "string",
+  "confidenceScore": number (0-1)
 }`;
     }
     validateRoadmapResponse(response) {
@@ -217,7 +221,7 @@ Return ONLY valid JSON in this exact schema:
                 title: z.string(),
                 description: z.string(),
                 priority: z.number().min(1).max(5),
-                dependencies: z.array(z.string()).optional()
+                dependsOn: z.array(z.string()).default([])
             })),
             metadata: z.object({
                 processingTimeMs: z.number(),

@@ -4,17 +4,7 @@ declare const BedrockConfigSchema: z.ZodObject<{
     modelId: z.ZodDefault<z.ZodString>;
     maxTokens: z.ZodDefault<z.ZodNumber>;
     temperature: z.ZodDefault<z.ZodNumber>;
-}, "strip", z.ZodTypeAny, {
-    region: string;
-    modelId: string;
-    maxTokens: number;
-    temperature: number;
-}, {
-    region?: string | undefined;
-    modelId?: string | undefined;
-    maxTokens?: number | undefined;
-    temperature?: number | undefined;
-}>;
+}, z.core.$strip>;
 export declare class BedrockValidationExhaustedError extends Error {
     readonly attempts: number;
     readonly lastZodError: z.ZodError;
