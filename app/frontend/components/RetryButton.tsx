@@ -7,7 +7,7 @@ interface RetryButtonProps {
   label?: string;
 }
 
-export function RetryButton({ onRetry, label = "Reessayer" }: RetryButtonProps) {
+export function RetryButton({ onRetry, label = "Réessayer" }: RetryButtonProps) {
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleRetry = async () => {

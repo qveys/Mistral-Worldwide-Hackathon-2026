@@ -12,25 +12,21 @@ export function demoModeMiddleware(req: Request, res: Response, next: NextFuncti
   const path = req.path;
   const method = req.method;
 
-  // Mock structure endpoint
-  if (method === 'POST' && path.includes('/structure')) {
-    // Simulate processing delay
+  if (method === 'POST' && path === '/api/structure') {
     setTimeout(() => {
       res.json(mockRoadmap);
     }, 800);
     return;
   }
 
-  // Mock revise endpoint
-  if (method === 'POST' && path.includes('/revise')) {
+  if (method === 'POST' && path === '/api/revise') {
     setTimeout(() => {
       res.json(mockRevision);
     }, 600);
     return;
   }
 
-  // Mock clarify endpoint
-  if (method === 'POST' && path.includes('/clarify')) {
+  if (method === 'POST' && path === '/api/clarify') {
     setTimeout(() => {
       res.json(mockClarify);
     }, 400);

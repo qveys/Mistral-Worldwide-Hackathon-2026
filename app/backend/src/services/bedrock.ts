@@ -24,16 +24,18 @@ export class BedrockService {
   }
 
   private async withRetry<T>(operation: () => Promise<T>, operationName: string, maxRetries = 2): Promise<T> {
+    const totalAttempts = maxRetries + 1;
     let lastError: Error | undefined;
-    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+    for (let attempt = 1; attempt <= totalAttempts; attempt++) {
       try {
-        console.log(JSON.stringify({ level: "info", operation: operationName, attempt, maxRetries: maxRetries + 1 }));
+        console.log(JSON.stringify({ level: "info", operation: operationName, attempt, maxRetries, totalAttempts }));
         return await operation();
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
         console.log(JSON.stringify({ level: "warn", operation: operationName, attempt, error: lastError.message }));
         if (attempt <= maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+          const delayMs = 1000 * (2 ** (attempt - 1));
+          await new Promise(resolve => setTimeout(resolve, delayMs));
         }
       }
     }
