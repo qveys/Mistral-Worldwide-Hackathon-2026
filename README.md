@@ -38,9 +38,17 @@ From the **repo root**:
 ```bash
 git clone <repo-url>
 cd Mistral-Worldwide-Hackathon-2026
+
+# Frontend (http://localhost:3000)
+cd app/frontend
 npm install
-cp .env.example .env.local   # fill in your keys
-npm run dev                  # or: docker compose up — http://localhost:3000
+npm run dev
+
+# Backend API (http://localhost:3001)
+cd ../backend
+npm install
+cp env.example .env
+npm run dev
 ```
 
 ### Environment Variables
@@ -82,15 +90,15 @@ AWS_SECRET_ACCESS_KEY=...
 │   ├── speech-to-text/
 │   ├── aws-solution-architect/
 │   └── ui-ux-pro-max/
-└── app/
-    ├── frontend/        # Next.js (App Router, components, hooks, lib)
-    │   ├── app/         # Next.js App Router pages
-    │   ├── components/  # Atomic UI components
-    │   ├── hooks/       # useVoxtral, useBedrock, ...
-    │   └── lib/         # bedrock.ts, schema.ts, ...
-    └── backend/         # Express API (TypeScript)
-        ├── routes/
-        └── prompts/
+├── app/
+│   ├── frontend/        # Next.js app
+│   │   ├── app/         # App Router routes/pages
+│   │   ├── components/  # Atomic UI components
+│   │   └── lib/         # shared frontend logic/types
+│   └── backend/         # Express API (TypeScript)
+│       └── src/
+│           ├── routes/
+│           └── prompts/
 ```
 
 ## 🧠 JSON Schema
