@@ -4,6 +4,7 @@ import { StatBox } from '@/components/dashboard/StatBox';
 import { SectionHeader } from '@/components/documentation/SectionHeader';
 import { ActionItemsList } from '@/components/roadmap/ActionItemsList';
 import { DependencyGraph } from '@/components/roadmap/DependencyGraph';
+import { KnowledgeGraph } from '@/components/roadmap/KnowledgeGraph';
 import { ObjectiveGrid } from '@/components/roadmap/ObjectiveGrid';
 import { PlanningTimeline } from '@/components/roadmap/PlanningTimeline';
 import { ProjectHeader } from '@/components/roadmap/ProjectHeader';
@@ -47,7 +48,7 @@ export default function ProjectPage() {
     const [localTasks, setLocalTasks] = useState<RoadmapTask[]>([]);
     const [localPlanning, setLocalPlanning] = useState<Planning | undefined>(undefined);
     const [syncedProjectId, setSyncedProjectId] = useState<string | null>(null);
-    const [viewMode, setViewMode] = useState<'grid' | 'graph' | 'timeline'>('grid');
+    const [viewMode, setViewMode] = useState<'grid' | 'graph' | 'knowledge' | 'timeline'>('grid');
     const errorKey = error ? getErrorMessageKey(error) : null;
     const localizedError = error
         ? errorKey
@@ -229,6 +230,22 @@ export default function ProjectPage() {
                             className="space-y-6"
                         >
                             <DependencyGraph
+                                tasks={localTasks}
+                                className="h-175 border-slate-200 dark:border-slate-700/50 shadow-2xl rounded-[2.5rem]"
+                            />
+                        </motion.div>
+                    )}
+
+                    {viewMode === 'knowledge' && (
+                        <motion.div
+                            key="knowledge"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="space-y-6"
+                        >
+                            <KnowledgeGraph
+                                objectives={roadmap.objectives}
                                 tasks={localTasks}
                                 className="h-175 border-slate-200 dark:border-slate-700/50 shadow-2xl rounded-[2.5rem]"
                             />
