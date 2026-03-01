@@ -2,7 +2,8 @@ import { mkdir, readFile, writeFile } from 'fs/promises';
 import * as path from 'node:path';
 import { sanitizeProjectId } from '../lib/projectId.js';
 
-const PROJECTS_DIR = '/tmp/projects';
+const DEFAULT_PROJECTS_DIR = path.join(process.cwd(), 'data', 'projects');
+const PROJECTS_DIR = path.resolve(process.env.PROJECTS_DIR ?? DEFAULT_PROJECTS_DIR);
 
 async function ensureDir(): Promise<void> {
   await mkdir(PROJECTS_DIR, { recursive: true });

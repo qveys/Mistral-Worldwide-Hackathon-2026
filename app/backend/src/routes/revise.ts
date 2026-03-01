@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
   try {
     if (DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      res.json(DEMO_REVISED_ROADMAP);
+      res.json({ roadmap: DEMO_REVISED_ROADMAP.revisedRoadmap });
       return;
     }
 
